@@ -1,0 +1,212 @@
+wang@wang-Z390-M-GAMING:~/dgemm_test$ ./general_benchmark_mkl 3 7000 7000 7000 4 -2 N N
+A SIMPLE DGEMM TESTING PROGRAM
+Matrix elements will be stored in column-major order.
+Transposition: matrix A: N; matrix B: N.
+DGEMM will be called in this way:
+    <dgemmname>(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc)
+Please make sure that the dgemm library you provided can respond normally to the call above
+
+Enter your dgemm library path(path to the *.so file):DGEMM.so
+Enter the function name of dgemm in your library(e.g., dgemm):dgemmserial
+Now test dgemm with small matrices, identical results indicate successful linking
+Reference product matrix:         1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Product matrix from your library: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Available memory in words: 8025477632
+Memory required in words: 294000000
+Matrix dimensions lower than 10 will be reset to 10
+Dimensions of matrix A: 7000 * 7000
+Dimensions of matrix B: 7000 * 7000
+Number of iterations 3 
+Elements of A and B will be generated randomly at the start of every iteration in the range [ -2.000000e+00 , 4.000000e+00 )
+Expected value of every element in the product matrix: 7.000000e+03
+Now start DGEMM iterations 
+
+Iteration 1:
+First 5 elements of matrix A: 4.006216e-01, 1.358178e-01, 1.945099e+00, 2.687655e+00, 2.834198e+00
+First 5 elements of matrix B: 9.826356e-01, -9.789361e-01, 1.353863e+00, 3.738060e+00, 1.648693e+00
+First 5 elements of product matrix (AB)test: 7.080568e+03, 6.589563e+03, 7.101183e+03, 7.469860e+03, 6.891965e+03
+First 5 elements of matrix (AB)test-(AB)mkl: 1.733724e-11, 1.895728e-11, 1.584510e-11, 3.595346e-12, -2.458478e-12
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 1 : element no. 14590155: 9.202950e-11
+
+Iteration 2:
+First 5 elements of matrix A: 6.347779e-01, 8.732098e-02, 3.481444e+00, 2.247430e+00, 4.599965e-01
+First 5 elements of matrix B: -1.131017e-01, 8.470168e-01, 2.701726e-01, 2.340633e+00, 2.835461e+00
+First 5 elements of product matrix (AB)test: 6.881832e+03, 7.099435e+03, 7.517634e+03, 7.491220e+03, 6.852793e+03
+First 5 elements of matrix (AB)test-(AB)mkl: -1.682565e-11, -3.633716e-11, 3.630873e-11, 8.313350e-12, -1.661249e-11
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 2 : element no. 5037827: 8.347456e-11
+
+Iteration 3:
+First 5 elements of matrix A: 1.776122e-01, -5.390820e-02, 3.237677e-01, -2.198705e-01, 2.611641e+00
+First 5 elements of matrix B: -1.314460e+00, 1.511617e-01, -2.635894e-01, 1.986393e+00, -6.680926e-01
+First 5 elements of product matrix (AB)test: 6.855396e+03, 7.027868e+03, 7.246464e+03, 6.280355e+03, 7.267704e+03
+First 5 elements of matrix (AB)test-(AB)mkl: -4.959588e-12, -9.777068e-12, 3.707612e-11, -1.700329e-11, 3.052492e-11
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 3 : element no. 17201041: 8.905943e-11
+
+SUMMARY of the test:
+FP operation count per dgemm call:686000000000
+lib1: DGEMM.so.
+MKL library: 2018, linked with libgomp, 32-bit integer interface.
+Iter	Seconds-lib1	GFLOPS-lib1	Seconds-MKL2018	GFLOPS-MKL2018
+ 1	  10.364692	 66.186241	    10.357769	 66.230479
+ 2	  10.359944	 66.216574	    10.294219	 66.639344
+ 3	  10.361024	 66.209672	    10.293538	 66.643753
+wang@wang-Z390-M-GAMING:~/dgemm_test$ ./general_benchmark_mkl 3 7000 7000 7000 4 -2 Y Y
+A SIMPLE DGEMM TESTING PROGRAM
+Matrix elements will be stored in column-major order.
+Transposition: matrix A: T; matrix B: T.
+DGEMM will be called in this way:
+    <dgemmname>(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc)
+Please make sure that the dgemm library you provided can respond normally to the call above
+
+Enter your dgemm library path(path to the *.so file):DGEMM.so
+Enter the function name of dgemm in your library(e.g., dgemm):dgemmserial
+Now test dgemm with small matrices, identical results indicate successful linking
+Reference product matrix:         1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Product matrix from your library: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Available memory in words: 8025285120
+Memory required in words: 294000000
+Matrix dimensions lower than 10 will be reset to 10
+Dimensions of matrix A: 7000 * 7000
+Dimensions of matrix B: 7000 * 7000
+Number of iterations 3 
+Elements of A and B will be generated randomly at the start of every iteration in the range [ -2.000000e+00 , 4.000000e+00 )
+Expected value of every element in the product matrix: 7.000000e+03
+Now start DGEMM iterations 
+
+Iteration 1:
+First 5 elements of matrix A: 5.654090e-01, 3.343813e+00, -2.656171e-01, 1.735915e+00, 7.867039e-01
+First 5 elements of matrix B: 2.414781e+00, 1.048251e+00, 2.388604e+00, -1.070964e+00, -7.626770e-01
+First 5 elements of product matrix (AB)test: 7.304391e+03, 7.202043e+03, 7.302478e+03, 7.501109e+03, 7.034991e+03
+First 5 elements of matrix (AB)test-(AB)mkl: -1.524825e-11, 2.535216e-11, -2.155787e-11, 7.240430e-12, -3.488765e-12
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 1 : element no. 39983275: 8.958523e-11
+
+Iteration 2:
+First 5 elements of matrix A: -7.062463e-02, 7.761489e-01, -1.077445e+00, 4.072945e-01, 1.281785e+00
+First 5 elements of matrix B: 5.434910e-01, 1.585685e+00, 2.159723e+00, 1.767837e+00, 1.178568e+00
+First 5 elements of product matrix (AB)test: 7.254637e+03, 7.013260e+03, 6.844748e+03, 6.814024e+03, 7.086529e+03
+First 5 elements of matrix (AB)test-(AB)mkl: 4.273204e-11, 8.142820e-12, -1.307399e-12, 2.162892e-11, 1.473666e-11
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 2 : element no. 7147330: 9.243450e-11
+
+Iteration 3:
+First 5 elements of matrix A: 1.175273e+00, 6.876533e-01, 3.879636e+00, 3.785111e+00, 4.103765e-01
+First 5 elements of matrix B: 6.155226e-01, -1.392187e+00, 1.828306e+00, 1.580533e-01, 4.661392e-01
+First 5 elements of product matrix (AB)test: 7.095445e+03, 7.110173e+03, 6.760671e+03, 7.010794e+03, 7.150836e+03
+First 5 elements of matrix (AB)test-(AB)mkl: -6.679102e-13, -2.444978e-11, 1.196554e-11, 3.780087e-12, -8.540724e-12
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 3 : element no. 29894246: 9.012524e-11
+
+SUMMARY of the test:
+FP operation count per dgemm call:686000000000
+lib1: DGEMM.so.
+MKL library: 2018, linked with libgomp, 32-bit integer interface.
+Iter	Seconds-lib1	GFLOPS-lib1	Seconds-MKL2018	GFLOPS-MKL2018
+ 1	  10.491081	 65.388877	    10.397670	 65.976320
+ 2	  10.501479	 65.324132	    10.372317	 66.137585
+ 3	  10.498527	 65.342500	    10.373246	 66.131662
+wang@wang-Z390-M-GAMING:~/dgemm_test$ ./general_benchmark_mkl 3 7000 7000 7000 4 -2 N Y
+A SIMPLE DGEMM TESTING PROGRAM
+Matrix elements will be stored in column-major order.
+Transposition: matrix A: N; matrix B: T.
+DGEMM will be called in this way:
+    <dgemmname>(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc)
+Please make sure that the dgemm library you provided can respond normally to the call above
+
+Enter your dgemm library path(path to the *.so file):DGEMM.so
+Enter the function name of dgemm in your library(e.g., dgemm):dgemmserial
+Now test dgemm with small matrices, identical results indicate successful linking
+Reference product matrix:         1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Product matrix from your library: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Available memory in words: 8025310208
+Memory required in words: 294000000
+Matrix dimensions lower than 10 will be reset to 10
+Dimensions of matrix A: 7000 * 7000
+Dimensions of matrix B: 7000 * 7000
+Number of iterations 3 
+Elements of A and B will be generated randomly at the start of every iteration in the range [ -2.000000e+00 , 4.000000e+00 )
+Expected value of every element in the product matrix: 7.000000e+03
+Now start DGEMM iterations 
+
+Iteration 1:
+First 5 elements of matrix A: 2.162156e+00, 1.991678e+00, -1.895934e+00, -1.960138e+00, 1.611151e+00
+First 5 elements of matrix B: -1.637830e-01, 1.471330e+00, 2.278604e+00, 3.596672e+00, -1.901653e+00
+First 5 elements of product matrix (AB)test: 7.091155e+03, 7.342697e+03, 7.330403e+03, 7.617654e+03, 7.344953e+03
+First 5 elements of matrix (AB)test-(AB)mkl: 1.944045e-11, 1.037392e-11, 1.314504e-11, -1.350031e-11, -9.521273e-12
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 1 : element no. 4472927: 8.681411e-11
+
+Iteration 2:
+First 5 elements of matrix A: -3.430421e-01, 4.523434e-01, -1.864001e-01, -7.006289e-01, 1.289464e-01
+First 5 elements of matrix B: 5.929055e-01, 1.031770e+00, -1.660418e+00, -1.985097e+00, 1.037639e+00
+First 5 elements of product matrix (AB)test: 6.290693e+03, 6.524477e+03, 6.788663e+03, 6.873583e+03, 6.969494e+03
+First 5 elements of matrix (AB)test-(AB)mkl: -2.761880e-11, -1.406875e-11, 3.254286e-12, 1.030642e-11, 1.421085e-14
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 2 : element no. 19562278: 9.102763e-11
+
+Iteration 3:
+First 5 elements of matrix A: 2.903405e-01, 1.919086e+00, -8.976685e-01, 3.202806e+00, 1.630593e+00
+First 5 elements of matrix B: 3.087817e+00, -1.632633e+00, -1.131713e+00, 2.410353e-01, 3.683771e-01
+First 5 elements of product matrix (AB)test: 6.877377e+03, 6.557112e+03, 6.383917e+03, 6.889435e+03, 7.148019e+03
+First 5 elements of matrix (AB)test-(AB)mkl: 2.717115e-11, 1.594458e-11, -2.697931e-11, 2.115996e-11, 1.951150e-11
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 3 : element no. 11326446: 8.921575e-11
+
+SUMMARY of the test:
+FP operation count per dgemm call:686000000000
+lib1: DGEMM.so.
+MKL library: 2018, linked with libgomp, 32-bit integer interface.
+Iter	Seconds-lib1	GFLOPS-lib1	Seconds-MKL2018	GFLOPS-MKL2018
+ 1	  10.357474	 66.232365	    10.421158	 65.827617
+ 2	  10.409346	 65.902315	    10.395575	 65.989616
+ 3	  10.409581	 65.900827	    10.393933	 66.000041
+wang@wang-Z390-M-GAMING:~/dgemm_test$ ./general_benchmark_mkl 3 7000 7000 7000 4 -2 Y N
+A SIMPLE DGEMM TESTING PROGRAM
+Matrix elements will be stored in column-major order.
+Transposition: matrix A: T; matrix B: N.
+DGEMM will be called in this way:
+    <dgemmname>(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc)
+Please make sure that the dgemm library you provided can respond normally to the call above
+
+Enter your dgemm library path(path to the *.so file):DGEMM.so
+Enter the function name of dgemm in your library(e.g., dgemm):dgemmserial
+Now test dgemm with small matrices, identical results indicate successful linking
+Reference product matrix:         1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Product matrix from your library: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Available memory in words: 8025378816
+Memory required in words: 294000000
+Matrix dimensions lower than 10 will be reset to 10
+Dimensions of matrix A: 7000 * 7000
+Dimensions of matrix B: 7000 * 7000
+Number of iterations 3 
+Elements of A and B will be generated randomly at the start of every iteration in the range [ -2.000000e+00 , 4.000000e+00 )
+Expected value of every element in the product matrix: 7.000000e+03
+Now start DGEMM iterations 
+
+Iteration 1:
+First 5 elements of matrix A: -1.417670e+00, 1.376509e+00, -7.377033e-01, -9.530798e-01, 3.466831e+00
+First 5 elements of matrix B: 3.769248e+00, -2.765703e-02, -1.232952e+00, 3.008425e+00, -3.526093e-01
+First 5 elements of product matrix (AB)test: 7.563759e+03, 7.096506e+03, 7.016221e+03, 7.459718e+03, 7.434481e+03
+First 5 elements of matrix (AB)test-(AB)mkl: 6.252776e-13, 1.268319e-11, 1.261924e-11, 2.404477e-11, 1.594458e-11
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 1 : element no. 44130937: 9.478640e-11
+
+Iteration 2:
+First 5 elements of matrix A: -9.754477e-01, 2.030565e+00, 2.158794e+00, -1.389175e-02, 3.132993e+00
+First 5 elements of matrix B: 3.156316e+00, 1.418361e-01, 3.841478e+00, -1.832413e+00, 2.159402e+00
+First 5 elements of product matrix (AB)test: 7.514290e+03, 7.085261e+03, 6.913384e+03, 6.735672e+03, 6.614922e+03
+First 5 elements of matrix (AB)test-(AB)mkl: -1.294609e-11, -1.591616e-12, -7.247536e-12, -2.073364e-11, 3.467449e-12
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 2 : element no. 37666615: 8.974155e-11
+
+Iteration 3:
+First 5 elements of matrix A: 1.431244e+00, 2.879854e-02, -4.116379e-01, -2.296270e-01, 2.955986e-01
+First 5 elements of matrix B: 2.047829e+00, 1.435146e+00, 1.689226e-01, 5.157160e-01, 1.274486e+00
+First 5 elements of product matrix (AB)test: 7.436053e+03, 7.424488e+03, 6.916317e+03, 6.446975e+03, 6.671137e+03
+First 5 elements of matrix (AB)test-(AB)mkl: 1.382716e-11, 2.421530e-11, 1.487876e-11, -2.718537e-11, 6.252776e-12
+Max abs of elements in '(AB)test-(AB)mkl' in iteration 3 : element no. 20931402: 9.120527e-11
+
+SUMMARY of the test:
+FP operation count per dgemm call:686000000000
+lib1: DGEMM.so.
+MKL library: 2018, linked with libgomp, 32-bit integer interface.
+Iter	Seconds-lib1	GFLOPS-lib1	Seconds-MKL2018	GFLOPS-MKL2018
+ 1	  10.458874	 65.590235	    10.398217	 65.972849
+ 2	  10.502349	 65.318721	    10.374050	 66.126537
+ 3	  10.500303	 65.331448	    10.382940	 66.069919
