@@ -23,7 +23,7 @@ irreg/reg/tail: The matrix block dealing with
            reg: Block size the same as defined
           tail: The block's m dimension smaller than defined size, but the other dimension identical to defined size
 
-a/b/c:Load and pack elements from matrix A or B
+a/b:Load and pack elements from matrix A or B
 
 c/r:Load from column-major or row-major main matrix
 
