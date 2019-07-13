@@ -9,7 +9,7 @@ Interface in C:
 omp-paralleled: void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc)
 
 
-Function naming in rest_dgemm.c:
+Function naming in dgemm.c:
 
 load/dgemmblk: The role of the function: load elements from main matrix and pack them into a matrix block, or do dgemm of block matrices
 
