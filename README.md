@@ -1,5 +1,5 @@
 # DGEMM_AVX2
-A fast avx2/fma3 dgemm subroutine for large matrices, written in C and assembly, with 96-99% performance of Intel MKL(2018) (or 101-105% performance of OpenBLAS(Haswell))
+A fast avx2/fma3 dgemm subroutine for large matrices, written in C and assembly, with 97-99% single-thread performance of Intel MKL(2018) (or 101-105% of OpenBLAS(Haswell))
 
 
 Interface in C:
