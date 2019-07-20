@@ -2,7 +2,7 @@
 
 #Introduction
 
-A fast avx2/fma3 dgemm subroutine for large matrices, written in C and assembly, with 97-99% single-thread performance of Intel MKL(2018)
+A fast avx2/fma3 dgemm subroutine for large matrices, written in C and assembly, with 97-99% single-thread performance of Intel MKL(2018) and reduced memory occupation of buffers (only 0.5 mb per thread).
 
 
 #Interface in C:
