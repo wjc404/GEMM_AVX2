@@ -180,11 +180,11 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
     }
     NCT=BlkDimN*(BlksN-1);
     load_irreg_b_c(b+NCT*LDB,bblk,LDB,EdgeN,EdgeK,alpha);
-    dgemmcolumnirreg(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeK,EdgeN,beta); //only the master thread can write abuffer
+    dgemmcolumnirreg(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeK,EdgeN,beta);
     synproc(tid,numthreads,workprogress);//before updating abuffer, the master thread need to wait here until all child threads finish calculation with current abuffer
     KCT=EdgeK;
     for(BlkCtK=1;BlkCtK<BlksK;BlkCtK++){
-     if(tid==0) load_abuffer_ac(a+KCT*LDA,abuffer,LDA,BlksM,EdgeM);
+     if(tid==0) load_abuffer_ac(a+KCT*LDA,abuffer,LDA,BlksM,EdgeM); //only the master thread can write abuffer
      synproc(tid,numthreads,workprogress);//before the calculations, child threads need to wait here until the master finish writing abuffer
      for(BlkCtN=0;BlkCtN<BlksN-1;BlkCtN++){
       NCT=BlkCtN*BlkDimN;
