@@ -974,9 +974,14 @@ dgemmblkregccc:
 
     movq AL,%r9
     subq $384,%r9
+    movq B0,AL
+    subq $516096,AL //currently AL for bpref
     UPDATECBLK_1col
     movq CIP,CL
 .Louter_dgemmblkregccc_last:
+    prefetcht1 (AL)
+    prefetcht1 64(AL)
+    prefetcht1 128(AL)
     PREFm12 CL
     prefetcht1 152(CL)
     prefetcht1 184(CL)
@@ -1004,6 +1009,7 @@ dgemmblkregccc:
     jb .Linner_dgemmblkregccc_last
 
     incq %r12
+    addq $192,AL
     STORECBLK_1col
     PREFm12 CS
     UPDATECBLK_1col
