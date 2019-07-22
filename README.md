@@ -2,19 +2,25 @@
 
 #Introduction
 
-A fast avx2/fma3 dgemm subroutine for large matrices, written in C and assembly, with 97-99% single-thread performance of Intel MKL(2018).
+Fast avx2/fma3 dgemm subroutines for large matrices, written in C and assembly, with efficiencies comparable to Intel MKL(2018).
 
 
-#Interface in C:
+#Dynamic libraries
 
-1-thread: void dgemmserial(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc)
-
-omp-paralleled: void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc)
-
+DGEMM.so and DGEMM_LARGEMEM.so, the latter consumes more memory but runs faster.
 
 
 
-#Function naming in dgemm.c:
+#Function interface in C:
+
+1-thread: void dgemmserial(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc), in DGEMM.so
+
+omp-paralleled: void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc), in both libraries.
+
+
+
+
+#Function naming in source codes:
 
 load/dgemmblk: The role of the function: load elements from main matrix and pack them into a matrix block, or do dgemm of block matrices
 
@@ -37,6 +43,9 @@ _ac/_ar:The matrix A is column-major(transa='N') or row-major(transa='T')
 
 2 DGEMM test codes are also attached (General_Benchmark_*.c). Compilation of them requires installation of Intel MKL 2018.
 
+
+
 #Comments:
 
 Any optimizations to the dgemm codes are welcomed~
+Unlike the completely-tested "DGEMM.so", the library "DGEMM_LARGEMEM.so" haven't been thoroughly tested so may become buggy in some rare cases. The author would be grateful if some experts could help him check the codes.
