@@ -927,7 +927,7 @@ load_reg_b_r:
 
 //The dgemm-calc codes blow use rdi and rsi as block matrix pointers, use r13-r15 for load/store of C elements, use r11 and r12 as loop counters, use ymm0-ymm3 for temporary load of matrix (A&B) elements, use ymm4-ymm15 for C elements, use r9 and r10 for update of ablk pointer (r9 also for prefetcht1-ablknext), use rax,rbx and rcx for ablk preload (also rdx when transa=y), rax also for building masks in dgemmblktailccc
 
-//enter the function dgemmblkregccc, rdi=abufferctpos, rsi=bblk, rdx=cstartpos, ecx=ldc
+//enter the function dgemmblkregccc_ac, rdi=abufferctpos, rsi=bblk, rdx=cstartpos, ecx=ldc
 .globl dgemmblkregccc
 .type dgemmblkregccc,@function
 dgemmblkregccc:
@@ -1465,5 +1465,19 @@ dgemmblkirregccc:
     pop %r13
     pop %r14
     pop %r15
+    retq
+
+//enter the function timedelay
+.globl timedelay
+.type timedelay,@function
+timedelay:
+    xorq %r11,%r11
+.Ltimedelay:
+    incq %r11
+    vhaddpd %ymm0,%ymm0,%ymm0
+    cmpq $2000,%r11
+    jb .Ltimedelay
+
+    vzeroupper
     retq
 
