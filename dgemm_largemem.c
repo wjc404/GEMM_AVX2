@@ -1,6 +1,7 @@
 ﻿# include <stdio.h>
 # include <stdlib.h>
 # include <immintrin.h> //AVX2
+# include <omp.h>
 
 # define BlkUnitM 3 //fixed!
 # define BlkUnitN 64 //fixed!
@@ -9,8 +10,7 @@
 # define BlkDimN (BlkUnitN*4)
 # define BlkDimK (BlkUnitK*4)
 //compilation command: gcc -fopenmp --shared -fPIC -march=haswell -O3 dgemm_largemem.c dgemm.S -o DGEMM_LARGEMEM.so
-//DGEMM_LARGEMEM.so requires more memory space than DGEMM.so, ran faster (~2%) than the latter.
-//currently no parallelization
+//DGEMM_LARGEMEM.so requires more memory space(m*2kB) than DGEMM.so, ran faster (~2-5%) than the latter.
 
 void load_irreg_b_c(double *bstartpos,double *bblk,int ldb,int ndim,int kdim,double *alpha){//dense rearr(old) lazy mode
   double *bin1,*bin2,*bin3,*bin4,*bout;int bcol,brow;
@@ -68,6 +68,21 @@ extern void dgemmblktailccc(double *abufferctpos,double *bblk,double *cstartpos,
 extern void dgemmblkirregkccc(double *ablk,double *bblk,double *cstartpos,int ldc,int kdim,double *beta);
 extern void dgemmblkirregnccc(double *ablk,double *bblk,double *cstartpos,int ldc,int ndim);
 extern void dgemmblkirregccc(double *ablk,double *bblk,double *cstartpos,int ldc,int mdim,int ndim,int kdim,double *beta);
+extern void timedelay();//produce nothing besides a delay(~3 us), with no system calls 
+void synproc(int tid,int threads,int *workprogress){//workprogress[] must be shared among all threads
+  int ahead;
+  workprogress[16*tid]++;
+  do{
+   timedelay();ahead = 0;
+   for(int i=0;i<threads;i++){
+    if(workprogress[16*i]<workprogress[16*tid]) ahead = 1;
+   }
+  }while(ahead);
+}//this function is for synchronization of threads before/after load_abuffer
+void setend(int tid,int *workprogress){//tell other threads my work has done so they will no longer wait for me.
+  timedelay();
+  workprogress[16*tid]+=5;
+}
 void load_abuffer_ac(double *aheadpos,double *abuffer,int LDA,int BlksM,int EdgeM){
   int i;
   for(i=0;i<BlksM-1;i++) load_reg_a_c(aheadpos+i*BlkDimM,abuffer+i*BlkDimM*BlkDimK,LDA);
@@ -120,29 +135,44 @@ void dgemmcolumnirreg(double *abuffer,double *bblk,double *cheadpos,int BlksM,in
   }
   dgemmblkirregccc(abuffer+MCT*kdim,bblk,cheadpos+MCT,LDC,EdgeM,ndim,kdim,beta);
 }
-void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc){//dgemm function with 1 thread
+void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *bstart,int *ldb,double *beta,double *cstart,int *ldc){//dgemm function paralleled via gnu-openmp. top performance: 486GFLOPS(93% theoretical) for 8 threads on i9-9900K at 4.1 GHz (while Intel MKL(2018) gave 474 GFLOPS)
 //assume column-major storage with arguments passed by addresses (FORTRAN style)
 //a:matrix with m rows and k columns if transa=N
 //b:matrix with k rows and n columns if transb=N
 //c:product matrix with m rows and n columns
- const int M = *m;const int N = *n;const int K = *k;
+ const int M = *m;/* const int N = *n; */const int K = *k;
  double BETA = 1.0;
  const int LDA = *lda;const int LDB = *ldb;const int LDC=*ldc;
  const char TRANSA = *transa;const char TRANSB = *transb;
  const int BlksM = (M-1)/BlkDimM+1;const int EdgeM = M-(BlksM-1)*BlkDimM;//the m-dim of edges
- const int BlksN = (N-1)/BlkDimN+1;const int EdgeN = N-(BlksN-1)*BlkDimN;//the n-dim of edges
  const int BlksK = (K-1)/BlkDimK+1;const int EdgeK = K-(BlksK-1)*BlkDimK;//the k-dim of edges
- int BlkCtM,BlkCtN,BlkCtK,MCT,NCT,KCT;//loop counters over blocks(tiles)
- //MCT,NCT and KCT are used to locate the current position of matrix blocks
- int mdim,ndim,kdim;
- double *ablk,*bblk,*abuffer; //abuffer[]: store 256 columns of matrix a
+ int *workprogress, *cchunks;const int numthreads=omp_get_max_threads();int i; //for parallel execution
+ //cchunk[] for dividing tasks, workprogress[] for recording the progresses of all threads and synchronization.
+ //unlike the implementation in DGEMM.so, synchronization is necessary here since abuffer[] is shared between threads.
+ //if abuffer[] is thread-private, the bandwidth of memory will limit the performance.
+ //synchronization by openmp functions can be expensive, so handcoded funcions (synproc, setend) are used instead.
+ double *abuffer; //abuffer[]: store 256 columns of matrix a
  if((*alpha) != (double)0.0){//then do C+=alpha*AB
-  ablk=(double *)aligned_alloc(4096,(BlkDimM*BlkDimK)*sizeof(double));
-  bblk=(double *)aligned_alloc(64,(BlkDimN*BlkDimK)*sizeof(double));
   abuffer = (double *)aligned_alloc(4096,(BlkDimM*BlkDimK*BlksM)*sizeof(double));
+  workprogress = (int *)calloc(20*numthreads,sizeof(int));
+  cchunks = (int *)malloc((numthreads+1)*sizeof(int));
+  for(i=0;i<=numthreads;i++) cchunks[i]=(*n)*i/numthreads;
+#pragma omp parallel
+ {
+  int tid = omp_get_thread_num();
+  double *c = cstart + LDC * cchunks[tid];
+  double *b;
+  if(TRANSB=='N' || TRANSB=='n') b = bstart + LDB * cchunks[tid];
+  else b = bstart + cchunks[tid];
+  const int N = cchunks[tid+1]-cchunks[tid];
+  const int BlksN = (N-1)/BlkDimN+1; const int EdgeN = N-(BlksN-1)*BlkDimN;//the n-dim of edges
+  int BlkCtM,BlkCtN,BlkCtK,MCT,NCT,KCT;//loop counters over blocks
+  //MCT,NCT and KCT are used to locate the current position of matrix blocks
+  double *bblk = (double *)aligned_alloc(4096,(BlkDimN*BlkDimK)*sizeof(double)); //thread-private bblk[]
   if(TRANSA=='N' || TRANSA=='n'){
    if(TRANSB=='N' || TRANSB=='n'){//CASE NN
-    load_abuffer_irregk_ac(a,abuffer,LDA,BlksM,EdgeM,EdgeK);
+    if(tid==0) load_abuffer_irregk_ac(a,abuffer,LDA,BlksM,EdgeM,EdgeK); //only the master thread can write abuffer
+    synproc(tid,numthreads,workprogress); //before the calculations, child threads need to wait here until the master finish writing abuffer
     for(BlkCtN=0;BlkCtN<BlksN-1;BlkCtN++){
      NCT=BlkDimN*BlkCtN;
      load_irreg_b_c(b+NCT*LDB,bblk,LDB,BlkDimN,EdgeK,alpha);
@@ -150,10 +180,12 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
     }
     NCT=BlkDimN*(BlksN-1);
     load_irreg_b_c(b+NCT*LDB,bblk,LDB,EdgeN,EdgeK,alpha);
-    dgemmcolumnirreg(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeK,EdgeN,beta);
+    dgemmcolumnirreg(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeK,EdgeN,beta); //only the master thread can write abuffer
+    synproc(tid,numthreads,workprogress);//before updating abuffer, the master thread need to wait here until all child threads finish calculation with current abuffer
     KCT=EdgeK;
     for(BlkCtK=1;BlkCtK<BlksK;BlkCtK++){
-     load_abuffer_ac(a+KCT*LDA,abuffer,LDA,BlksM,EdgeM);
+     if(tid==0) load_abuffer_ac(a+KCT*LDA,abuffer,LDA,BlksM,EdgeM);
+     synproc(tid,numthreads,workprogress);//before the calculations, child threads need to wait here until the master finish writing abuffer
      for(BlkCtN=0;BlkCtN<BlksN-1;BlkCtN++){
       NCT=BlkCtN*BlkDimN;
       load_reg_b_c(b+NCT*LDB+KCT,bblk,LDB,alpha);
@@ -162,11 +194,14 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
      NCT=(BlksN-1)*BlkDimN;
      load_irreg_b_c(b+NCT*LDB+KCT,bblk,LDB,EdgeN,BlkDimK,alpha);
      dgemmcolumnirregn(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeN);
+     synproc(tid,numthreads,workprogress);//before updating abuffer, the master thread need to wait here until all child threads finish calculation with current abuffer
      KCT+=BlkDimK;
     }//loop BlkCtK++
+    setend(tid,workprogress);
    }
    else{//CASE NY
-    load_abuffer_irregk_ac(a,abuffer,LDA,BlksM,EdgeM,EdgeK);
+    if(tid==0) load_abuffer_irregk_ac(a,abuffer,LDA,BlksM,EdgeM,EdgeK);
+    synproc(tid,numthreads,workprogress);
     for(BlkCtN=0;BlkCtN<BlksN-1;BlkCtN++){
      NCT=BlkDimN*BlkCtN;
      load_irreg_b_r(b+NCT,bblk,LDB,BlkDimN,EdgeK,alpha);
@@ -175,9 +210,11 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
     NCT=BlkDimN*(BlksN-1);
     load_irreg_b_r(b+NCT,bblk,LDB,EdgeN,EdgeK,alpha);
     dgemmcolumnirreg(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeK,EdgeN,beta);
+    synproc(tid,numthreads,workprogress);
     KCT=EdgeK;
     for(BlkCtK=1;BlkCtK<BlksK;BlkCtK++){
-     load_abuffer_ac(a+KCT*LDA,abuffer,LDA,BlksM,EdgeM);
+     if(tid==0) load_abuffer_ac(a+KCT*LDA,abuffer,LDA,BlksM,EdgeM);
+     synproc(tid,numthreads,workprogress);
      for(BlkCtN=0;BlkCtN<BlksN-1;BlkCtN++){
       NCT=BlkCtN*BlkDimN;
       load_reg_b_r(b+KCT*LDB+NCT,bblk,LDB,alpha);
@@ -186,13 +223,16 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
      NCT=(BlksN-1)*BlkDimN;
      load_irreg_b_r(b+KCT*LDB+NCT,bblk,LDB,EdgeN,BlkDimK,alpha);
      dgemmcolumnirregn(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeN);
+     synproc(tid,numthreads,workprogress);
      KCT+=BlkDimK;
     }//loop BlkCtK++
+    setend(tid,workprogress);
    }
   }
   else{
    if(TRANSB=='N' || TRANSB=='n'){//case YN
-    load_abuffer_irregk_ar(a,abuffer,LDA,BlksM,EdgeM,EdgeK);
+    if(tid==0) load_abuffer_irregk_ar(a,abuffer,LDA,BlksM,EdgeM,EdgeK);
+    synproc(tid,numthreads,workprogress);
     for(BlkCtN=0;BlkCtN<BlksN-1;BlkCtN++){
      NCT=BlkDimN*BlkCtN;
      load_irreg_b_c(b+NCT*LDB,bblk,LDB,BlkDimN,EdgeK,alpha);
@@ -201,9 +241,11 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
     NCT=BlkDimN*(BlksN-1);
     load_irreg_b_c(b+NCT*LDB,bblk,LDB,EdgeN,EdgeK,alpha);
     dgemmcolumnirreg(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeK,EdgeN,beta);
+    synproc(tid,numthreads,workprogress);
     KCT=EdgeK;
     for(BlkCtK=0;BlkCtK<BlksK-1;BlkCtK++){
-     load_abuffer_ar(a+KCT,abuffer,LDA,BlksM,EdgeM);
+     if(tid==0) load_abuffer_ar(a+KCT,abuffer,LDA,BlksM,EdgeM);
+     synproc(tid,numthreads,workprogress);
      for(BlkCtN=0;BlkCtN<BlksN-1;BlkCtN++){
       NCT=BlkCtN*BlkDimN;
       load_reg_b_c(b+NCT*LDB+KCT,bblk,LDB,alpha);
@@ -212,11 +254,14 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
      NCT=(BlksN-1)*BlkDimN;
      load_irreg_b_c(b+NCT*LDB+KCT,bblk,LDB,EdgeN,BlkDimK,alpha);
      dgemmcolumnirregn(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeN);
+     synproc(tid,numthreads,workprogress);
      KCT+=BlkDimK;
     }//loop BlkCtK++
+    setend(tid,workprogress);
    }
    else{//case YY
-    load_abuffer_irregk_ar(a,abuffer,LDA,BlksM,EdgeM,EdgeK);
+    if(tid==0) load_abuffer_irregk_ar(a,abuffer,LDA,BlksM,EdgeM,EdgeK);
+    synproc(tid,numthreads,workprogress);
     for(BlkCtN=0;BlkCtN<BlksN-1;BlkCtN++){
      NCT=BlkDimN*BlkCtN;
      load_irreg_b_r(b+NCT,bblk,LDB,BlkDimN,EdgeK,alpha);
@@ -225,9 +270,11 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
     NCT=BlkDimN*(BlksN-1);
     load_irreg_b_r(b+NCT,bblk,LDB,EdgeN,EdgeK,alpha);
     dgemmcolumnirreg(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeK,EdgeN,beta);
+    synproc(tid,numthreads,workprogress);
     KCT=EdgeK;
     for(BlkCtK=0;BlkCtK<BlksK-1;BlkCtK++){
-     load_abuffer_ar(a+KCT,abuffer,LDA,BlksM,EdgeM);
+     if(tid==0) load_abuffer_ar(a+KCT,abuffer,LDA,BlksM,EdgeM);
+     synproc(tid,numthreads,workprogress);
      for(BlkCtN=0;BlkCtN<BlksN-1;BlkCtN++){
       NCT=BlkCtN*BlkDimN;
       load_reg_b_r(b+KCT*LDB+NCT,bblk,LDB,alpha);
@@ -236,12 +283,16 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
      NCT=(BlksN-1)*BlkDimN;
      load_irreg_b_r(b+KCT*LDB+NCT,bblk,LDB,EdgeN,BlkDimK,alpha);
      dgemmcolumnirregn(abuffer,bblk,c+NCT*LDC,BlksM,EdgeM,LDC,EdgeN);
+     synproc(tid,numthreads,workprogress);
      KCT+=BlkDimK;
     }//loop BlkCtK++
+    setend(tid,workprogress);
    }
   }
+  free(bblk);bblk=NULL;
+ }//out of openmp region
+  free(cchunks);cchunks=NULL;
+  free(workprogress);workprogress=NULL;
   free(abuffer);abuffer=NULL;
-  free(bblk);free(ablk);
-  bblk=NULL;ablk=NULL;
  }
 }
