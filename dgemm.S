@@ -927,6 +927,98 @@ load_reg_b_r:
 
 //The dgemm-calc codes blow use rdi and rsi as block matrix pointers, use r13-r15 for load/store of C elements, use r11 and r12 as loop counters, use ymm0-ymm3 for temporary load of matrix (A&B) elements, use ymm4-ymm15 for C elements, use r9 and r10 for update of ablk pointer (r9 also for prefetcht1-ablknext), use rax,rbx and rcx for ablk preload (also rdx when transa=y), rax also for building masks in dgemmblktailccc
 
+//enter the function dgemmblkregccc, rdi=abufferctpos, rsi=bblk, rdx=cstartpos, ecx=ldc
+.globl dgemmblkregccc
+.type dgemmblkregccc,@function
+dgemmblkregccc:
+
+    push %r15
+    push %r14
+    push %r13
+    push %r12
+    movq %rdx,CIP
+    movq %rdi,AL
+    addq $49152,AL //point to (prefetch) next ablk zone of abuffer
+    movslq %ecx,LDC
+    shlq $3,LDC
+    movq CIP,CL
+    movq CIP,CS
+
+    INIT_C_3col
+    movq $0xa000000000000000,%r10 //ablk pointer increment table = (0xa000,0x0000,0x0000,0x0000)
+    xorq %r12,%r12
+.Louter_dgemmblkregccc:
+    UPDATECBLK_1col
+    movswq %r10w,%r9
+    PREFm12 CS
+    PREFm12 CL
+    subq $96,AL
+    prefetcht1 (AL)
+    prefetcht1 64(AL)
+    xorq %r11,%r11
+.Linner_dgemmblkregccc:
+    KERNELm12n4k8
+    cmpq $8,%r11
+    jb .Linner_dgemmblkregccc
+
+    addq %r9,A0
+    prefetcht0 (A0)
+    prefetcht0 64(A0)
+    prefetcht0 128(A0)
+    prefetcht0 192(A0)
+    incq %r12
+    STORECBLK_1col
+    rorq $16,%r10
+    cmpq $252,%r12
+    jb .Louter_dgemmblkregccc
+
+    movq AL,%r9
+    subq $384,%r9
+    UPDATECBLK_1col
+    movq CIP,CL
+.Louter_dgemmblkregccc_last:
+    PREFm12 CL
+    prefetcht1 152(CL)
+    prefetcht1 184(CL)
+    xorq %r11,%r11
+.Linner_dgemmblkregccc_last:
+    prefetcht0 256(A0)
+    prefetcht0 320(A0)
+    prefetcht1 (%r9)
+    KERNELm12n4k1 0,0
+    prefetcht0 384(A0)
+    prefetcht0 768(B0)
+    prefetcht1 64(%r9)
+    incq %r11
+    KERNELm12n4k1 96,32
+    prefetcht0 448(A0)
+    prefetcht0 512(A0)
+    prefetcht1 128(%r9)
+    KERNELm12n4k1 192,64
+    prefetcht0 576(A0)
+    prefetcht0 832(B0)
+    prefetcht1 192(%r9)
+    addq $256,%r9
+    KERNELm12n4kf 288,96,384,128
+    cmpq $16,%r11
+    jb .Linner_dgemmblkregccc_last
+
+    incq %r12
+    STORECBLK_1col
+    PREFm12 CS
+    UPDATECBLK_1col
+    cmpq $256,%r12
+    jb .Louter_dgemmblkregccc_last
+    movq CIP,CS
+    FIN_C_3col
+
+    vzeroupper
+    pop %r12
+    pop %r13
+    pop %r14
+    pop %r15
+    retq
+
 //enter the function dgemmblkregccc_ac, rdi=ablk, rsi=bblk, rdx=cstartpos, ecx=ldc, r8=aprefpos, r9d=lda, stack1=nextablk
 .globl dgemmblkregccc_ac
 .type dgemmblkregccc_ac,@function
@@ -1374,5 +1466,4 @@ dgemmblkirregccc:
     pop %r14
     pop %r15
     retq
-
 
