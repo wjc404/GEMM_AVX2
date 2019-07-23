@@ -71,6 +71,7 @@ extern void dgemmblkirregccc(double *ablk,double *bblk,double *cstartpos,int ldc
 extern void timedelay();//produce nothing besides a delay(~3 us), with no system calls 
 void synproc(int tid,int threads,int *workprogress){//workprogress[] must be shared among all threads
   int ahead;
+  _mm_mfence();
   workprogress[16*tid]++;
   do{
    timedelay();ahead = 0;
