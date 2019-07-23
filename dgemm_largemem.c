@@ -79,10 +79,6 @@ void synproc(int tid,int threads,int *workprogress){//workprogress[] must be sha
    }
   }while(ahead);
 }//this function is for synchronization of threads before/after load_abuffer
-void setend(int tid,int *workprogress){//tell other threads my work has done so they will no longer wait for me.
-  timedelay();
-  workprogress[16*tid]+=5;
-}
 void load_abuffer_ac(double *aheadpos,double *abuffer,int LDA,int BlksM,int EdgeM){
   int i;
   for(i=0;i<BlksM-1;i++) load_reg_a_c(aheadpos+i*BlkDimM,abuffer+i*BlkDimM*BlkDimK,LDA);
@@ -150,7 +146,7 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
  //cchunk[] for dividing tasks, workprogress[] for recording the progresses of all threads and synchronization.
  //unlike the implementation in DGEMM.so, synchronization is necessary here since abuffer[] is shared between threads.
  //if abuffer[] is thread-private, the bandwidth of memory will limit the performance.
- //synchronization by openmp functions can be expensive, so handcoded funcions (synproc, setend) are used instead.
+ //synchronization by openmp functions can be expensive, so handcoded funcion (synproc) is used instead.
  double *abuffer; //abuffer[]: store 256 columns of matrix a
  if((*alpha) != (double)0.0){//then do C+=alpha*AB
   abuffer = (double *)aligned_alloc(4096,(BlkDimM*BlkDimK*BlksM)*sizeof(double));
@@ -197,7 +193,6 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
      synproc(tid,numthreads,workprogress);//before updating abuffer, the master thread need to wait here until all child threads finish calculation with current abuffer
      KCT+=BlkDimK;
     }//loop BlkCtK++
-    setend(tid,workprogress);
    }
    else{//CASE NY
     if(tid==0) load_abuffer_irregk_ac(a,abuffer,LDA,BlksM,EdgeM,EdgeK);
@@ -226,7 +221,6 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
      synproc(tid,numthreads,workprogress);
      KCT+=BlkDimK;
     }//loop BlkCtK++
-    setend(tid,workprogress);
    }
   }
   else{
@@ -257,7 +251,6 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
      synproc(tid,numthreads,workprogress);
      KCT+=BlkDimK;
     }//loop BlkCtK++
-    setend(tid,workprogress);
    }
    else{//case YY
     if(tid==0) load_abuffer_irregk_ar(a,abuffer,LDA,BlksM,EdgeM,EdgeK);
@@ -286,7 +279,6 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
      synproc(tid,numthreads,workprogress);
      KCT+=BlkDimK;
     }//loop BlkCtK++
-    setend(tid,workprogress);
    }
   }
   free(bblk);bblk=NULL;
