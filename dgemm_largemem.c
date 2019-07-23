@@ -70,15 +70,13 @@ extern void dgemmblkirregnccc(double *ablk,double *bblk,double *cstartpos,int ld
 extern void dgemmblkirregccc(double *ablk,double *bblk,double *cstartpos,int ldc,int mdim,int ndim,int kdim,double *beta);
 extern void timedelay();//produce nothing besides a delay(~3 us), with no system calls 
 void synproc(int tid,int threads,int *workprogress){//workprogress[] must be shared among all threads
-  int ahead;
-  _mm_mfence();
-  workprogress[16*tid]++;
-  do{
-   timedelay();ahead = 0;
-   for(int i=0;i<threads;i++){
-    if(workprogress[16*i]<workprogress[16*tid]) ahead = 1;
-   }
-  }while(ahead);
+  int waitothers,ctid;
+  for(waitothers=1;waitothers;timedelay()){
+    waitothers=0;
+    for(ctid=0;ctid<threads;ctid++){
+      if(workprogress[16*ctid]<workprogress[16*tid]) waitothers = 1;
+    }
+  }
 }//this function is for synchronization of threads before/after load_abuffer
 void load_abuffer_ac(double *aheadpos,double *abuffer,int LDA,int BlksM,int EdgeM){
   int i;
