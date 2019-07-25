@@ -149,7 +149,7 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
  //if abuffer[] is thread-private, the bandwidth of memory will limit the performance.
  //synchronization by openmp functions can be expensive, so handcoded funcion (synproc) is used instead.
  double *abuffer; //abuffer[]: store 256 columns of matrix a
- if((*alpha) != (double)0.0 || (*beta) != 1.0){//then do C+=alpha*AB
+ if((*alpha) != (double)0.0 || (*beta) != 1.0){//then do C=alpha*AB+beta*C
   abuffer = (double *)aligned_alloc(4096,(BlkDimM*BlkDimK*BlksM)*sizeof(double));
   workprogress = (int *)calloc(20*numthreads,sizeof(int));
   cchunks = (int *)malloc((numthreads+1)*sizeof(int));
