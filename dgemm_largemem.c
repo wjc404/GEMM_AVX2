@@ -132,6 +132,17 @@ void dgemmcolumnirreg(double *abuffer,double *bblk,double *cheadpos,int BlksM,in
   }
   dgemmblkirregccc(abuffer+MCT*kdim,bblk,cheadpos+MCT,LDC,EdgeM,ndim,kdim,beta);
 }
+void cmultbeta(double *c,int ldc,int m,int n,double beta){
+  int i,j;double *C0,*C;
+  C0=c;
+  for(i=0;i<n;i++){
+    C=C0;
+    for(j=0;j<m;j++){
+      *C*=beta;C++;
+    }
+    C0+=ldc;
+  }
+}
 void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *bstart,int *ldb,double *beta,double *cstart,int *ldc){//dgemm function paralleled via gnu-openmp. top performance: 486GFLOPS(93% theoretical) for 8 threads on i9-9900K at 4.1 GHz (while Intel MKL(2018) gave 474 GFLOPS)
 //assume column-major storage with arguments passed by addresses (FORTRAN style)
 //a:matrix with m rows and k columns if transa=N
@@ -149,7 +160,8 @@ void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *
  //if abuffer[] is thread-private, the bandwidth of memory will limit the performance.
  //synchronization by openmp functions can be expensive, so handcoded funcion (synproc) is used instead.
  double *abuffer; //abuffer[]: store 256 columns of matrix a
- if((*alpha) != (double)0.0 || (*beta) != (double)1.0){//then do C=alpha*AB+beta*C
+ if((*alpha) == (double)0.0 && (*beta) != (double)1.0) cmultbeta(c,LDC,M,(*n),(*beta));//limited by memory bendwidth so no need for parallel execution
+ if((*alpha) != (double)0.0){//then do C=alpha*AB+beta*C
   abuffer = (double *)aligned_alloc(4096,(BlkDimM*BlkDimK*BlksM)*sizeof(double));
   workprogress = (int *)calloc(20*numthreads,sizeof(int));
   cchunks = (int *)malloc((numthreads+1)*sizeof(int));
