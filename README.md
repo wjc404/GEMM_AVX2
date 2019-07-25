@@ -22,7 +22,7 @@ omp-paralleled: void dgemm(char *transa,char *transb,int *m,int *n,int *k,double
 
 
 
-#Function naming in source codes:
+#Function namings in source codes:
 
 load/dgemmblk: The role of the function: load = "load elements from main matrix and pack them into a matrix block"; dgemmblk = "do dgemm of matrix blocks".
 
