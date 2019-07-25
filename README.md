@@ -24,7 +24,7 @@ omp-paralleled: void dgemm(char *transa,char *transb,int *m,int *n,int *k,double
 
 #Function naming in source codes:
 
-load/dgemmblk: The role of the function: load = "load elements from main matrix and pack them into a matrix block"; dgemmblk = "do dgemm of block matrices".
+load/dgemmblk: The role of the function: load = "load elements from main matrix and pack them into a matrix block"; dgemmblk = "do dgemm of matrix blocks".
 
 irreg/reg/tail: The matrix block dealing with: 
          irreg = "block size smaller than defined size, e.g. a block at the edge of the main matrix";
@@ -35,7 +35,7 @@ a/b:Load and pack elements from matrix A or B
 
 c/r:Load from column-major or row-major main matrix
 
-ccc:All matrix blocks are column-major
+ccc:All matrix blocks are column-major for dgemm
 
 _ac/_ar:The matrix A is column-major(transa='N') or row-major(transa='T')
 
