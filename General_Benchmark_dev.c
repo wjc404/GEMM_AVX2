@@ -169,11 +169,11 @@ int main(int argc, char* argv[]) // command line: ./general_benchmark_dev [niter
             dlclose(handle1);dlclose(handle2);handle1=handle2=NULL;
             exit(1);
         }
-        availmem = (long)s_info.freeram*(long)s_info.mem_unit/(long)sizeof(double); // available memory for doubles in WORDs
-        occupmem = (long)m*(long)n*(long)2+(long)m*(long)k*(long)2+(long)n*(long)k*(long)2;
-        printf("Available memory in words: %ld\nMemory required in words: %ld\n",availmem,occupmem);//debug
+        availmem = (long)s_info.freeram*(long)s_info.mem_unit/(long)sizeof(double); // available memory for doubles
+        occupmem = (long)m*(long)n+(long)m*(long)k+(long)n*(long)k+100000000; //800MB preserved for DGEMM libraries
+        printf("Available memory in QWords: %ld\nMemory required in QWords: %ld\n",availmem,occupmem);//debug
         if (occupmem > availmem){ // if the matrices will occupy more than half of the free memory
-            k = n = m = (int)sqrt(availmem/6);
+            lda = ldb = ldc = k = n = m = (int)sqrt(availmem/3-100000000);
             printf("Matrix dimensions reset to %d-%d-%d due to memory limitations\n",m,n,k);
         }
 // allocate space for matrices and counter vector
