@@ -96,6 +96,17 @@ void dgemmcolumn_ar(double *aheadpos,double *ablk,double *ablk2,double *bblk,dou
   load_tail_a_r(aheadpos+MCT*LDA,ablk,LDA,EdgeM);
   dgemmblktailccc(ablk,bblk,cheadpos+MCT,LDC,EdgeM);
 }
+void cmultbeta(double *c,int ldc,int m,int n,double beta){
+  int i,j;double *C0,*C;
+  C0=c;
+  for(i=0;i<n;i++){
+    C=C0;
+    for(j=0;j<m;j++){
+      *C*=beta;C++;
+    }
+    C0+=ldc;
+  }
+}
 void dgemmserial(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc){//dgemm function with 1 thread
 //assume column-major storage with arguments passed by addresses (FORTRAN style)
 //a:matrix with m rows and k columns if transa=N
@@ -115,7 +126,8 @@ void dgemmserial(char *transa,char *transb,int *m,int *n,int *k,double *alpha,do
  ablk=(double *)aligned_alloc(4096,(BlkDimM*BlkDimK)*sizeof(double));
  ablk2=(double *)aligned_alloc(4096,(BlkDimM*BlkDimK)*sizeof(double));
  bblk=(double *)aligned_alloc(64,(BlkDimN*BlkDimK)*sizeof(double));
- if((*alpha) != (double)0.0 || (*beta) != (double)1.0){//then do C=alpha*AB+beta*C
+ if((*alpha) == (double)0.0 && (*beta) != (double)1.0) cmultbeta(c,LDC,M,N,(*beta));
+ if((*alpha) != (double)0.0){//then do C=alpha*AB+beta*C
   if(TRANSA=='N' || TRANSA=='n'){
    if(TRANSB=='N' || TRANSB=='n'){//CASE NN
     KCT=0;
