@@ -13,7 +13,7 @@ DGEMM.so and DGEMM_LARGEMEM.so, the latter consumes more memory but runs faster.
 
 
 
-#Function interface in C:
+#Function interfaces in C:
 
 1-thread: void dgemmserial(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc), in DGEMM.so
 
