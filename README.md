@@ -24,12 +24,12 @@ omp-paralleled: void dgemm(char *transa,char *transb,int *m,int *n,int *k,double
 
 #Function naming in source codes:
 
-load/dgemmblk: The role of the function: load elements from main matrix and pack them into a matrix block, or do dgemm of block matrices
+load/dgemmblk: The role of the function: load = "load elements from main matrix and pack them into a matrix block"; dgemmblk = "do dgemm of block matrices".
 
 irreg/reg/tail: The matrix block dealing with: 
-         irreg: Block size smaller than defined size, e.g. a block at the edge of the main matrix;
-           reg: Block size the same as defined;
-          tail: The block's m dimension smaller than defined size, but the other dimension identical to defined size.
+         irreg = "block size smaller than defined size, e.g. a block at the edge of the main matrix";
+           reg = "block size the same as defined";
+          tail = "the block's m dimension smaller than defined size, but the other dimension identical to defined size".
 
 a/b:Load and pack elements from matrix A or B
 
