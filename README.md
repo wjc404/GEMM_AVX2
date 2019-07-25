@@ -43,7 +43,7 @@ _ac/_ar:The matrix A is column-major(transa='N') or row-major(transa='T')
 
 #Attached test programs:
 
-There're 2 dgemm test programs attached (General_Benchmark_*.c) for debugging and benchmarking purpose. Compilation of them requires installation of Intel MKL (version 2018 is ok). Please compile them with gcc and link them to MKL with 32-bit integer interface.
+There're 2 dgemm test programs attached (General_Benchmark_*.c) for debugging and benchmarking purposes. Compilation of them requires installation of Intel MKL (version 2018 is ok). Please compile them with gcc and link them to MKL with 32-bit integer interface.
 
 
 
