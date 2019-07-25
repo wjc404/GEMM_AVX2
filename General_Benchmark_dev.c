@@ -170,7 +170,7 @@ int main(int argc, char* argv[]) // command line: ./general_benchmark_dev [niter
             exit(1);
         }
         availmem = (long)s_info.freeram*(long)s_info.mem_unit/(long)sizeof(double); // available memory for doubles
-        occupmem = (long)m*(long)n+(long)m*(long)k+(long)n*(long)k+100000000; //800MB preserved for DGEMM libraries
+        occupmem = (long)m*(long)n+(long)m*(long)k+(long)n*(long)k+100000000; //0.8 GB preserved for DGEMM libraries
         printf("Available memory in QWords: %ld\nMemory required in QWords: %ld\n",availmem,occupmem);//debug
         if (occupmem > availmem){ // if the matrices will occupy more than half of the free memory
             lda = ldb = ldc = k = n = m = (int)sqrt(availmem/3-100000000);
