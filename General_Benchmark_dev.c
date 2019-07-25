@@ -196,7 +196,7 @@ int main(int argc, char* argv[]) // command line: ./general_benchmark_dev [niter
 	printf("Dimensions of matrix B: %d * %d\n",k,n);
 	printf("Number of iterations %d \n",niters);
         printf("Elements of A and B will be generated randomly at the start of every iteration in the range [ %e , %e )\n",lowerbound,upperbound);
-        printf("Expected value of every element in the product matrix: %e\n",(lowerbound+upperbound)*(lowerbound+upperbound)/4*k);
+        printf("Expected value of every element in the product matrix: %e\n",2*(lowerbound+upperbound)*(lowerbound+upperbound)/4*k);
         srand((unsigned)time(NULL));
         for (i=0; i<2*niters; ++i) tscs[i] = 0.0;
         printf("Now start DGEMM iterations \n\n");
