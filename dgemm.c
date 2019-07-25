@@ -115,7 +115,7 @@ void dgemmserial(char *transa,char *transb,int *m,int *n,int *k,double *alpha,do
  ablk=(double *)aligned_alloc(4096,(BlkDimM*BlkDimK)*sizeof(double));
  ablk2=(double *)aligned_alloc(4096,(BlkDimM*BlkDimK)*sizeof(double));
  bblk=(double *)aligned_alloc(64,(BlkDimN*BlkDimK)*sizeof(double));
- if((*alpha) != (double)0.0){//then do C+=alpha*AB
+ if((*alpha) != (double)0.0 || (*beta) != (double)1.0){//then do C=alpha*AB+beta*C
   if(TRANSA=='N' || TRANSA=='n'){
    if(TRANSB=='N' || TRANSB=='n'){//CASE NN
     KCT=0;
