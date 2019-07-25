@@ -7,7 +7,7 @@
 #include <sys/time.h> // for timing of dgemm
 #include <sys/sysinfo.h> // for determining available memory
 #include <unistd.h> // for sleep()
-//this program is for comparative test (about performances and outputs) of 2 dgemm libraries.
+//this program is for comparative test (about performances and outputs) of 2 dgemm libraries provided by user.
 
 int main(int argc, char* argv[]) // command line: ./general_benchmark_dev [niter] [m] [n] [k] [upperbound] [lowerbound] [transa] [transb]
 {
