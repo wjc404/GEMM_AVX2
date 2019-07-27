@@ -14,7 +14,7 @@ i9-9900K, avx-offset=6, dual-channel DDR4-2400:
 
 r7-3700X, 3.6 GHz, dual-channel DDR4-2133:
 
-1 thread: DGEMM_LARGEMEM.so 54.8 GFLOPS; OpenBLAS(Haswell,recent update) 52.8 GFLOPS; Theoretical 57.6 GFLOPS
+1 thread: DGEMM.so 52-53 GFLOPS; DGEMM_LARGEMEM.so 54.8 GFLOPS; OpenBLAS(Haswell,recent update) 52.8 GFLOPS; Theoretical 57.6 GFLOPS
 
 
 #Dynamic libraries
