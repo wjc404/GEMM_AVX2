@@ -1,0 +1,240 @@
+wang@wang-AB350M-Gaming-3:~/DGEMM_AVX2$ ./dgemm_benchmark 3 7000 7000 7000 4 -2 N N
+A SIMPLE DGEMM TESTING PROGRAM
+Matrix elements will be stored in column-major order.
+Transposition: matrix A: N; matrix B: N.
+DGEMM will be called in this way:
+    dgemm(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc)
+Please make sure that the dgemm routines you want to test can respond normally to the call above
+Please note that dgemm functions in different BLAS libraries can have different names
+    e.g. Intel MKL and NVIDIA nvblas use the name 'dgemm' but OpenBLAS uses 'dgemm_'
+
+Enter the library path of dgemm routine 1 (path to the *.so file):libopenblas_haswell_recentupdate.so
+Enter the function name of dgemm in routine 1 (e.g., dgemm):dgemm_
+Now test dgemm routine 1 with small matrices, identical results indicate successful linking
+Elements of reference product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Elements of routine-1 product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Enter the library path of dgemm routine 2 (path to the *.so file):DGEMM_LARGEMEM.so
+Enter the function name of dgemm in routine 2 (e.g., dgemm):dgemm
+Now test dgemm routine 2 with small matrices, identical results indicate successful linking
+Elements of reference product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Elements of routine-2 product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Available memory in words: 1762720768
+Memory required in words: 294000000
+Dimensions of matrix A: 7000 * 7000
+Dimensions of matrix B: 7000 * 7000
+Number of iterations 3 
+Elements of A and B will be generated randomly at the start of every iteration in the range [ -2.000000e+00 , 4.000000e+00 )
+Expected value of every element in the product matrix: 7.000000e+03
+Now start DGEMM iterations 
+
+Iteration 1:
+First 5 elements of matrix A: 1.676478e+00, 1.954803e+00, 5.406031e-01, 2.976891e+00, 2.610004e+00
+First 5 elements of matrix B: -1.096382e+00, -1.244019e+00, 6.743439e-01, 2.779364e+00, -8.062889e-01
+First 5 elements of product matrix (AB)1: 7.503891e+03, 7.141555e+03, 7.572216e+03, 7.263888e+03, 7.320346e+03
+First 5 elements of matrix (AB)1-(AB)2: -1.941515e-11, -1.893198e-11, 7.151703e-13, 1.068714e-11, -1.026525e-11
+Max abs of elements in '(AB)1-(AB)2' in iteration 1 : element no. 36697277: 8.746099e-11
+
+Iteration 2:
+First 5 elements of matrix A: 3.245198e+00, -1.927502e+00, 1.092361e+00, -2.367258e-01, 6.157360e-02
+First 5 elements of matrix B: 2.773461e+00, 3.202118e+00, 3.746634e-01, 9.187436e-01, 3.128340e+00
+First 5 elements of product matrix (AB)1: 6.902680e+03, 7.455484e+03, 6.801155e+03, 6.675243e+03, 6.605706e+03
+First 5 elements of matrix (AB)1-(AB)2: -9.666152e-12, 4.665083e-12, -9.590625e-12, -7.592414e-12, -2.287380e-11
+Max abs of elements in '(AB)1-(AB)2' in iteration 2 : element no. 6169383: 8.472934e-11
+
+Iteration 3:
+First 5 elements of matrix A: -1.612030e+00, -1.416819e+00, 9.052598e-02, 1.424005e+00, -1.851080e+00
+First 5 elements of matrix B: -1.674165e+00, 3.812383e-01, -1.395230e+00, 9.838480e-01, 3.892905e+00
+First 5 elements of product matrix (AB)1: 6.807867e+03, 6.851010e+03, 6.641893e+03, 7.368511e+03, 6.549595e+03
+First 5 elements of matrix (AB)1-(AB)2: 3.073272e-12, -1.587709e-11, 2.719160e-12, -5.546047e-12, 1.511174e-11
+Max abs of elements in '(AB)1-(AB)2' in iteration 3 : element no. 30270722: 8.862931e-11
+
+SUMMARY of the test:
+FP operation count per dgemm call:686000000000
+Routine 1: libopenblas_haswell_recentupdate.so
+Routine 2: DGEMM_LARGEMEM.so
+Iter Seconds-routine1 GFLOPS-routine1 Seconds-routine2 GFLOPS-routine2
+ 1       12.986608       52.823647       12.501573       54.873095
+ 2       12.979718       52.851688       12.511968       54.827506
+ 3       12.977621       52.860228       12.509947       54.836363
+wang@wang-AB350M-Gaming-3:~/DGEMM_AVX2$ ./dgemm_benchmark 3 7000 7000 7000 4 -2 N T
+A SIMPLE DGEMM TESTING PROGRAM
+Matrix elements will be stored in column-major order.
+Transposition: matrix A: N; matrix B: T.
+DGEMM will be called in this way:
+    dgemm(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc)
+Please make sure that the dgemm routines you want to test can respond normally to the call above
+Please note that dgemm functions in different BLAS libraries can have different names
+    e.g. Intel MKL and NVIDIA nvblas use the name 'dgemm' but OpenBLAS uses 'dgemm_'
+
+Enter the library path of dgemm routine 1 (path to the *.so file):libopenblas_haswell_recentupdate.so
+Enter the function name of dgemm in routine 1 (e.g., dgemm):dgemm_
+Now test dgemm routine 1 with small matrices, identical results indicate successful linking
+Elements of reference product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Elements of routine-1 product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Enter the library path of dgemm routine 2 (path to the *.so file):DGEMM_LARGEMEM.so
+Enter the function name of dgemm in routine 2 (e.g., dgemm):dgemm
+Now test dgemm routine 2 with small matrices, identical results indicate successful linking
+Elements of reference product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Elements of routine-2 product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Available memory in words: 1762619392
+Memory required in words: 294000000
+Dimensions of matrix A: 7000 * 7000
+Dimensions of matrix B: 7000 * 7000
+Number of iterations 3 
+Elements of A and B will be generated randomly at the start of every iteration in the range [ -2.000000e+00 , 4.000000e+00 )
+Expected value of every element in the product matrix: 7.000000e+03
+Now start DGEMM iterations 
+
+Iteration 1:
+First 5 elements of matrix A: 3.051044e+00, -3.655251e-03, -4.605285e-01, -5.453995e-02, -4.992554e-01
+First 5 elements of matrix B: 3.611369e+00, -1.500746e+00, -1.328976e+00, -1.422617e+00, 1.464165e+00
+First 5 elements of product matrix (AB)1: 7.224513e+03, 6.692929e+03, 7.285657e+03, 6.864621e+03, 6.457921e+03
+First 5 elements of matrix (AB)1-(AB)2: 1.232140e-11, 4.186707e-12, 1.234663e-11, -9.172298e-12, 6.756070e-12
+Max abs of elements in '(AB)1-(AB)2' in iteration 1 : element no. 16239105: 8.873767e-11
+
+Iteration 2:
+First 5 elements of matrix A: -1.847227e+00, 3.546437e-01, -1.071599e+00, -5.118746e-02, 1.221240e+00
+First 5 elements of matrix B: 3.391911e+00, -1.059235e+00, 3.827148e+00, -1.359406e+00, 1.705661e+00
+First 5 elements of product matrix (AB)1: 7.181877e+03, 6.485521e+03, 7.045099e+03, 7.087644e+03, 6.875900e+03
+First 5 elements of matrix (AB)1-(AB)2: -1.946549e-11, -2.188453e-11, -1.814306e-14, -3.106680e-12, 3.740002e-11
+Max abs of elements in '(AB)1-(AB)2' in iteration 2 : element no. 18523762: 8.887033e-11
+
+Iteration 3:
+First 5 elements of matrix A: 1.310915e+00, 2.682554e+00, 2.129872e+00, -1.900203e+00, 3.199863e+00
+First 5 elements of matrix B: -3.693929e-01, 2.931401e+00, 4.332743e-01, 4.639510e-01, -1.497618e+00
+First 5 elements of product matrix (AB)1: 7.245910e+03, 7.290979e+03, 6.843119e+03, 7.367899e+03, 6.807210e+03
+First 5 elements of matrix (AB)1-(AB)2: 1.017426e-12, 6.255744e-12, -2.668755e-11, 1.315157e-11, 2.794863e-11
+Max abs of elements in '(AB)1-(AB)2' in iteration 3 : element no. 365318: 8.760246e-11
+
+SUMMARY of the test:
+FP operation count per dgemm call:686000000000
+Routine 1: libopenblas_haswell_recentupdate.so
+Routine 2: DGEMM_LARGEMEM.so
+Iter Seconds-routine1 GFLOPS-routine1 Seconds-routine2 GFLOPS-routine2
+ 1       13.035090       52.627178       12.521538       54.785602
+ 2       13.031890       52.640101       12.524837       54.771172
+ 3       13.034045       52.631397       12.523258       54.778078
+wang@wang-AB350M-Gaming-3:~/DGEMM_AVX2$ ./dgemm_benchmark 3 7000 7000 7000 4 -2 T N
+A SIMPLE DGEMM TESTING PROGRAM
+Matrix elements will be stored in column-major order.
+Transposition: matrix A: T; matrix B: N.
+DGEMM will be called in this way:
+    dgemm(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc)
+Please make sure that the dgemm routines you want to test can respond normally to the call above
+Please note that dgemm functions in different BLAS libraries can have different names
+    e.g. Intel MKL and NVIDIA nvblas use the name 'dgemm' but OpenBLAS uses 'dgemm_'
+
+Enter the library path of dgemm routine 1 (path to the *.so file):libopenblas_haswell_recentupdate.so
+Enter the function name of dgemm in routine 1 (e.g., dgemm):dgemm_
+Now test dgemm routine 1 with small matrices, identical results indicate successful linking
+Elements of reference product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Elements of routine-1 product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Enter the library path of dgemm routine 2 (path to the *.so file):DGEMM_LARGEMEM.so
+Enter the function name of dgemm in routine 2 (e.g., dgemm):dgemm
+Now test dgemm routine 2 with small matrices, identical results indicate successful linking
+Elements of reference product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Elements of routine-2 product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Available memory in words: 1762619392
+Memory required in words: 294000000
+Dimensions of matrix A: 7000 * 7000
+Dimensions of matrix B: 7000 * 7000
+Number of iterations 3 
+Elements of A and B will be generated randomly at the start of every iteration in the range [ -2.000000e+00 , 4.000000e+00 )
+Expected value of every element in the product matrix: 7.000000e+03
+Now start DGEMM iterations 
+
+Iteration 1:
+First 5 elements of matrix A: 5.493212e-01, 1.260391e-01, 1.641536e+00, 2.764014e+00, 2.256540e+00
+First 5 elements of matrix B: 2.472139e+00, -9.652302e-01, -7.246018e-02, 9.905894e-01, 1.896691e+00
+First 5 elements of product matrix (AB)1: 7.071052e+03, 7.193865e+03, 6.485442e+03, 7.134207e+03, 6.801236e+03
+First 5 elements of matrix (AB)1-(AB)2: -2.289095e-12, -4.323959e-12, 1.452419e-11, -1.511015e-11, 5.912650e-12
+Max abs of elements in '(AB)1-(AB)2' in iteration 1 : element no. 25723656: 8.571860e-11
+
+Iteration 2:
+First 5 elements of matrix A: 2.615301e+00, -1.511309e+00, -1.056337e+00, 3.021604e+00, 2.222743e+00
+First 5 elements of matrix B: -3.400443e-01, 7.693205e-01, 2.470380e+00, 3.127722e+00, 2.739300e+00
+First 5 elements of product matrix (AB)1: 6.528415e+03, 6.230691e+03, 6.774840e+03, 6.614368e+03, 6.879845e+03
+First 5 elements of matrix (AB)1-(AB)2: -1.161289e-11, 2.029509e-11, -1.004765e-11, 1.113211e-11, -1.982562e-11
+Max abs of elements in '(AB)1-(AB)2' in iteration 2 : element no. 19575503: 9.374417e-11
+
+Iteration 3:
+First 5 elements of matrix A: 3.122832e+00, -8.620858e-02, 5.368498e-01, 3.426884e+00, -1.464040e+00
+First 5 elements of matrix B: -9.037652e-01, 2.257131e+00, 1.196160e+00, 1.171024e+00, -1.931524e+00
+First 5 elements of product matrix (AB)1: 7.150484e+03, 7.214224e+03, 7.293143e+03, 7.323450e+03, 6.975330e+03
+First 5 elements of matrix (AB)1-(AB)2: -1.451734e-11, -6.625046e-12, 9.328045e-12, 2.287599e-11, 1.001625e-11
+Max abs of elements in '(AB)1-(AB)2' in iteration 3 : element no. 14241175: 9.274671e-11
+
+SUMMARY of the test:
+FP operation count per dgemm call:686000000000
+Routine 1: libopenblas_haswell_recentupdate.so
+Routine 2: DGEMM_LARGEMEM.so
+Iter Seconds-routine1 GFLOPS-routine1 Seconds-routine2 GFLOPS-routine2
+ 1       13.040822       52.604046       12.551226       54.656015
+ 2       13.040605       52.604921       12.552560       54.650207
+ 3       13.052449       52.557187       12.558663       54.623649
+wang@wang-AB350M-Gaming-3:~/DGEMM_AVX2$ ./dgemm_benchmark 3 7000 7000 7000 4 -2 T T
+A SIMPLE DGEMM TESTING PROGRAM
+Matrix elements will be stored in column-major order.
+Transposition: matrix A: T; matrix B: T.
+DGEMM will be called in this way:
+    dgemm(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc)
+Please make sure that the dgemm routines you want to test can respond normally to the call above
+Please note that dgemm functions in different BLAS libraries can have different names
+    e.g. Intel MKL and NVIDIA nvblas use the name 'dgemm' but OpenBLAS uses 'dgemm_'
+
+Enter the library path of dgemm routine 1 (path to the *.so file):libopenblas_haswell_recentupdate.so
+Enter the function name of dgemm in routine 1 (e.g., dgemm):dgemm_
+Now test dgemm routine 1 with small matrices, identical results indicate successful linking
+Elements of reference product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Elements of routine-1 product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Enter the library path of dgemm routine 2 (path to the *.so file):DGEMM_LARGEMEM.so
+Enter the function name of dgemm in routine 2 (e.g., dgemm):dgemm
+Now test dgemm routine 2 with small matrices, identical results indicate successful linking
+Elements of reference product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+Elements of routine-2 product matrix: 1.780000e+00  -1.300000e-01  3.140000e+00  -6.900000e-01  4.500000e+00  -1.250000e+00
+
+Available memory in words: 1762523136
+Memory required in words: 294000000
+Dimensions of matrix A: 7000 * 7000
+Dimensions of matrix B: 7000 * 7000
+Number of iterations 3 
+Elements of A and B will be generated randomly at the start of every iteration in the range [ -2.000000e+00 , 4.000000e+00 )
+Expected value of every element in the product matrix: 7.000000e+03
+Now start DGEMM iterations 
+
+Iteration 1:
+First 5 elements of matrix A: -1.003821e+00, 1.225703e+00, 2.396809e+00, 3.885178e+00, 1.414519e+00
+First 5 elements of matrix B: 5.545029e-01, -6.067373e-01, 1.964702e+00, -1.501380e+00, 2.712800e+00
+First 5 elements of product matrix (AB)1: 7.390373e+03, 7.161292e+03, 7.513356e+03, 7.003679e+03, 7.632761e+03
+First 5 elements of matrix (AB)1-(AB)2: -1.140622e-11, -2.570417e-11, 2.405797e-11, -4.128272e-12, 2.843093e-11
+Max abs of elements in '(AB)1-(AB)2' in iteration 1 : element no. 28192424: 9.106869e-11
+
+Iteration 2:
+First 5 elements of matrix A: 2.358601e+00, 5.007181e-01, 2.798088e+00, -1.151202e+00, -9.927987e-01
+First 5 elements of matrix B: 3.429973e+00, -1.057141e+00, 3.802874e+00, -1.147738e+00, -7.163534e-01
+First 5 elements of product matrix (AB)1: 6.832698e+03, 6.572036e+03, 6.812044e+03, 6.828313e+03, 7.383126e+03
+First 5 elements of matrix (AB)1-(AB)2: -1.252261e-11, -2.475385e-11, 2.197791e-11, -3.468548e-12, -1.930467e-12
+Max abs of elements in '(AB)1-(AB)2' in iteration 2 : element no. 34564189: 8.658794e-11
+
+Iteration 3:
+First 5 elements of matrix A: 2.742515e+00, 2.343000e+00, 2.768459e+00, 3.426475e+00, 1.362738e+00
+First 5 elements of matrix B: 4.635754e-01, -1.323688e+00, 3.136040e+00, 1.449868e+00, 2.109166e+00
+First 5 elements of product matrix (AB)1: 7.021229e+03, 6.688465e+03, 6.945100e+03, 6.633669e+03, 6.683014e+03
+First 5 elements of matrix (AB)1-(AB)2: -2.675212e-12, 1.587670e-11, 5.500614e-12, 1.877787e-11, -1.284962e-11
+Max abs of elements in '(AB)1-(AB)2' in iteration 3 : element no. 34672225: 8.802031e-11
+
+SUMMARY of the test:
+FP operation count per dgemm call:686000000000
+Routine 1: libopenblas_haswell_recentupdate.so
+Routine 2: DGEMM_LARGEMEM.so
+Iter Seconds-routine1 GFLOPS-routine1 Seconds-routine2 GFLOPS-routine2
+ 1       13.038020       52.615351       12.526899       54.762156
+ 2       13.032903       52.636009       12.561999       54.609143
+ 3       13.035278       52.626419       12.564816       54.596900
