@@ -4,7 +4,17 @@
 
 Fast avx2/fma3 dgemm subroutines for large matrices, written in C and assembly, with efficiencies comparable to Intel MKL(2018).
 
-Top performance (i9-9900K, avx-offset=6, 8 threads, max 524 GFLOPS, dual-channel DDR4-2400): DGEMM.so 455-465 GFLOPS; DGEMM_LARGEMEM.so 488 GFLOPS; MKL(2018-libgomp) 474 GFLOPS.
+Top performance 
+
+i9-9900K, avx-offset=6, dual-channel DDR4-2400: 
+
+1 thread: DGEMM.so ; DGEMM_LARGEMEM.so 67.5 GFLOPS; MKL(2018-libgomp) 66-67 GFLOPS; Theoretical 70.4 GFLOPS
+
+8 threads: DGEMM.so 455-465 GFLOPS; DGEMM_LARGEMEM.so 488 GFLOPS; MKL(2018-libgomp) 474 GFLOPS; Theoretical 524 GFLOPS
+
+r7-3700X, 3.6 GHz, dual-channel DDR4-2133:
+
+1 thread: OpenBLAS(Haswell,recent update) 52.8 GFLOPS; DGEMM_LARGEMEM.so 54.8 GFLOPS; Theoretical 57.6 GFLOPS
 
 
 #Dynamic libraries
