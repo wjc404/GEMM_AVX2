@@ -1,0 +1,27 @@
+#!/bin/bash
+procs=`awk '$1=="cpu" && $2=="cores" {print $4}' /proc/cpuinfo | uniq` #num_of_physical_cores
+logprocs=`cat /proc/cpuinfo| grep "processor"| wc -l`
+echo "There are $procs CPU cores." #print num_of_physical_cores
+echo "First do test between HT cores from the same physical core."
+for core1 in $(seq 0 $(($procs-1)))
+do
+  core2=$(($core1+$procs))
+  if [ $logprocs -gt $core2 ]
+  then
+    echo -e "$core1 <-> $core2: \c"
+    export GOMP_CPU_AFFINITY="$core1 $core2"
+    ./ping-pong
+  fi
+done
+echo "Then do tests between physical cores."
+for core1 in $(seq 0 $(($procs-1)))
+do
+  for core2 in $(seq $(($core1+1)) $(($procs-1)))
+  do
+    echo -e "$core1 <-> $core2: \c"
+    export GOMP_CPU_AFFINITY="$core1 $core2"
+    ./ping-pong
+  done
+done
+exit
+
