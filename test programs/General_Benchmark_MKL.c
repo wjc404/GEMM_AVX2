@@ -12,7 +12,7 @@
 gcc -fopenmp General_Benchmark_MKL.c -Wl,--start-group /opt/intel/mkl/lib/intel64/libmkl_intel_lp64.a /opt/intel/mkl/lib/intel64/libmkl_gnu_thread.a /opt/intel/mkl/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread -lm -ldl -o general_benchmark_mkl
 */
 
-int main(int argc, char* argv[]) // command line: ./general_benchmark_dev [niter] [m] [n] [k] [upperbound] [lowerbound] [transa] [transb]
+int main(int argc, char* argv[]) // command line: ./general_benchmark_mkl [niter] [m] [n] [k] [upperbound] [lowerbound] [transa] [transb]
 {
 // variables blow for dynamic linking
         void (*dgemmroutine1)(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
