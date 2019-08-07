@@ -10,7 +10,7 @@ do
   then
     echo -e "$core1 <-> $core2: \c"
     export GOMP_CPU_AFFINITY="$core1 $core2"
-    ./ping-pong
+    $(dirname $0)/ping-pong
   fi
 done
 echo "Then do tests between physical cores."
@@ -20,7 +20,7 @@ do
   do
     echo -e "$core1 <-> $core2: \c"
     export GOMP_CPU_AFFINITY="$core1 $core2"
-    ./ping-pong
+    $(dirname $0)/ping-pong
   done
 done
 exit
