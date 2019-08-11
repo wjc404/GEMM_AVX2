@@ -101,21 +101,15 @@
 
 .macro UPDATECBLK_1col
     SHIFTYMM
-    vmovups (CL),%ymm13
-    vmovups 32(CL),%ymm14
-    vmovups 64(CL),%ymm15
-    addq LDC,CL
-.endm
-
-.macro UPDATECBLK_1col_irregm
-    SHIFTYMM
-    vmaskmovps (CL),%ymm1,%ymm13
-    vmaskmovps 32(CL),%ymm2,%ymm14
-    vmaskmovps 64(CL),%ymm3,%ymm15
-    addq LDC,CL
+    vxorps %ymm13,%ymm13,%ymm13
+    vxorps %ymm14,%ymm14,%ymm14
+    vxorps %ymm15,%ymm15,%ymm15
 .endm
 
 .macro STORECBLK_1col
+    vaddps (CS),%ymm4,%ymm4
+    vaddps 32(CS),%ymm5,%ymm5
+    vaddps 64(CS),%ymm6,%ymm6
     vmovups %ymm4,(CS)
     vmovups %ymm5,32(CS)
     vmovups %ymm6,64(CS)
@@ -124,6 +118,12 @@
 
 .macro STORECBLK_1col_irregm StoreMask
     load_mask \StoreMask
+    vmaskmovps (CS),%ymm1,%ymm0
+    vaddps %ymm4,%ymm0,%ymm4
+    vmaskmovps 32(CS),%ymm2,%ymm0
+    vaddps %ymm5,%ymm0,%ymm5
+    vmaskmovps 64(CS),%ymm3,%ymm0
+    vaddps %ymm6,%ymm0,%ymm6
     vmaskmovps %ymm4,%ymm1,(CS)
     vmaskmovps %ymm5,%ymm2,32(CS)
     vmaskmovps %ymm6,%ymm3,64(CS)
@@ -131,62 +131,70 @@
 .endm
 
 .macro INIT_C_3col
-    vmovups (CL),%ymm7
-    vmovups 32(CL),%ymm8
-    vmovups 64(CL),%ymm9
-    addq LDC,CL
-    vmovups (CL),%ymm10
-    vmovups 32(CL),%ymm11
-    vmovups 64(CL),%ymm12
-    addq LDC,CL
-    vmovups (CL),%ymm13
-    vmovups 32(CL),%ymm14
-    vmovups 64(CL),%ymm15
-    addq LDC,CL
-.endm
-
-.macro INIT_C_3col_irregm InitMask
-    load_mask \InitMask
-    vmaskmovps (CL),%ymm1,%ymm7
-    vmaskmovps 32(CL),%ymm2,%ymm8
-    vmaskmovps 64(CL),%ymm3,%ymm9
-    addq LDC,CL
-    vmaskmovps (CL),%ymm1,%ymm10
-    vmaskmovps 32(CL),%ymm2,%ymm11
-    vmaskmovps 64(CL),%ymm3,%ymm12
-    addq LDC,CL
-    vmaskmovps (CL),%ymm1,%ymm13
-    vmaskmovps 32(CL),%ymm2,%ymm14
-    vmaskmovps 64(CL),%ymm3,%ymm15
-    addq LDC,CL
+    vxorps %ymm7,%ymm7,%ymm7
+    vxorps %ymm8,%ymm8,%ymm8
+    vxorps %ymm9,%ymm9,%ymm9
+    vxorps %ymm10,%ymm10,%ymm10
+    vxorps %ymm11,%ymm11,%ymm11
+    vxorps %ymm12,%ymm12,%ymm12
+    vxorps %ymm13,%ymm13,%ymm13
+    vxorps %ymm14,%ymm14,%ymm14
+    vxorps %ymm15,%ymm15,%ymm15
 .endm
 
 .macro FIN_C_3col
+    vaddps (CS),%ymm4,%ymm4
+    vaddps 32(CS),%ymm5,%ymm5
+    vaddps 64(CS),%ymm6,%ymm6
     vmovups %ymm4,(CS)
     vmovups %ymm5,32(CS)
     vmovups %ymm6,64(CS)
     addq LDC,CS
+    vaddps (CS),%ymm7,%ymm7
+    vaddps 32(CS),%ymm8,%ymm8
+    vaddps 64(CS),%ymm9,%ymm9
     vmovups %ymm7,(CS)
     vmovups %ymm8,32(CS)
     vmovups %ymm9,64(CS)
     addq LDC,CS
+    vaddps (CS),%ymm10,%ymm10
+    vaddps 32(CS),%ymm11,%ymm11
+    vaddps 64(CS),%ymm12,%ymm12
     vmovups %ymm10,(CS)
     vmovups %ymm11,32(CS)
     vmovups %ymm12,64(CS)
 .endm
 
 .macro FIN_C_3col_irregm
-    vmaskmovps %ymm4,%ymm1,(CS)
-    vmaskmovps %ymm5,%ymm2,32(CS)
-    vmaskmovps %ymm6,%ymm3,64(CS)
-    addq LDC,CS
+    vmaskmovps (CS),%ymm1,%ymm0
+    vaddps %ymm7,%ymm0,%ymm7
+    vmaskmovps 32(CS),%ymm2,%ymm0
+    vaddps %ymm8,%ymm0,%ymm8
+    vmaskmovps 64(CS),%ymm3,%ymm0
+    vaddps %ymm9,%ymm0,%ymm9
     vmaskmovps %ymm7,%ymm1,(CS)
     vmaskmovps %ymm8,%ymm2,32(CS)
     vmaskmovps %ymm9,%ymm3,64(CS)
     addq LDC,CS
+    vmaskmovps (CS),%ymm1,%ymm0
+    vaddps %ymm10,%ymm0,%ymm10
+    vmaskmovps 32(CS),%ymm2,%ymm0
+    vaddps %ymm11,%ymm0,%ymm11
+    vmaskmovps 64(CS),%ymm3,%ymm0
+    vaddps %ymm12,%ymm0,%ymm12
     vmaskmovps %ymm10,%ymm1,(CS)
     vmaskmovps %ymm11,%ymm2,32(CS)
     vmaskmovps %ymm12,%ymm3,64(CS)
+    addq LDC,CS
+    vmaskmovps (CS),%ymm1,%ymm0
+    vaddps %ymm13,%ymm0,%ymm13
+    vmaskmovps 32(CS),%ymm2,%ymm0
+    vaddps %ymm14,%ymm0,%ymm14
+    vmaskmovps 64(CS),%ymm3,%ymm0
+    vaddps %ymm15,%ymm0,%ymm15
+    vmaskmovps %ymm13,%ymm1,(CS)
+    vmaskmovps %ymm14,%ymm2,32(CS)
+    vmaskmovps %ymm15,%ymm3,64(CS)
 .endm
 
 .macro PREFm12 src
@@ -247,7 +255,6 @@ sgemmblkregccc:
     addq $49152,AL //point to (prefetch) next ablk zone of abuffer; delta=48kB
     movslq %ecx,LDC
     salq $2,LDC //sizeof(float)=2^2
-    movq CIP,CL
     movq CIP,CS
 
     INIT_C_3col
@@ -257,7 +264,6 @@ sgemmblkregccc:
     UPDATECBLK_1col
     movswq %r10w,%r9
     PREFm12 CS
-    PREFm12 CL
     subq $96,AL
     prefetcht1 (AL)
     prefetcht1 64(AL)
@@ -283,9 +289,11 @@ sgemmblkregccc:
     UPDATECBLK_1col
     movq CIP,CL
 .Louter_sgemmblkregccc_last:
-    PREFm12 CL
-    prefetcht1 152(CL)
+    prefetcht1 (CL)
+    prefetcht1 64(CL)
+    prefetcht1 128(CL)
     prefetcht1 188(CL)
+    addq LDC,CL
     xorq %r11,%r11
 .Linner_sgemmblkregccc_last:
     prefetcht0 256(A0)
@@ -339,15 +347,13 @@ sgemmblktailccc:
     movslq %r8d,%r8 //mdim
     SETMASKm %rax,%r8 //generate mask integers. now rax point to the base element of mask integers, just like %2 in DGEMM.c
     add $8,%rsp //recover rsp so "CIP" can work normally
-    movq CIP,CL
     movq CIP,CS
-    INIT_C_3col_irregm %rax
+    INIT_C_3col
     xorq %r12,%r12
     movq $0x6000000000000000,%r10
 .Louter_tail:
-    UPDATECBLK_1col_irregm
+    UPDATECBLK_1col
     PREFm12 CS
-    PREFm12 CL
     xorq %r11,%r11
 .Linner_tail:
     KERNELm24n4k8
@@ -359,32 +365,8 @@ sgemmblktailccc:
     movswq %r10w,%r9
     subq %r9,A0
     ror $16,%r10
-    cmpq $252,%r12
-    jb .Louter_tail
-    UPDATECBLK_1col_irregm
-    movq CIP,CL
-.Louter_tail_last:
-    PREFm12 CL
-    xorq %r11,%r11
-.Linner_tail_last:
-    KERNELm24n4k1 0,0
-    KERNELm24n4k1 96,16
-    incq %r11
-    prefetcht0 448(A0)
-    prefetcht0 512(A0)
-    KERNELm24n4k1 192,32
-    prefetcht0 576(A0)
-    prefetcht0 416(B0)
-    KERNELm24n4kf 288,48,384,64
-    cmpq $16,%r11
-    jb .Linner_tail_last
-
-    STORECBLK_1col_irregm %rax
-    incq %r12
-    PREFm12 CS
-    UPDATECBLK_1col_irregm
     cmpq $256,%r12
-    jb .Louter_tail_last
+    jb .Louter_tail
 
     movq CIP,CS
     FIN_C_3col_irregm
@@ -408,3 +390,4 @@ timedelay:
 
     vzeroupper
     retq
+

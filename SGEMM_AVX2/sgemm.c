@@ -221,20 +221,19 @@ void sgemmblkirregkccc(float *ablk,float *bblk,float *cstartpos,int ldc,int kdim
   register __m256 a1,a2,a3,b1,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12;float *atemp,*btemp,*ctemp,*cpref;int ccol,acol;
   ctemp=cstartpos;btemp=bblk;
   for(ccol=0;ccol<BlkDimN;ccol+=4){//loop over cblk-columns, calculate 4 columns of cblk in each iteration.
-   cpref=cstartpos+(ccol+4)%BlkDimN*ldc+(ccol+4)/BlkDimN*BlkDimM;
-   b1=_mm256_broadcast_ss(beta);
-   c1=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c2=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c3=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=ldc-16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c4=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c5=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c6=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=ldc-16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c7=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c8=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c9=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=ldc-16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c10=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c11=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c12=_mm256_mul_ps(b1,_mm256_loadu_ps(ctemp));ctemp-=3*ldc+16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   cpref=ctemp;
+   c1=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c2=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c3=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c4=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c5=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c6=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c7=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c8=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c9=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c10=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c11=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c12=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
    atemp=ablk;
    for(acol=0;acol<kdim;acol++){//loop over ablk-columns, load 1 column of ablk in each micro-iteration.
     a1=_mm256_load_ps(atemp);atemp+=8;
@@ -249,10 +248,19 @@ void sgemmblkirregkccc(float *ablk,float *bblk,float *cstartpos,int ldc,int kdim
     b1=_mm256_broadcast_ss(btemp);btemp++;
     c10=_mm256_fmadd_ps(a1,b1,c10);c11=_mm256_fmadd_ps(a2,b1,c11);c12=_mm256_fmadd_ps(a3,b1,c12);
    }
-   _mm256_storeu_ps(ctemp,c1);ctemp+=8;_mm256_storeu_ps(ctemp,c2);ctemp+=8;_mm256_storeu_ps(ctemp,c3);ctemp+=ldc-16;
-   _mm256_storeu_ps(ctemp,c4);ctemp+=8;_mm256_storeu_ps(ctemp,c5);ctemp+=8;_mm256_storeu_ps(ctemp,c6);ctemp+=ldc-16;
-   _mm256_storeu_ps(ctemp,c7);ctemp+=8;_mm256_storeu_ps(ctemp,c8);ctemp+=8;_mm256_storeu_ps(ctemp,c9);ctemp+=ldc-16;
-   _mm256_storeu_ps(ctemp,c10);ctemp+=8;_mm256_storeu_ps(ctemp,c11);ctemp+=8;_mm256_storeu_ps(ctemp,c12);ctemp+=ldc-16;
+   b1=_mm256_broadcast_ss(beta);
+   a1=_mm256_loadu_ps(ctemp);a2=_mm256_loadu_ps(ctemp+8);a3=_mm256_loadu_ps(ctemp+16);
+   c1=_mm256_fmadd_ps(a1,b1,c1);c2=_mm256_fmadd_ps(a2,b1,c2);c3=_mm256_fmadd_ps(a3,b1,c3);
+   _mm256_storeu_ps(ctemp,c1);_mm256_storeu_ps(ctemp+8,c2);_mm256_storeu_ps(ctemp+16,c3);ctemp+=ldc;
+   a1=_mm256_loadu_ps(ctemp);a2=_mm256_loadu_ps(ctemp+8);a3=_mm256_loadu_ps(ctemp+16);
+   c4=_mm256_fmadd_ps(a1,b1,c4);c5=_mm256_fmadd_ps(a2,b1,c5);c6=_mm256_fmadd_ps(a3,b1,c6);
+   _mm256_storeu_ps(ctemp,c4);_mm256_storeu_ps(ctemp+8,c5);_mm256_storeu_ps(ctemp+16,c6);ctemp+=ldc;
+   a1=_mm256_loadu_ps(ctemp);a2=_mm256_loadu_ps(ctemp+8);a3=_mm256_loadu_ps(ctemp+16);
+   c7=_mm256_fmadd_ps(a1,b1,c7);c8=_mm256_fmadd_ps(a2,b1,c8);c9=_mm256_fmadd_ps(a3,b1,c9);
+   _mm256_storeu_ps(ctemp,c7);_mm256_storeu_ps(ctemp+8,c8);_mm256_storeu_ps(ctemp+16,c9);ctemp+=ldc;
+   a1=_mm256_loadu_ps(ctemp);a2=_mm256_loadu_ps(ctemp+8);a3=_mm256_loadu_ps(ctemp+16);
+   c10=_mm256_fmadd_ps(a1,b1,c10);c11=_mm256_fmadd_ps(a2,b1,c11);c12=_mm256_fmadd_ps(a3,b1,c12);
+   _mm256_storeu_ps(ctemp,c10);_mm256_storeu_ps(ctemp+8,c11);_mm256_storeu_ps(ctemp+16,c12);ctemp+=ldc;
   }
 }
 #define KERNELm24n4k2 {\
@@ -284,19 +292,19 @@ void sgemmblkirregnccc(float *ablk,float *bblk,float *cstartpos,int ldc,int ndim
   float *atemp,*btemp,*ctemp,*cpref,*apref;int ccol,acol;
   ctemp=cstartpos;btemp=bblk;
   for(ccol=0;ccol<ndim-3;ccol+=4){//loop over cblk-columns, calculate 5 columns of cblk in each iteration.
-   cpref=cstartpos+(ccol+4)%ndim*ldc+(ccol+4)/ndim*BlkDimM;
-   c1=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c2=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c3=_mm256_loadu_ps(ctemp);ctemp+=ldc-16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c4=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c5=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c6=_mm256_loadu_ps(ctemp);ctemp+=ldc-16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c7=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c8=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c9=_mm256_loadu_ps(ctemp);ctemp+=ldc-16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c10=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c11=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c12=_mm256_loadu_ps(ctemp);ctemp-=3*ldc+16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   cpref=ctemp;
+   c1=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c2=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c3=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c4=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c5=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c6=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c7=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c8=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c9=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c10=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c11=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c12=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
    atemp=ablk;
    for(acol=0;acol<BlkDimK;acol+=8){//loop over ablk-columns, load 1 column of ablk in each micro-iteration.
     KERNELm24n4k2
@@ -304,16 +312,23 @@ void sgemmblkirregnccc(float *ablk,float *bblk,float *cstartpos,int ldc,int ndim
     KERNELm24n4k2
     KERNELm24n4k2
    }
-   _mm256_storeu_ps(ctemp,c1);ctemp+=8;_mm256_storeu_ps(ctemp,c2);ctemp+=8;_mm256_storeu_ps(ctemp,c3);ctemp+=ldc-16;
-   _mm256_storeu_ps(ctemp,c4);ctemp+=8;_mm256_storeu_ps(ctemp,c5);ctemp+=8;_mm256_storeu_ps(ctemp,c6);ctemp+=ldc-16;
-   _mm256_storeu_ps(ctemp,c7);ctemp+=8;_mm256_storeu_ps(ctemp,c8);ctemp+=8;_mm256_storeu_ps(ctemp,c9);ctemp+=ldc-16;
-   _mm256_storeu_ps(ctemp,c10);ctemp+=8;_mm256_storeu_ps(ctemp,c11);ctemp+=8;_mm256_storeu_ps(ctemp,c12);ctemp+=ldc-16;
+   a1=_mm256_loadu_ps(ctemp);a2=_mm256_loadu_ps(ctemp+8);a3=_mm256_loadu_ps(ctemp+16);
+   c1=_mm256_add_ps(a1,c1);c2=_mm256_add_ps(a2,c2);c3=_mm256_add_ps(a3,c3);
+   _mm256_storeu_ps(ctemp,c1);_mm256_storeu_ps(ctemp+8,c2);_mm256_storeu_ps(ctemp+16,c3);ctemp+=ldc;
+   a1=_mm256_loadu_ps(ctemp);a2=_mm256_loadu_ps(ctemp+8);a3=_mm256_loadu_ps(ctemp+16);
+   c4=_mm256_add_ps(a1,c4);c5=_mm256_add_ps(a2,c5);c6=_mm256_add_ps(a3,c6);
+   _mm256_storeu_ps(ctemp,c4);_mm256_storeu_ps(ctemp+8,c5);_mm256_storeu_ps(ctemp+16,c6);ctemp+=ldc;
+   a1=_mm256_loadu_ps(ctemp);a2=_mm256_loadu_ps(ctemp+8);a3=_mm256_loadu_ps(ctemp+16);
+   c7=_mm256_add_ps(a1,c7);c8=_mm256_add_ps(a2,c8);c9=_mm256_add_ps(a3,c9);
+   _mm256_storeu_ps(ctemp,c7);_mm256_storeu_ps(ctemp+8,c8);_mm256_storeu_ps(ctemp+16,c9);ctemp+=ldc;
+   a1=_mm256_loadu_ps(ctemp);a2=_mm256_loadu_ps(ctemp+8);a3=_mm256_loadu_ps(ctemp+16);
+   c10=_mm256_add_ps(a1,c10);c11=_mm256_add_ps(a2,c11);c12=_mm256_add_ps(a3,c12);
+   _mm256_storeu_ps(ctemp,c10);_mm256_storeu_ps(ctemp+8,c11);_mm256_storeu_ps(ctemp+16,c12);ctemp+=ldc;
   }
-  cpref=cstartpos+BlkDimM;
   for(;ccol<ndim;ccol++){
-   c1=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c2=_mm256_loadu_ps(ctemp);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c3=_mm256_loadu_ps(ctemp);ctemp-=16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c1=_mm256_setzero_ps();_mm_prefetch((char *)ctemp,_MM_HINT_T0);
+   c2=_mm256_setzero_ps();_mm_prefetch((char *)(ctemp+16),_MM_HINT_T0);
+   c3=_mm256_setzero_ps();_mm_prefetch((char *)(ctemp+23),_MM_HINT_T0);
    atemp=ablk;
    for(acol=0;acol<BlkDimK;acol++){//loop over ablk-columns, load 1 column of ablk in each micro-iteration.
     a1=_mm256_load_ps(atemp);atemp+=8;
@@ -322,7 +337,9 @@ void sgemmblkirregnccc(float *ablk,float *bblk,float *cstartpos,int ldc,int ndim
     b1=_mm256_broadcast_ss(btemp);btemp++;
     c1=_mm256_fmadd_ps(a1,b1,c1);c2=_mm256_fmadd_ps(a2,b1,c2);c3=_mm256_fmadd_ps(a3,b1,c3);
    }
-   _mm256_storeu_ps(ctemp,c1);ctemp+=8;_mm256_storeu_ps(ctemp,c2);ctemp+=8;_mm256_storeu_ps(ctemp,c3);ctemp+=ldc-16;
+   a1=_mm256_loadu_ps(ctemp);a2=_mm256_loadu_ps(ctemp+8);a3=_mm256_loadu_ps(ctemp+16);
+   c1=_mm256_add_ps(a1,c1);c2=_mm256_add_ps(a2,c2);c3=_mm256_add_ps(a3,c3);
+   _mm256_storeu_ps(ctemp,c1);_mm256_storeu_ps(ctemp+8,c2);_mm256_storeu_ps(ctemp+16,c3);ctemp+=ldc;
   }
 }
 void sgemmblkirregccc(float *ablk,float *bblk,float *cstartpos,int ldc,int mdim,int ndim,int kdim,float *beta){
@@ -332,26 +349,21 @@ void sgemmblkirregccc(float *ablk,float *bblk,float *cstartpos,int ldc,int mdim,
   ml2=_mm256_setr_epi32(-(mdim>8),-(mdim>9),-(mdim>10),-(mdim>11),-(mdim>12),-(mdim>13),-(mdim>14),-(mdim>15));
   ml3=_mm256_setr_epi32(-(mdim>16),-(mdim>17),-(mdim>18),-(mdim>19),-(mdim>20),-(mdim>21),-(mdim>22),-(mdim>23));
   ctemp=cstartpos;btemp=bblk;
-  for(ccol=0;ccol<ndim-3;ccol+=4){//loop over cblk-columns, calculate 5 columns of cblk in each iteration.
-   cpref=cstartpos+(ccol+4)%ndim*ldc+(ccol+4)/ndim*BlkDimM;
-   b1=_mm256_broadcast_ss(beta);
-   c1=_mm256_maskload_ps(ctemp,ml1);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c2=_mm256_maskload_ps(ctemp,ml2);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c3=_mm256_maskload_ps(ctemp,ml3);ctemp+=ldc-16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c1=_mm256_mul_ps(c1,b1);c2=_mm256_mul_ps(c2,b1);c3=_mm256_mul_ps(c3,b1);
-   c4=_mm256_maskload_ps(ctemp,ml1);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c5=_mm256_maskload_ps(ctemp,ml2);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c6=_mm256_maskload_ps(ctemp,ml3);ctemp+=ldc-16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c4=_mm256_mul_ps(c4,b1);c5=_mm256_mul_ps(c5,b1);c6=_mm256_mul_ps(c6,b1);
-   c7=_mm256_maskload_ps(ctemp,ml1);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c8=_mm256_maskload_ps(ctemp,ml2);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c9=_mm256_maskload_ps(ctemp,ml3);ctemp+=ldc-16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c7=_mm256_mul_ps(c7,b1);c8=_mm256_mul_ps(c8,b1);c9=_mm256_mul_ps(c9,b1);
-   c10=_mm256_maskload_ps(ctemp,ml1);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c11=_mm256_maskload_ps(ctemp,ml2);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c12=_mm256_maskload_ps(ctemp,ml3);ctemp-=3*ldc+16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c10=_mm256_mul_ps(c10,b1);c11=_mm256_mul_ps(c11,b1);c12=_mm256_mul_ps(c12,b1);
-   atemp=ablk;//bpref=bblk+BlkDimK*((i+5)%BlkDimN);
+  for(ccol=0;ccol<ndim-3;ccol+=4){//loop over cblk-columns, calculate 4 columns of cblk in each iteration.
+   cpref=ctemp;
+   c1=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c2=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c3=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c4=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c5=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c6=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c7=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c8=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c9=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c10=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
+   c11=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
+   c12=_mm256_setzero_ps();_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   atemp=ablk;
    for(acol=0;acol<kdim;acol++){//loop over ablk-columns, load 1 column of ablk in each micro-iteration.
     a1=_mm256_load_ps(atemp);atemp+=8;
     a2=_mm256_load_ps(atemp);atemp+=8;   _mm_prefetch((char *)(btemp+128),_MM_HINT_T0);
@@ -365,26 +377,25 @@ void sgemmblkirregccc(float *ablk,float *bblk,float *cstartpos,int ldc,int mdim,
     b1=_mm256_broadcast_ss(btemp);btemp++;
     c10=_mm256_fmadd_ps(a1,b1,c10);c11=_mm256_fmadd_ps(a2,b1,c11);c12=_mm256_fmadd_ps(a3,b1,c12);
    }
-   _mm256_maskstore_ps(ctemp,ml1,c1);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml2,c2);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml3,c3);ctemp+=ldc-16;
-   _mm256_maskstore_ps(ctemp,ml1,c4);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml2,c5);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml3,c6);ctemp+=ldc-16;
-   _mm256_maskstore_ps(ctemp,ml1,c7);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml2,c8);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml3,c9);ctemp+=ldc-16;
-   _mm256_maskstore_ps(ctemp,ml1,c10);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml2,c11);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml3,c12);ctemp+=ldc-16;
+   b1=_mm256_broadcast_ss(beta);
+   a1=_mm256_maskload_ps(ctemp,ml1);a2=_mm256_maskload_ps(ctemp+8,ml2);a3=_mm256_maskload_ps(ctemp+16,ml3);
+   c1=_mm256_fmadd_ps(a1,b1,c1);c2=_mm256_fmadd_ps(a2,b1,c2);c3=_mm256_fmadd_ps(a3,b1,c3);
+   _mm256_maskstore_ps(ctemp,ml1,c1);_mm256_maskstore_ps(ctemp+8,ml2,c2);_mm256_maskstore_ps(ctemp+16,ml3,c3);ctemp+=ldc;
+   a1=_mm256_maskload_ps(ctemp,ml1);a2=_mm256_maskload_ps(ctemp+8,ml2);a3=_mm256_maskload_ps(ctemp+16,ml3);
+   c4=_mm256_fmadd_ps(a1,b1,c4);c5=_mm256_fmadd_ps(a2,b1,c5);c6=_mm256_fmadd_ps(a3,b1,c6);
+   _mm256_maskstore_ps(ctemp,ml1,c4);_mm256_maskstore_ps(ctemp+8,ml2,c5);_mm256_maskstore_ps(ctemp+16,ml3,c6);ctemp+=ldc;
+   a1=_mm256_maskload_ps(ctemp,ml1);a2=_mm256_maskload_ps(ctemp+8,ml2);a3=_mm256_maskload_ps(ctemp+16,ml3);
+   c7=_mm256_fmadd_ps(a1,b1,c7);c8=_mm256_fmadd_ps(a2,b1,c8);c9=_mm256_fmadd_ps(a3,b1,c9);
+   _mm256_maskstore_ps(ctemp,ml1,c7);_mm256_maskstore_ps(ctemp+8,ml2,c8);_mm256_maskstore_ps(ctemp+16,ml3,c9);ctemp+=ldc;
+   a1=_mm256_maskload_ps(ctemp,ml1);a2=_mm256_maskload_ps(ctemp+8,ml2);a3=_mm256_maskload_ps(ctemp+16,ml3);
+   c10=_mm256_fmadd_ps(a1,b1,c10);c11=_mm256_fmadd_ps(a2,b1,c11);c12=_mm256_fmadd_ps(a3,b1,c12);
+   _mm256_maskstore_ps(ctemp,ml1,c10);_mm256_maskstore_ps(ctemp+8,ml2,c11);_mm256_maskstore_ps(ctemp+16,ml3,c12);ctemp+=ldc;
   }
-  cpref=cstartpos+BlkDimM;
   c9=_mm256_broadcast_ss(beta);
   for(;ccol<ndim;ccol++){
-   c1=_mm256_maskload_ps(ctemp,ml1);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
-   c2=_mm256_maskload_ps(ctemp,ml2);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
-   c3=_mm256_maskload_ps(ctemp,ml3);ctemp-=16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
-   c1=_mm256_mul_ps(c1,c9);c2=_mm256_mul_ps(c2,c9);c3=_mm256_mul_ps(c3,c9);
+   c1=_mm256_setzero_ps();_mm_prefetch((char *)ctemp,_MM_HINT_T0);
+   c2=_mm256_setzero_ps();_mm_prefetch((char *)(ctemp+16),_MM_HINT_T0);
+   c3=_mm256_setzero_ps();_mm_prefetch((char *)(ctemp+23),_MM_HINT_T0);
    atemp=ablk;
    for(acol=0;acol<kdim;acol++){//loop over ablk-columns, load 1 column of ablk in each micro-iteration.
     a1=_mm256_load_ps(atemp);atemp+=8;
@@ -393,9 +404,9 @@ void sgemmblkirregccc(float *ablk,float *bblk,float *cstartpos,int ldc,int mdim,
     b1=_mm256_broadcast_ss(btemp);btemp++;
     c1=_mm256_fmadd_ps(a1,b1,c1);c2=_mm256_fmadd_ps(a2,b1,c2);c3=_mm256_fmadd_ps(a3,b1,c3);
    }
-   _mm256_maskstore_ps(ctemp,ml1,c1);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml2,c2);ctemp+=8;
-   _mm256_maskstore_ps(ctemp,ml3,c3);ctemp+=ldc-16;
+   a1=_mm256_maskload_ps(ctemp,ml1);a2=_mm256_maskload_ps(ctemp+8,ml2);a3=_mm256_maskload_ps(ctemp+16,ml3);
+   c1=_mm256_fmadd_ps(a1,c9,c1);c2=_mm256_fmadd_ps(a2,c9,c2);c3=_mm256_fmadd_ps(a3,c9,c3);
+   _mm256_maskstore_ps(ctemp,ml1,c1);_mm256_maskstore_ps(ctemp+8,ml2,c2);_mm256_maskstore_ps(ctemp+16,ml3,c3);ctemp+=ldc;
   }
 }
 void synproc(int tid,int threads,int *workprogress){//workprogress[] must be shared among all threads
