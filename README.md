@@ -65,4 +65,4 @@ There're 2 dgemm test programs attached (General_Benchmark_*.c) for debugging an
 #Comments:
 
 Any optimizations to the dgemm codes are welcomed~
-Unlike the completely-tested "DGEMM.so", the library "DGEMM_LARGEMEM.so" haven't been thoroughly tested so may become buggy in some rare cases. The author would be grateful if some experts could help him check the codes.
+Unlike the completely-tested "DGEMM.so", the libraries "DGEMM_LARGEMEM.so" and "SGEMM.so" haven't been thoroughly tested so may become buggy in some rare cases. The author would be grateful if some experts could help him check the codes.
