@@ -1,8 +1,8 @@
-# DGEMM_AVX2
+# GEMM_AVX2
 
 #Introduction
 
-Fast avx2/fma3 gemm subroutines for large matrices, written in C and assembly, with performances comparable to Intel MKL(2018).
+Fast avx2/fma3 dgemm and sgemm subroutines for large matrices, written in C and assembly, with performances comparable to Intel MKL(2018).
 
 
 
