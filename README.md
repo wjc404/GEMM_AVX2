@@ -2,13 +2,14 @@
 
 #Introduction
 
-Fast avx2/fma3 dgemm subroutines for large matrices, written in C and assembly, with performances comparable to Intel MKL(2018).
+Fast avx2/fma3 gemm subroutines for large matrices, written in C and assembly, with performances comparable to Intel MKL(2018).
 
 
 
 #Dynamic libraries
 
 DGEMM.so and DGEMM_LARGEMEM.so, the latter consumes more memory but runs faster.
+SGEMM.so (experimental)
 
 
 
@@ -16,13 +17,17 @@ DGEMM.so and DGEMM_LARGEMEM.so, the latter consumes more memory but runs faster.
 
 i9-9900K, avx-offset=6, dual-channel DDR4-2400: 
 
-1 thread: DGEMM.so 65.3-66.2 GFLOPS; DGEMM_LARGEMEM.so 67.5 GFLOPS; OpenBLAS(Haswell,recent update) 65.8 GFLOPS; MKL(2018-libgomp) 66-67 GFLOPS; Theoretical 70.4 GFLOPS.
+1-thread dgemm: DGEMM.so 65.3-66.2 GFLOPS; DGEMM_LARGEMEM.so 67.5 GFLOPS; OpenBLAS(Haswell,recent update) 65.8 GFLOPS; MKL(2018-libgomp) 66-67 GFLOPS; Theoretical 70.4 GFLOPS.
 
-8 threads: DGEMM.so 455-465 GFLOPS; DGEMM_LARGEMEM.so 488 GFLOPS; OpenBLAS(Haswell,recent update) 470 GFLOPS; MKL(2018-libgomp) 474 GFLOPS; Theoretical 524 GFLOPS.
+1-thread sgemm: SGEMM.so 133 GFLOPS; MKL(2018-libgomp) 133 GFLOPS; OpenBLAS(Haswell) 120 GFLOPS; Theoretical 141 GFLOPS.
+
+8-thread dgemm: DGEMM.so 455-465 GFLOPS; DGEMM_LARGEMEM.so 488 GFLOPS; OpenBLAS(Haswell,recent update) 470 GFLOPS; MKL(2018-libgomp) 474 GFLOPS; Theoretical 524 GFLOPS.
+
+8-thread sgemm: SGEMM.so 970 GFLOPS; MKL(2018-libgomp) 950 GFLOPS.
 
 r7-3700X, 3.6 GHz, dual-channel DDR4-2133:
 
-1 thread: DGEMM.so 52-54 GFLOPS; DGEMM_LARGEMEM.so 54.8 GFLOPS; OpenBLAS(Haswell,recent update) 53.0 GFLOPS; Theoretical 57.6 GFLOPS.
+1-thread dgemm: DGEMM.so 52-54 GFLOPS; DGEMM_LARGEMEM.so 54.8 GFLOPS; OpenBLAS(Haswell,recent update) 53.0 GFLOPS; Theoretical 57.6 GFLOPS.
 
 
 #Function interfaces in C:
