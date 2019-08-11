@@ -9,8 +9,8 @@ Fast avx2/fma3 gemm subroutines for large matrices, written in C and assembly, w
 #Dynamic libraries
 
 DGEMM.so and DGEMM_LARGEMEM.so, the latter consumes more memory but runs faster.
-SGEMM.so (experimental)
 
+SGEMM.so (experimental)
 
 
 #Top performances
@@ -21,9 +21,9 @@ i9-9900K, avx-offset=6, dual-channel DDR4-2400:
 
 1-thread sgemm: SGEMM.so 133 GFLOPS; MKL(2018-libgomp) 133 GFLOPS; OpenBLAS(Haswell) 120 GFLOPS; Theoretical 141 GFLOPS.
 
-8-thread dgemm: DGEMM.so 455-465 GFLOPS; DGEMM_LARGEMEM.so 488 GFLOPS; OpenBLAS(Haswell,recent update) 470 GFLOPS; MKL(2018-libgomp) 474 GFLOPS; Theoretical 524 GFLOPS.
+8-thread dgemm: DGEMM.so 455-465 GFLOPS; DGEMM_LARGEMEM.so 488 GFLOPS; OpenBLAS(Haswell,recent update) 470 GFLOPS; MKL(2018-libgomp) 474 GFLOPS; Theoretical 525 GFLOPS.
 
-8-thread sgemm: SGEMM.so 970 GFLOPS; MKL(2018-libgomp) 950 GFLOPS.
+8-thread sgemm: SGEMM.so 970 GFLOPS; MKL(2018-libgomp) 950 GFLOPS; Theoretical 1050 GFLOPS.
 
 r7-3700X, 3.6 GHz, dual-channel DDR4-2133:
 
@@ -34,7 +34,7 @@ r7-3700X, 3.6 GHz, dual-channel DDR4-2133:
 
 1-thread: void dgemmserial(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc), in DGEMM.so
 
-omp-paralleled: void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc), in both libraries.
+omp-paralleled: void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc), in DGEMM.so and DGEMM_LARGEMEM.so; void sgemm(char *transa,char *transb,int *m,int *n,int *k,float *alpha,float *a,int *lda,float *b,int *ldb,float *beta,float *c,int *ldc), in SGEMM.so.
 
 
 #Function namings in source codes:
