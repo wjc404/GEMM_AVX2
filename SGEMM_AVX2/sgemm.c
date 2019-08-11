@@ -379,10 +379,12 @@ void sgemmblkirregccc(float *ablk,float *bblk,float *cstartpos,int ldc,int mdim,
    _mm256_maskstore_ps(ctemp,ml3,c12);ctemp+=ldc-16;
   }
   cpref=cstartpos+BlkDimM;
+  c9=_mm256_broadcast_ss(beta);
   for(;ccol<ndim;ccol++){
    c1=_mm256_maskload_ps(ctemp,ml1);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=16;
    c2=_mm256_maskload_ps(ctemp,ml2);ctemp+=8;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=7;
    c3=_mm256_maskload_ps(ctemp,ml3);ctemp-=16;_mm_prefetch((char *)cpref,_MM_HINT_T0);cpref+=ldc-23;
+   c1=_mm256_mul_ps(c1,c9);c2=_mm256_mul_ps(c2,c9);c3=_mm256_mul_ps(c3,c9);
    atemp=ablk;
    for(acol=0;acol<kdim;acol++){//loop over ablk-columns, load 1 column of ablk in each micro-iteration.
     a1=_mm256_load_ps(atemp);atemp+=8;
