@@ -23,7 +23,7 @@ i9-9900K, avx-offset=6, dual-channel DDR4-2400:
 
 8-thread dgemm: DGEMM.so 455-465 GFLOPS; DGEMM_LARGEMEM.so 488 GFLOPS; OpenBLAS(Haswell,recent update) 470 GFLOPS; MKL(2018-libgomp) 474 GFLOPS; Theoretical 525 GFLOPS.
 
-8-thread sgemm: SGEMM.so 970 GFLOPS; MKL(2018-libgomp) 950 GFLOPS; Theoretical 1050 GFLOPS.
+8-thread sgemm: SGEMM.so 988 GFLOPS; MKL(2018-libgomp) 965 GFLOPS; Theoretical 1050 GFLOPS.
 
 r7-3700X, 3.6 GHz, dual-channel DDR4-2133:
 
