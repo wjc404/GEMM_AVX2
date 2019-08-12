@@ -29,6 +29,8 @@ r7-3700X, 3.6 GHz, dual-channel DDR4-2133:
 
 1-thread dgemm: DGEMM.so 52-54 GFLOPS; DGEMM_LARGEMEM.so 54.8 GFLOPS; OpenBLAS(Haswell,recent update) 53.0 GFLOPS; Theoretical 57.6 GFLOPS.
 
+1-thread sgemm: SGEMM.so 111 GFLOPS; OpenBLAS(Haswell) 104 GFLOPS; Theoretical 115 GFLOPS.
+
 
 #Function interfaces in C:
 
