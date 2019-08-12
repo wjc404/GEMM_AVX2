@@ -46,7 +46,21 @@ void load_irreg_a_r(float *astartpos,float *ablk,int lda,int mdim,int kdim){//sp
   }
 }
 void load_reg_a_c(float *astartpos,float *ablk,int lda){load_irreg_a_c(astartpos,ablk,lda,BlkDimM,BlkDimK);}
-void load_reg_a_r(float *astartpos,float *ablk,int lda){load_irreg_a_r(astartpos,ablk,lda,BlkDimM,BlkDimK);}
+void load_reg_a_r(float *astartpos,float *ablk,int lda){
+  int acol,arow;float *ar1,*ar2,*ar3,*ar4,*awrite;
+  for(arow=0;arow<BlkDimM;arow+=4){
+    ar1=astartpos+arow*lda;
+    ar2=ar1+lda;ar3=ar2+lda;ar4=ar3+lda;
+    awrite=ablk+arow;
+    for(acol=0;acol<BlkDimK;acol++){
+      *(awrite+0)=*(ar1+acol);
+      *(awrite+1)=*(ar2+acol);
+      *(awrite+2)=*(ar3+acol);
+      *(awrite+3)=*(ar4+acol);
+      awrite+=BlkDimM;
+    }
+  }
+}
 void load_tail_a_c(float *astartpos,float *ablk,int lda,int mdim){load_irreg_a_c(astartpos,ablk,lda,mdim,BlkDimK);}
 void load_tail_a_r(float *astartpos,float *ablk,int lda,int mdim){load_irreg_a_r(astartpos,ablk,lda,mdim,BlkDimK);}
 void load_irregk_a_c(float *astartpos,float *ablk,int lda,int kdim){load_irreg_a_c(astartpos,ablk,lda,BlkDimM,kdim);}
