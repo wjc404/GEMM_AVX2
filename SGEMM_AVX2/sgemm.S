@@ -203,45 +203,62 @@
     prefetcht0 92(\src)
 .endm
 
-.macro DECPUSH aaa
-    decq \aaa
-    push \aaa
-.endm
-
-.macro SETMASKm Temp,Mdim //use stack to store mask integer array
-    xorq \Temp,\Temp
-    subq \Mdim,\Temp
-    addq $23,\Temp
-    push \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    DECPUSH \Temp
-    movq %rsp,\Temp //save base address of mask integer array
-    addq $192,%rsp //recover rsp
+.macro SETMASKm//use stack to store mask integer array
+    xorl %eax,%eax
+    subl %r8d,%eax
+    addl $23,%eax
+    movl %eax,-4(%rsp)
+    decl %eax
+    movl %eax,-8(%rsp)
+    decl %eax
+    movl %eax,-12(%rsp)
+    decl %eax
+    movl %eax,-16(%rsp)
+    decl %eax
+    movl %eax,-20(%rsp)
+    decl %eax
+    movl %eax,-24(%rsp)
+    decl %eax
+    movl %eax,-28(%rsp)
+    decl %eax
+    movl %eax,-32(%rsp)
+    decl %eax
+    movl %eax,-36(%rsp)
+    decl %eax
+    movl %eax,-40(%rsp)
+    decl %eax
+    movl %eax,-44(%rsp)
+    decl %eax
+    movl %eax,-48(%rsp)
+    decl %eax
+    movl %eax,-52(%rsp)
+    decl %eax
+    movl %eax,-56(%rsp)
+    decl %eax
+    movl %eax,-60(%rsp)
+    decl %eax
+    movl %eax,-64(%rsp)
+    decl %eax
+    movl %eax,-68(%rsp)
+    decl %eax
+    movl %eax,-72(%rsp)
+    decl %eax
+    movl %eax,-76(%rsp)
+    decl %eax
+    movl %eax,-80(%rsp)
+    decl %eax
+    movl %eax,-84(%rsp)
+    decl %eax
+    movl %eax,-88(%rsp)
+    decl %eax
+    movl %eax,-92(%rsp)
+    decl %eax
+    movl %eax,-96(%rsp)
+    leaq -96(%rsp),%rax
 .endm
 
 .section .text
-//enter the function sgemmblkregccc_ac, rdi=abufferctpos, rsi=bblk, rdx=cstartpos, ecx=ldc
+//enter the function sgemmblkregccc, rdi=abufferctpos, rsi=bblk, rdx=cstartpos, ecx=ldc
 .globl sgemmblkregccc
 .type sgemmblkregccc,@function
 sgemmblkregccc:
@@ -345,7 +362,7 @@ sgemmblktailccc:
     movslq %ecx,LDC
     salq $2,LDC
     movslq %r8d,%r8 //mdim
-    SETMASKm %rax,%r8 //generate mask integers. now rax point to the base element of mask integers, just like %2 in DGEMM.c
+    SETMASKm
     add $8,%rsp //recover rsp so "CIP" can work normally
     movq CIP,CS
     INIT_C_3col
