@@ -60,19 +60,19 @@ int main(int argc, char* argv[]) // command line: ./dgemmtest [niter] [m] [n] [k
 	} else {
 		m = 2000;
 	}
-        if (m < 10) m = 10;
+        if (m < 3) m = 3;
 	if (argc >= 4) {
 		n = atoi(argv[3]);
 	} else {
 		n = 2000;
 	}
-        if (n < 10) n = 10;
+        if (n < 3) n = 3;
 	if (argc >= 5) {
 		k = atoi(argv[4]);
 	} else {
 		k = 2000;
 	}
-        if (k < 10) k = 10;
+        if (k < 3) k = 3;
         templdc = tempm; ldc = m;
 // get range of random numbers filled in A and B, default [0,10)
 	if (argc >= 6) {
@@ -177,7 +177,7 @@ int main(int argc, char* argv[]) // command line: ./dgemmtest [niter] [m] [n] [k
             exit(1);
         }
 // print test information
-        printf("Matrix dimensions lower than 10 will be reset to 10\n");
+        printf("Matrix dimensions lower than 3 will be reset to 3\n");
 	printf("Dimensions of matrix A: %d * %d\n",m,k);
 	printf("Dimensions of matrix B: %d * %d\n",k,n);
 	printf("Number of iterations %d \n",niters);
@@ -207,26 +207,26 @@ int main(int argc, char* argv[]) // command line: ./dgemmtest [niter] [m] [n] [k
             printf("First 5 elements of matrix B: %e, %e, %e, %e, %e\n",B[0],B[1],B[2],B[3],B[4]);//DEBUG
         }
 // start C = 2*(AB)1
-	alpha[0]=4.0;alpha[1]=0.0;beta[0]=2.0;beta[1]=0.0;
+	alpha[0]=4.0;alpha[1]=2.0;beta[0]=2.0;beta[1]=0.0;
         gettimeofday(&starttime,0);
         zgemm(&trsa, &trsb, &m, &n, &k, alpha, A, &lda, B, &ldb, beta, C, &ldc);
         gettimeofday(&endtime,0);
         tscs[2*i] = 1000000*(endtime.tv_sec - starttime.tv_sec) + endtime.tv_usec - starttime.tv_usec; //interval in usec
-        if(niters < 100) printf("First 5 elements of product matrix 4(AB)mkl: %e, %e, %e, %e, %e\n",C[0],C[1],C[2],C[3],C[4]);//DEBUG
+        if(niters < 100) printf("First 5 DP elements of product matrix (4+2i)AB: %e, %e, %e, %e, %e\n",C[0],C[1],C[2],C[3],C[4]);//DEBUG
 // start C = C - (AB)2
-	alpha[0]=-2.0;alpha[1]=0.0;beta[0]=0.5;beta[1]=0.0;
+	alpha[0]=-10.0;alpha[1]=-10.0;beta[0]=3.0;beta[1]=1.0;//beta=3+i;alpha=-(4+2i)(3+i)=-10-10i
         gettimeofday(&starttime,0);
         (*zgemmroutine1)(&trsa, &trsb, &m, &n, &k, alpha, A, &lda, B, &ldb, beta, C, &ldc);
         gettimeofday(&endtime,0);
         tscs[2*i+1] = 1000000*(endtime.tv_sec - starttime.tv_sec) + endtime.tv_usec - starttime.tv_usec; //interval in usec
-        if(niters < 100) printf("First 5 elements of matrix 2(AB)mkl-2(AB)test: %e, %e, %e, %e, %e\n",C[0],C[1],C[2],C[3],C[4]);//DEBUG
+        if(niters < 100) printf("First 5 DP elements of matrix (-10-10i)AB+(3+i)C: %e, %e, %e, %e, %e\n",C[0],C[1],C[2],C[3],C[4]);//DEBUG
 // compare matrices C and [0]
         maxdif = 0.00;maxelem = 0;
         for (j=0; j<2*m*n ; j++){
             tempdif = fabs(C[j]);
 	    if(tempdif > maxdif) {maxdif = tempdif;maxelem = j;}
         }
-        printf("Max abs of DP elements in '(AB)test-(AB)mkl' in iteration %d : element no. %ld: %e\n\n",i+1,maxelem,maxdif);
+        printf("Max abs of DP elements in the final matrix in iteration %d : element no. %ld: %e\n\n",i+1,maxelem,maxdif);
     }
 // **end of iterations, print calculated FLOPS of routine 1 and 2 in each iteration**
         zgemmroutine1=NULL;
