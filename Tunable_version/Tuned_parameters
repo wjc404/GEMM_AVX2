@@ -1,0 +1,6 @@
+Ryzen 7 3700X:
+  BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=24
+  BlkDimN: 256 for SGEMM.so, 192 for DGEMM.so
+  
+Core i9 9900K:
+  BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=64, BlkDimN=256
