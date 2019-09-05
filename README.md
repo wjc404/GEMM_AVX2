@@ -27,9 +27,9 @@ i9-9900K, avx-offset=6, dual-channel DDR4-2400:
 
 r7-3700X, 3.6 GHz, dual-channel DDR4-2133:
 
-1-thread dgemm: DGEMM.so 52-54 GFLOPS; DGEMM_LARGEMEM.so 54.8 GFLOPS; OpenBLAS(Haswell,recent update) 53.0 GFLOPS; Theoretical 57.6 GFLOPS.
+1-thread dgemm: DGEMM.so 52-54 GFLOPS; DGEMM_LARGEMEM.so 54.8 GFLOPS; MKL 55 GFLOPS; OpenBLAS(Haswell,recent update) 53.0 GFLOPS; Theoretical 57.6 GFLOPS.
 
-1-thread sgemm: SGEMM.so 111 GFLOPS; OpenBLAS(Haswell) 104 GFLOPS; Theoretical 115 GFLOPS.
+1-thread sgemm: SGEMM.so 111 GFLOPS; MKL 110-111 GFLOPS; OpenBLAS(Haswell) 104 GFLOPS; Theoretical 115 GFLOPS.
 
 
 #Function interfaces in C:
@@ -61,6 +61,8 @@ _ac/_ar:The matrix A is column-major(transa='N') or row-major(transa='T')
 #Attached test programs:
 
 There're 2 dgemm test programs attached (General_Benchmark_*.c) for debugging and benchmarking purposes. Compilation of them requires installation of Intel MKL (version 2018 is ok). Please compile them with gcc and link them to MKL with 32-bit integer interface.
+
+Before testing on zen processors, please set the environment variable "MKL_DEBUG_CPU_TYPE" to 5, which tells MKL to use AVX2 code path. Setting of "GOMP_CPU_AFFINITY" is encouraged to improve reproducibility.
 
 
 
