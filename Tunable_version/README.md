@@ -1,9 +1,6 @@
-Ryzen 7 3700X:
-  BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=24
-  BlkDimN: 256 for SGEMM.so, 192 for DGEMM.so
-  
-Core i9 9900K:
-  BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=64, BlkDimN=256
+This directory contains heavily-optimized AVX2 DGEMM and SGEMM codes dealing with large matrices (dimension: 3000~40000).
+Function interface: FORTRAN, 32-bit integer.
+The performance can be tuned via 4 parameters in Makefile: BlkDimK, BlkDimN, A_PR_BYTE, B_PR_ELEM.
 
 Parameters:
   BlkDimK: the dimension K of packed matrix A and B, should be exactly divisible by 128. 
@@ -19,3 +16,13 @@ Parameters:
              For CPUs with 2 256-bit FMA units per core, the current implementation reads 16 bytes per cycle from packed A, the recommended setting is 1.5~2*(L2_latency_in_cycles*16).
   B_PR_ELEM: the distance of prefetch from packed B, in elements(floats for SGEMM, doubles for DGEMM).
              For CPUs with 2 256-bit FMA units per core, the current implementation reads 2/3 element per cycle from packed B, the recommended setting is 1.5~3*(latency_of_the_cache_holding_packed_B_in_cycles*2/3).
+
+
+Tuned parameters for some processors:
+
+Ryzen 7 3700X:
+  BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=24
+  BlkDimN: 256 for SGEMM.so, 192 for DGEMM.so
+  
+Core i9 9900K:
+  BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=64, BlkDimN=256
