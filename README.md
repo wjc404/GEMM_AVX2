@@ -62,7 +62,7 @@ _ac/_ar:The matrix A is column-major(transa='N') or row-major(transa='T')
 
 There're 2 dgemm test programs attached (General_Benchmark_*.c) for debugging and benchmarking purposes. Compilation of them requires installation of Intel MKL (version 2018 is ok). Please compile them with gcc and link them to MKL with 32-bit integer interface.
 
-Before testing on zen processors, please set the environment variable "MKL_DEBUG_CPU_TYPE" to 5, which tells MKL to use AVX2 code path. Setting of "GOMP_CPU_AFFINITY" is encouraged to improve reproducibility.
+Before testing on zen processors, please set the environment variable "MKL_DEBUG_CPU_TYPE" to 5, which tells MKL to use AVX2 code path. Setting of "GOMP_CPU_AFFINITY" is encouraged to improve reproducibility (except for benchmarking OpenBLAS).
 
 
 
