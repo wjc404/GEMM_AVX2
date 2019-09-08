@@ -6,7 +6,7 @@ The performance can be tuned via 4 parameters in Makefile: BlkDimK, BlkDimN, A_P
 
 #Parameters:
 
-BlkDimK: the dimension K of packed matrix A and B, should be exactly divisible by 128. The dimension M of packed A is fixed to 96 bytes in current implementation. To place packed A in L1 cache, careful adjustment of this parameter is needed. Please note that the required memory bandwidth of accessing matrix C is inversely proportional to BlkDimK.Recommended setting: 0.4~0.8*(L1_size_in_bytes/96)
+BlkDimK: the dimension K of packed matrix A and B, should be exactly divisible by 128. The dimension M of packed A is fixed to 96 bytes in current implementation. To place packed A in L1 cache, careful adjustment of this parameter is needed. Please note that the required memory bandwidth of accessing matrix C is inversely proportional to BlkDimK. Recommended setting: 0.4~0.8*(L1_size_in_bytes/96)
 
 BlkDimN: the dimension N of packed matrix B, should be exactly divisible by 16. This parameter and BlkDimK control the size of packed matrix B, determining where packed B sits (L2/L3 cache).
 
