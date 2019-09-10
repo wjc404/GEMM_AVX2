@@ -1,6 +1,6 @@
 # Introduction:
 
-This directory contains heavily-optimized AVX2 DGEMM and SGEMM codes dealing with large matrices (dimension: 3000~40000).
+This directory contains heavily-optimized AVX2 DGEMM and SGEMM codes dealing with large matrices (dimension: 3000~40000), using 768bitx4column kernel.
 Function interface: FORTRAN, 32-bit integer.
 The performance can be tuned via 4 parameters in Makefile: BlkDimK, BlkDimN, A_PR_BYTE, B_PR_ELEM.
 
