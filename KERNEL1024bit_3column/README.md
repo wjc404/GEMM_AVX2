@@ -1,6 +1,6 @@
 # Introduction
 
-This directory contains AVX2 SGEMM and DGEMM codes based on 1024bitx3 kernel (SGEMM: 32x3; DGEMM: 16x3). The 1-thread performances are close to previous implementations on 768bitx4 kernel.
+This directory contains AVX2 SGEMM and DGEMM codes based on 1024bitx3 kernel (SGEMM: 32x3; DGEMM: 16x3). The 1-thread performances are almost identical to previous implementations on 768bitx4 kernel.
 
 # Parameters in Makefile
 
