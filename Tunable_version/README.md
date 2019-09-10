@@ -1,10 +1,10 @@
-#Introduction:
+# Introduction:
 
 This directory contains heavily-optimized AVX2 DGEMM and SGEMM codes dealing with large matrices (dimension: 3000~40000).
 Function interface: FORTRAN, 32-bit integer.
 The performance can be tuned via 4 parameters in Makefile: BlkDimK, BlkDimN, A_PR_BYTE, B_PR_ELEM.
 
-#Parameters:
+# Parameters:
 
 BlkDimK: the dimension K of packed matrix A and B, should be exactly divisible by 128. The dimension M of packed A is fixed to 96 bytes in current implementation. To place packed A in L1 cache, careful adjustment of this parameter is needed. Please note that the required memory bandwidth of accessing matrix C is inversely proportional to BlkDimK. Recommended setting: 0.4~0.8*(L1_size_in_bytes/96)
 
@@ -15,7 +15,7 @@ A_PR_BYTE: the distance of prefetch from packed A, in bytes. As some elements of
 B_PR_ELEM: the distance of prefetch from packed B, in elements(floats for SGEMM, doubles for DGEMM). For CPUs with 2 256-bit FMA units per core, the current implementation reads 2/3 element per cycle from packed B, the recommended setting is 1.5~3*(latency_of_the_cache_holding_packed_B_in_cycles*2/3).
 
 
-#Tuned parameters for some processors:
+# Tuned parameters for some processors:
 
 Ryzen 7 3700X:
 BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=24; 
