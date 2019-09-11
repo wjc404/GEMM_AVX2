@@ -110,7 +110,7 @@ void CNAME(char *transa,char *transb,int *m,int *n,int *k,FLOAT *alpha,FLOAT *a,
  FLOAT *abuffer; //abuffer[]: store 256 columns of matrix a
  if((*alpha) == 0.0 && (*beta) != 1.0) cmultbeta(cstart,LDC,M,(*n),(*beta));//limited by memory bendwidth so no need for parallel execution
  if((*alpha) != 0.0){//then do C=alpha*AB+beta*C
-  abuffer = (FLOAT *)aligned_alloc(4096,(BlkDimM*BlkDimK*BlksM)*sizeof(FLOAT));
+  abuffer = (FLOAT *)aligned_alloc(1024,(BlkDimM*BlkDimK*BlksM)*sizeof(FLOAT));
   workprogress = (int *)calloc(20*numthreads,sizeof(int));
   cchunks = (int *)malloc((numthreads+1)*sizeof(int));
   for(i=0;i<=numthreads;i++) cchunks[i]=(*n)*i/numthreads;
@@ -125,7 +125,7 @@ void CNAME(char *transa,char *transb,int *m,int *n,int *k,FLOAT *alpha,FLOAT *a,
   const int BlksN = (N-1)/BlkDimN+1; const int EdgeN = N-(BlksN-1)*BlkDimN;//the n-dim of edges
   int BlkCtM,BlkCtN,BlkCtK,MCT,NCT,KCT;//loop counters over blocks
   //MCT,NCT and KCT are used to locate the current position of matrix blocks
-  FLOAT *bblk = (FLOAT *)aligned_alloc(4096,(BlkDimN*BlkDimK)*sizeof(FLOAT)); //thread-private bblk[]
+  FLOAT *bblk = (FLOAT *)aligned_alloc(1024,(BlkDimN*BlkDimK)*sizeof(FLOAT)); //thread-private bblk[]
   if(TRANSA=='N' || TRANSA=='n'){
    if(TRANSB=='N' || TRANSB=='n'){//CASE NN
     if(tid==0) load_abuffer_irregk_ac(a,abuffer,LDA,BlksM,EdgeM,EdgeK); //only the master thread can write abuffer
