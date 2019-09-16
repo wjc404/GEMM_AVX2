@@ -18,8 +18,8 @@ B_PR_ELEM: the distance of prefetch from packed B, in elements(floats for SGEMM,
 # Tuned parameters for some processors:
 
 Ryzen 7 3700X:
-BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=24; 
-BlkDimN: 256 for SGEMM.so, 192 for DGEMM.so
+BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=64; 
+BlkDimN: 256 for SGEMM.so, 128 for DGEMM.so
   
 Core i9 9900K:
 BlkDimK=256, A_PR_BYTE=256, B_PR_ELEM=64, BlkDimN=256
