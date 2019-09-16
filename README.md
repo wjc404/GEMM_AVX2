@@ -56,7 +56,9 @@ ccc:All matrix blocks are column-major for gemm
 
 #Test programs:
 
-See my repository GEMM_AVX2_FMA3 for details. 
+For gemm benchmarking tools, see my repository GEMM_AVX2_FMA3 for details. 
+
+There's a FMA3 dgemm GFLOPS test tool in the folder MAX_GFLOPS. 
 
 Before testing on AMD Zen processors, please set the environment variable "MKL_DEBUG_CPU_TYPE" to 5, which tells MKL to use the AVX2 code path. 
 
