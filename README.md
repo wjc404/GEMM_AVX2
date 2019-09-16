@@ -19,9 +19,6 @@ i9-9900K, avx-offset=6, dual-channel DDR4-2400:
 
 1-thread sgemm: SGEMM.so >135 GFLOPS; MKL(2018-libgomp) 134 GFLOPS; OpenBLAS(Haswell) 120 GFLOPS; Theoretical 141 GFLOPS.
 
-8-thread dgemm: DGEMM.so >480 GFLOPS; OpenBLAS(Haswell,recent update) 470 GFLOPS; MKL(2018-libgomp) 474 GFLOPS; Theoretical 525 GFLOPS.
-
-8-thread sgemm: SGEMM.so >980 GFLOPS; MKL(2018-libgomp) 965 GFLOPS; Theoretical 1050 GFLOPS.
 
 r7-3700X, 3.6 GHz, dual-channel DDR4-2133:
 
@@ -52,6 +49,11 @@ c/r:Load from column-major or row-major source matrix
 ccc:All matrix blocks are column-major for gemm
 
 
+#Tuning the performance:
+
+Choosing the best kernel: there are 3 types of kernels, differ in the blocking of C matrix in 12 ymm registers: 512bitx6column, 768bitx4column and 1024bitx3column.  Usually the 768bitx4column kernel is the most efficient one. 
+
+Adjusting parameters for blocking and prefetch: see the ReadMe files in kernel directories for details. 
 
 
 #Test programs:
