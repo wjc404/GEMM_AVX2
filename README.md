@@ -53,7 +53,7 @@ ccc:All matrix blocks are column-major for gemm
 
 Choosing the best kernel: there are 3 types of kernels, differ in the blocking of C matrix in 12 ymm registers: 512bitx6column, 768bitx4column and 1024bitx3column.  Usually the 768bitx4column kernel is the most efficient one. 
 
-Adjusting parameters for blocking and prefetch: see the ReadMe files in kernel directories for details. 
+Adjusting parameters for blocking and prefetch: see the README files in kernel directories for details. 
 
 
 #Test programs:
