@@ -8,4 +8,6 @@ BlkDimK should be exactly divisible by 48.
 
 BlkDimN should be exactly divisible by 48.
 
+"BlkDimK * 64 % BlkDimN" should be zero.
+
 A_PR_BYTE and B_PR_ELEM control prefetch distances.
