@@ -10,6 +10,8 @@ BlkDimK: the dimension K of packed matrix A and B, should be exactly divisible b
 
 BlkDimN: the dimension N of packed matrix B, should be exactly divisible by 16. This parameter and BlkDimK control the size of packed matrix B, determining where packed B sits (L2/L3 cache).
 
+For the convenience of prefetch, "BlkDimK * 96 % BlkDimN" should be zero.
+
 A_PR_BYTE: the distance of prefetch from packed A, in bytes. As some elements of A could be evicted accidentally from L1 at runtime, the prefetch mechanism ensures that they come back to L1 in time before being accessed. So this parameter should be set according to the latency of L2 cache. For CPUs with 2 256-bit FMA units per core, the current implementation reads 16 bytes per cycle from packed A, the recommended setting is 1.5~2*(L2_latency_in_cycles*16).
 
 B_PR_ELEM: the distance of prefetch from packed B, in elements(floats for SGEMM, doubles for DGEMM). For CPUs with 2 256-bit FMA units per core, the current implementation reads 2/3 element per cycle from packed B, the recommended setting is 1.5~3*(latency_of_the_cache_holding_packed_B_in_cycles*2/3).
