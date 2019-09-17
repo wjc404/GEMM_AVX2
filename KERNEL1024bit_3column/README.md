@@ -6,6 +6,8 @@ This directory contains AVX2 SGEMM and DGEMM codes based on 1024bitx3 kernel (SG
 
 BlkDimK (the K-dim of packed A and B matrices) and BlkDimN (the N-dim of packed B matrix) should be exactly divisible by 96.
 
+"BlkDimK * 128 % BlkDimN" should be zero.
+
 A_PR_BYTE and B_PR_ELEM control the prefetch distances of packed A and B.
 
 # Tuned parameters
