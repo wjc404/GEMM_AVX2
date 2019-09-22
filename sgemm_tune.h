@@ -1,6 +1,7 @@
 // The size of packed A matrix is 3kB * GEMM_LOOP_TIMES_K, which should not succeeds the capacity of L1 cache.
 // The value of PREF_CYCLES_PACKED_A should be greater than the latency of L2 cache (in cycles).
 // The value of PREF_CYCLES_PACKED_B should be greater than the latency of L3 cache (in cycles).
+// GEMM_LOOP_TIMES_N * GEMM_LOOP_TIMES_K should be even.
 
 /*Parameters tuned on AMD R7-3700X*/
 # define GEMM_UNROLL_N 6
