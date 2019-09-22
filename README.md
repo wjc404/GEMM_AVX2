@@ -7,7 +7,7 @@ Fast avx2/fma3 sgemm and dgemm subroutines for large matrices, written in C and 
 
 # Interface in C
 
-omp-paralleled: void dgemm_(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc); void sgemm_(char *transa,char *transb,int *m,int *n,int *k,float *alpha,float *a,int *lda,float *b,int *ldb,float *beta,float *c,int *ldc).
+omp-paralleled: void dgemm_(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc) in DGEMM.so; void sgemm_(char *transa,char *transb,int *m,int *n,int *k,float *alpha,float *a,int *lda,float *b,int *ldb,float *beta,float *c,int *ldc) in SGEMM.so.
 
 
 # How to tune
