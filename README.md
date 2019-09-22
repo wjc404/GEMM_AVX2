@@ -1,42 +1,19 @@
-# DGEMM_AVX2
+# GEMM_AVX2
 
-#Introduction
+# Introduction
 
-A fast avx2/fma3 dgemm subroutine for large matrices, written in C and assembly, with 97-99% single-thread performance of Intel MKL(2018).
-
-
-#Interface in C:
-
-1-thread: void dgemmserial(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc)
-
-omp-paralleled: void dgemm(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc)
+Fast avx2/fma3 sgemm and dgemm subroutines for large matrices, written in C and assembly, able to outperform Intel MKL(2019 update 4) after tuning.
 
 
+# Interface in C:
+
+omp-paralleled: void dgemm_(char *transa,char *transb,int *m,int *n,int *k,double *alpha,double *a,int *lda,double *b,int *ldb,double *beta,double *c,int *ldc); void sgemm_(char *transa,char *transb,int *m,int *n,int *k,float *alpha,float *a,int *lda,float *b,int *ldb,float *beta,float *c,int *ldc).
 
 
-#Function naming in dgemm.c:
+# How to tune
 
-load/dgemmblk: The role of the function: load elements from main matrix and pack them into a matrix block, or do dgemm of block matrices
+Please edit "dgemm_tune.h" and "sgemm_tune.h". Benchmarking tools can be downloaded from my repository "GEMM_AVX2_FMA3".
 
-irreg/reg/tail: The matrix block dealing with: 
-         irreg: Block size smaller than defined size, e.g. a block at the edge of the main matrix;
-           reg: Block size the same as defined;
-          tail: The block's m dimension smaller than defined size, but the other dimension identical to defined size.
+# Comments:
 
-a/b:Load and pack elements from matrix A or B
-
-c/r:Load from column-major or row-major main matrix
-
-ccc:All matrix blocks are column-major
-
-_ac/_ar:The matrix A is column-major(transa='N') or row-major(transa='T')
-
-
-
-#Attached test programs:
-
-2 DGEMM test codes are also attached (General_Benchmark_*.c). Compilation of them requires installation of Intel MKL 2018.
-
-#Comments:
-
-Any optimizations to the dgemm codes are welcomed~
+Any optimizations to the gemm codes are welcomed~
