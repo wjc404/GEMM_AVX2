@@ -28,11 +28,14 @@
 # if GEMM_LOOP_TIMES_K < 1
  # define GEMM_LOOP_TIMES_K 1
 # endif
+# if GEMM_LOOP_TIMES_K > 32
+ # define GEMM_LOOP_TIMES_K 32
+# endif
 # if PREF_CYCLES_PACKED_A < 1
- # define PREF_CYCLES_PACKED_A 1
+ # define PREF_CYCLES_PACKED_A 16
 # endif
 # if PREF_CYCLES_PACKED_B < 1
- # define PREF_CYCLES_PACKED_B 1
+ # define PREF_CYCLES_PACKED_B 64
 # endif
 
 //setting prefetch parameters, assuming 2x256bit FMA units per core
