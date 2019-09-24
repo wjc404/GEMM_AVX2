@@ -16,6 +16,7 @@
 # include "edge_kernel/gemm_edge_kernel.c" //functions for calculating edge parts of matrices; please note that multiplication by beta is no longer needed here.
 # define NOTRANSB (TRANSB=='N'||TRANSB=='n')
 # define NOTRANSA (TRANSA=='N'||TRANSA=='n')
+# pragma GCC visibility push(hidden)
 extern void gemmblkregccc(FLOAT *abufferctpos,FLOAT *bblk,FLOAT *cstartpos,int ldc);//carry >90% gemm calculations
 extern void gemmblktailccc(FLOAT *abufferctpos,FLOAT *bblk,FLOAT *cstartpos,int ldc,int mdim);
 extern void timedelay();//produce nothing besides a delay(~3 us), with no system calls
@@ -113,6 +114,7 @@ static void C_MULT_BETA(FLOAT *c,int ldc,int m,int n,FLOAT beta){
     C0+=ldc;
   }
 }
+# pragma GCC visibility pop
 void GEMM_DRIVER(const char *transa,const char *transb,const int *m,const int *n,const int *k,const FLOAT *alpha,const FLOAT *a,const int *lda,const FLOAT *bstart,const int *ldb,const FLOAT *beta,FLOAT *cstart,const int *ldc){
 //assume column-major storage when no transposition is requested.
 //a:matrix with m rows and k columns if transa=N
