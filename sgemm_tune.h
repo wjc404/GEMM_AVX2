@@ -3,14 +3,14 @@
 // The value of PREF_CYCLES_PACKED_B should be greater than the latency of L3 cache (in cycles).
 // GEMM_LOOP_TIMES_N * GEMM_LOOP_TIMES_K should be even.
 
-/*Parameters tuned on AMD R7-3700X*/
+//Parameters tuned on AMD R7-3700X
 # define GEMM_UNROLL_N 6
 # define GEMM_LOOP_TIMES_N 32
 # define GEMM_LOOP_TIMES_K 7
 # define PREF_CYCLES_PACKED_A 18
 # define PREF_CYCLES_PACKED_B 96
 
-/*
+/* //Parameters tuned on i9-9900K
 # define GEMM_UNROLL_N 4
 # define GEMM_LOOP_TIMES_N 64
 # define GEMM_LOOP_TIMES_K 8
