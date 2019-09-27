@@ -2,7 +2,7 @@
 
 # Introduction
 
-Fast avx2/fma3 sgemm and dgemm subroutines for large matrices, written in C and assembly, able to outperform Intel MKL(2019 update 4) after tuning.
+Fast avx2/fma3 sgemm and dgemm subroutines for large matrices, written in C and assembly, able to outperform Intel MKL(2019 update 4) after tuning, achieving >95% serial theoretical performance and >93% parallel theoretical performance.
 
 
 # Interface in C
@@ -13,6 +13,7 @@ omp-paralleled: void dgemm_(char *transa,char *transb,int *m,int *n,int *k,doubl
 # How to tune
 
 Please edit "dgemm_tune.h" and "sgemm_tune.h". Benchmarking tools can be downloaded from my repository "GEMM_AVX2_FMA3".
+
 
 # Comments:
 
