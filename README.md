@@ -2,7 +2,7 @@
 
 # Introduction
 
-Fast avx2/fma3 sgemm and dgemm subroutines for large matrices, written in C and assembly, able to outperform Intel MKL(2019 update 4) after tuning, achieving >95% serial theoretical performance and >93% parallel theoretical performance.
+Fast avx2/fma3 sgemm and dgemm subroutines for large matrices, written in C and assembly, able to outperform Intel MKL(2019 update 4) after tuning, achieving >95% serial theoretical performance and >90% parallel theoretical performance.
 
 
 # Interface in C
