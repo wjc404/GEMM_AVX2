@@ -9,32 +9,41 @@
 
 //GEMM_UNROLL_N: 2,3,4 or 6
 # if GEMM_UNROLL_N < 2
+ # undef GEMM_UNROLL_N
  # define GEMM_UNROLL_N 2
 # endif
 # if GEMM_UNROLL_N == 5
+ # undef GEMM_UNROLL_N
  # define GEMM_UNROLL_N 4
 # endif
 # if GEMM_UNROLL_N > 6
+ # undef GEMM_UNROLL_N
  # define GEMM_UNROLL_N 6
 # endif
 
 //restrict other parameters
 # if GEMM_LOOP_TIMES_N < 1
+ # undef GEMM_LOOP_TIMES_N
  # define GEMM_LOOP_TIMES_N 1
 # endif
 # if GEMM_LOOP_TIMES_N > 200
+ # undef GEMM_LOOP_TIMES_N
  # define GEMM_LOOP_TIMES_N 200
 # endif
 # if GEMM_LOOP_TIMES_K < 1
+ # undef GEMM_LOOP_TIMES_K
  # define GEMM_LOOP_TIMES_K 1
 # endif
 # if GEMM_LOOP_TIMES_K > 32
+ # undef GEMM_LOOP_TIMES_K
  # define GEMM_LOOP_TIMES_K 32
 # endif
 # if PREF_CYCLES_PACKED_A < 1
+ # undef PREF_CYCLES_PACKED_A
  # define PREF_CYCLES_PACKED_A 16
 # endif
 # if PREF_CYCLES_PACKED_B < 1
+ # undef PREF_CYCLES_PACKED_B
  # define PREF_CYCLES_PACKED_B 64
 # endif
 
