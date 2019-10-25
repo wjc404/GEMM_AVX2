@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) // command line: ./dtrmmtest [niter] [m] [n] [u
         printf("    DTRMM performs B = alpha op(A) B  or  B = alpha B op(A).\n");
         printf("Please make sure that the dtrmm library you provided can respond normally to the call above\n\n");
 
-// load the tested cgemm routine
+// load the tested dtrmm routine
         dlerror();
         printf("Enter your dtrmm library path(path to the *.so file):");
         scanf("%s",dtrmmpath1);
