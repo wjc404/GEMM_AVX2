@@ -35,8 +35,7 @@
 #define unit_save_m4n2(c1,c2) \
     "vunpcklpd "#c2","#c1",%%ymm2; vunpckhpd "#c1","#c2",%%ymm3;"\
     "vfmadd213pd (%2),%%ymm0,%%ymm2; vfmadd213pd (%2,%4,1),%%ymm0,%%ymm3;"\
-    "vmovupd %%ymm2,(%2); vmovupd %%ymm3,(%2,%4,1);"\
-    "prefetcht1 56(%2); prefetcht1 56(%2,%4,1);"
+    "vmovupd %%ymm2,(%2); vmovupd %%ymm3,(%2,%4,1);"
 
 #define SAVE_m4n12 \
     "vbroadcastsd (%3),%%ymm0;"\
