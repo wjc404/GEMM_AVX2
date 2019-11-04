@@ -281,15 +281,21 @@
     "salq $1,%4;subq %4,%2;salq $2,%4;subq %4,%2;sarq $3,%4;addq $16,%2;"
 
 #define KERNEL_m4(ndim) \
-    "cmpq $8,%5;jb 74"#ndim"1f;"\
+    "movq %2,%7;cmpq $24,%5;jb 74"#ndim"1f;"\
     "74"#ndim"0:\n\t"\
     KERNEL_k2m4n##ndim\
     KERNEL_k2m4n##ndim\
     KERNEL_k2m4n##ndim\
+    "prefetcht1 (%7); prefetcht1 31(%7); addq %4,%7;"\
     KERNEL_k2m4n##ndim\
-    "subq $8,%5;cmpq $8,%5;jnb 74"#ndim"0b;"\
+    KERNEL_k2m4n##ndim\
+    KERNEL_k2m4n##ndim\
+    "prefetcht1 (%8); addq $10,%8;"\
+    "subq $12,%5;cmpq $24,%5;jnb 74"#ndim"0b;"\
+    "movq %2,%7;"\
     "74"#ndim"1:\n\t"\
     "cmpq $1,%5;jb 74"#ndim"2f;"\
+    "prefetcht0 (%7); prefetcht0 31(%7); addq %4,%7;"\
     KERNEL_k1m4n##ndim\
     "decq %5;jmp 74"#ndim"1b;"\
     "74"#ndim"2:\n\t"\
@@ -312,9 +318,10 @@
     "71"#ndim"2:\n\t"\
     "movq %%r13,%5; movq %%r11,%1;"
 
-//%0 -> a; %1 -> b; %2 -> c; %3 -> alpha; %4 = ldc(bytes); %5 = k_count, %6 = m_count;
+//%0 -> a; %1 -> b; %2 -> c; %3 -> alpha; %4 = ldc(bytes); %5 = k_count, %6 = m_count, %7 = c_pref, %8 = b_pref;
 //cases with n=8,12 requires r12 for efficient addressing. r12 = k << 5; r13 for k, r14 for m, r15 for a_head_address; r11 for b_head_address;
 #define COMPUTE(ndim) {\
+    b_pref = b_pointer + ndim * K;\
     __asm__ __volatile__(\
     "movq %1,%%r11; movq %5,%%r13; movq %6,%%r14; movq %0,%%r15; movq %5,%%r12; salq $5,%%r12;"\
     "cmpq $4,%6;jb "#ndim"01f;"\
@@ -336,7 +343,7 @@
     SAVE_m1n##ndim\
     #ndim"03:\n\t"\
     "movq %%r14,%6;salq $3,%%r14;subq %%r14,%2;movq %%r15,%0;vzeroupper;"\
-    :"+r"(a_pointer),"+r"(b_pointer),"+r"(c_pointer),"+r"(ALPHA),"+r"(ldc_in_bytes),"+r"(K),"+r"(M):\
+    :"+r"(a_pointer),"+r"(b_pointer),"+r"(c_pointer),"+r"(ALPHA),"+r"(ldc_in_bytes),"+r"(K),"+r"(M),"+r"(c_pref),"+r"(b_pref):\
     :"xmm0","xmm1","xmm2","xmm3","xmm4","xmm5","xmm6","xmm7","xmm8","xmm9","xmm10","xmm11","xmm12","xmm13","xmm14","xmm15","r11","r12","r13","r14","r15","cc","memory");\
     b_pointer += K * ndim; c_pointer += ldc * ndim;\
 }
@@ -352,7 +359,7 @@
 int __attribute__ ((noinline)) CNAME(BLASLONG m, BLASLONG n, BLASLONG k, double alpha, double * __restrict__ A, double * __restrict__ B, double * __restrict__ C, BLASLONG ldc){
     if(m==0 || n==0 || k==0 || alpha == 0.0) return 0; double AA = alpha; double *ALPHA = &AA;
     int64_t ldc_in_bytes = (int64_t)ldc * sizeof(double), M = (int64_t)m, K = (int64_t)k;
-    double *a_pointer = A, *b_pointer = B, *c_pointer = C;
+    double *a_pointer = A, *b_pointer = B, *c_pointer = C, *c_pref = C,*b_pref = B;
     BLASLONG ndim_count = n;
     for(;ndim_count>11;ndim_count-=12) COMPUTE(12)
     for(;ndim_count>7;ndim_count-=8) COMPUTE(8)
@@ -427,7 +434,7 @@ static void SCALE_MULT(double *dat,double *sca, BLASLONG lead_dim, BLASLONG dim_
       current_dat += lead_dim - dim_first;
     }
 }
-#define BLOCKDIM_K 256 //GEMM_Q in OpenBLAS
+#define BLOCKDIM_K 240 //GEMM_Q in OpenBLAS
 #define BLOCKDIM_M 512 //GEMM_P in OpenBLAS
 #define NOTRANSA ((*transa)=='N'||(*transa)=='n')
 #define NOTRANSB ((*transb)=='N'||(*transb)=='n')
