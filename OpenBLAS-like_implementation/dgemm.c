@@ -291,7 +291,7 @@
     KERNEL_k2m4n##ndim\
     "prefetcht1 (%8); addq $10,%8;"\
     "subq $12,%5;cmpq $24,%5;jnb 74"#ndim"0b;"\
-    "movq %2,%7;"\
+    "movq %2,%7; prefetcht0 (%3);"\
     "74"#ndim"1:\n\t"\
     "cmpq $1,%5;jb 74"#ndim"2f;"\
     "prefetcht0 (%7); prefetcht0 31(%7); addq %4,%7;"\
