@@ -120,7 +120,7 @@
     #ndim"443:\n\t"\
     SAVE_m4n##ndim "addq $32,%2;"
 
-/* m = 2 *//* xmm0 for alpha, xmm1-xmm3 and xmm10 for temporary use, xmm4-xmm6 for accumulators */
+/* m = 2 *//* xmm0 for alpha, xmm1-xmm3 and xmm10 for temporary use, xmm4-xmm9 for accumulators */
 #define INIT_m2n1 "vpxor %%xmm4,%%xmm4,%%xmm4;"
 #define KERNEL_k1m2n1 \
     "vmovsd (%0),%%xmm1; addq $8,%0;"\
