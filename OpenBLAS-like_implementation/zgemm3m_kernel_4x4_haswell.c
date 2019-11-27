@@ -58,19 +58,19 @@
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
-    "prefetcht1 (%5); prefetcht1 64(%5); prefetcht1 127(%5); addq %3,%5;"\
+    "prefetcht1 (%5); prefetcht1 63(%5); addq %3,%5;"\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
-    "prefetcht1 (%8); addq $64,%8;"\
+    "prefetcht1 (%8); addq $32,%8;"\
     "subq $12,%4; cmpq $24,%4; jnb "#ndim"004041b;"\
     "movq %2,%5;"\
     #ndim"004042:\n\t"\
     "testq %4,%4; jz "#ndim"004043f;"\
-    "prefetcht0 (%5); prefetcht0 64(%5); prefetcht0 127(%5); addq %3,%5;"\
+    "prefetcht0 (%5); prefetcht0 63(%5); addq %3,%5;"\
     KERNEL_k1m4n##ndim\
     "decq %4; jmp "#ndim"004042b;"\
     #ndim"004043:\n\t"\
