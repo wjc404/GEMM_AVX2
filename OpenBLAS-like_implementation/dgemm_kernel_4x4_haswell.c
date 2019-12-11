@@ -437,7 +437,7 @@ static void SCALE_MULT(double *dat,double *sca, BLASLONG lead_dim, BLASLONG dim_
 #define BLOCKDIM_M 512 //GEMM_P in OpenBLAS
 #define NOTRANSA ((*transa)=='N'||(*transa)=='n')
 #define NOTRANSB ((*transb)=='N'||(*transb)=='n')
-//gcc -march=haswell --shared -fPIC -O2 dgemm.c -o dgemm.so
+//gcc -march=haswell --shared -fPIC -O2 dgemm_kernel_4x4_haswell.c -o dgemm.so
 void dgemm_(char *transa,char *transb,BLASLONG *m,BLASLONG *n,BLASLONG *k,double *alpha,double *a,BLASLONG *lda,double *b,BLASLONG *ldb,double *beta,double *c,BLASLONG *ldc){
     if((*m)==0||(*n)==0) return;
     if((*beta)!=1.0) SCALE_MULT(c,beta,*ldc,*m,*n);
