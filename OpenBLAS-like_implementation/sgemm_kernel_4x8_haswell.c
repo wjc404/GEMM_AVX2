@@ -169,10 +169,16 @@
 #define COMPUTE_m4(ndim) \
   "movq %%r13,%5; movq %%r14,%1; movq %2,%4;" INIT_m4n##ndim\
   "cmpq $32,%5; jb "#ndim"441f; "#ndim"440:\n\t"\
+  "prefetcht0 384(%0);"\
+  "prefetcht0 128(%1); prefetcht0 128(%1,%%r12,1); prefetcht0 128(%1,%%r12,2);"\
   KERNEL_t_k1m4n##ndim KERNEL_t_k1m4n##ndim\
+  "prefetcht0 128(%1); prefetcht0 128(%1,%%r12,1); prefetcht0 128(%1,%%r12,2);"\
   KERNEL_t_k1m4n##ndim KERNEL_t_k1m4n##ndim\
   "prefetcht1 (%4); prefetcht1 15(%4); addq %3,%4;"\
+  "prefetcht0 384(%0);"\
+  "prefetcht0 128(%1); prefetcht0 128(%1,%%r12,1); prefetcht0 128(%1,%%r12,2);"\
   KERNEL_t_k1m4n##ndim KERNEL_t_k1m4n##ndim\
+  "prefetcht0 128(%1); prefetcht0 128(%1,%%r12,1); prefetcht0 128(%1,%%r12,2);"\
   KERNEL_t_k1m4n##ndim KERNEL_t_k1m4n##ndim\
   "prefetcht1 (%8); addq $16,%8;"\
   "subq $8,%5; cmpq $32,%5; jnb "#ndim"440b;"\
@@ -181,6 +187,7 @@
   "prefetcht0 (%4); prefetcht0 15(%4); addq %3,%4;"\
   KERNEL_t_k1m4n##ndim "decq %5; jmp "#ndim"441b;"\
   #ndim"442:\n\t"\
+  "prefetcht0 (%%r14); prefetcht0 64(%%r14);"\
   SAVE_m4n##ndim
 
 #define COMPUTE_m2(ndim) \
