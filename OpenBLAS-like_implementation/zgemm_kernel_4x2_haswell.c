@@ -65,9 +65,9 @@
 #define INIT_m4n4 zero_4ymm(4,5,6,7) zero_4ymm(8,9,10,11)
 #define INIT_m4n6 INIT_m4n4 zero_4ymm(12,13,14,15)
 #if A_CONJ == B_CONJ
-  #define cont_expacc(cl,cr,dst) "vaddsubpd %%ymm"#cl",%%ymm"#cr",%%ymm"#dst";"
+  #define cont_expacc(cl,cr,dst) "vpermilpd $5,%%ymm"#cr",%%ymm"#cr"; vaddsubpd %%ymm"#cl",%%ymm"#cr",%%ymm"#dst";"
 #else
-  #define cont_expacc(cl,cr,dst) "vaddsubpd %%ymm"#cr",%%ymm"#cl",%%ymm"#dst";"
+  #define cont_expacc(cl,cr,dst) "vpermilpd $5,%%ymm"#cr",%%ymm"#cr"; vaddsubpd %%ymm"#cr",%%ymm"#cl",%%ymm"#dst";"
 #endif
 #if A_CONJ == 0
   #define save_1ymm(c,tmp,off,alpr,alpi,...) \
@@ -92,7 +92,7 @@
   "testq %5,%5; jz "#ndim"4443f; cmpq $10,%5; jb "#ndim"4442f;"\
   "movq $10,%5; movq $84,%%r15;"\
   #ndim"4441:\n\t"\
-  "prefetcht1 (%3); leaq -63(%3.%%r15,1),%3;"\
+  "prefetcht1 (%3); leaq -63(%3,%%r15,1),%3;"\
   "prefetcht0 128(%1); prefetcht0 128(%1,%%r12,1); prefetcht0 128(%1,%%r12,2);" KERNEL_k1m4n##ndim KERNEL_k1m4n##ndim\
   "testq $12,%5; movq $84,%%r15; cmovz %4,%%r15; prefetcht1 (%8); addq $16,%8;"\
   "prefetcht0 128(%1); prefetcht0 128(%1,%%r12,1); prefetcht0 128(%1,%%r12,2);" KERNEL_k1m4n##ndim KERNEL_k1m4n##ndim\
@@ -162,9 +162,9 @@
 #define INIT_m1n4 INIT_m1n2 "vpxor %%ymm6,%%ymm6,%%ymm6; vpxor %%ymm7,%%ymm7,%%ymm7;"
 #define INIT_m1n6 INIT_m1n4 "vpxor %%ymm8,%%ymm8,%%ymm8; vpxor %%ymm9,%%ymm9,%%ymm9;"
 #if A_CONJ == B_CONJ
-  #define cont_expxmmacc(cl,cr,dst) "vaddsubpd %%xmm"#cl",%%xmm"#cr",%%xmm"#dst";"
+  #define cont_expxmmacc(cl,cr,dst) "vpermilpd $5,%%xmm"#cr",%%xmm"#cr"; vaddsubpd %%xmm"#cl",%%xmm"#cr",%%xmm"#dst";"
 #else
-  #define cont_expxmmacc(cl,cr,dst) "vaddsubpd %%xmm"#cr",%%xmm"#cl",%%xmm"#dst";"
+  #define cont_expxmmacc(cl,cr,dst) "vpermilpd $5,%%xmm"#cr",%%xmm"#cr"; vaddsubpd %%xmm"#cr",%%xmm"#cl",%%xmm"#dst";"
 #endif
 #if A_CONJ == 0
   #define save_m1n1(c,tmp,alpr,alpi) \
@@ -176,8 +176,8 @@
     "vmovupd %%xmm"#c",(%3); vextractf128 $1,%%ymm"#c",(%3,%4,1); leaq (%3,%4,2),%3;"
 #else
   #define save_m1n1(c,tmp,alpr,alpi) \
-    "vpermilpd $5,%%xmm"#c",%%xmm"#tmp"; vfmsubadd213pd (%3),%%xmm"#alpi",%%xmm"#tmp";"\
-    "vfmsubadd231pd %%xmm"#c",%%xmm"#alpr",%%xmm"#tmp"; vmovupd %%xmm"#tmp",(%3);"
+    "vpermilpd $5,%%xmm"#c",%%xmm"#tmp"; vfmaddsub213pd (%3),%%xmm"#alpi",%%xmm"#tmp";"\
+    "vfmaddsub231pd %%xmm"#c",%%xmm"#alpr",%%xmm"#tmp"; vmovupd %%xmm"#tmp",(%3);"
   #define save_m1n2(c,tmp1,tmp2,alpr,alpi) \
     "vpermilpd $5,%%ymm"#c",%%ymm"#tmp1"; vmovupd (%3),%%xmm"#tmp2"; vinsertf128 $1,(%3,%4,1),%%ymm"#tmp2",%%ymm"#tmp2";"\
     "vfmaddsub213pd %%ymm"#tmp2",%%ymm"#alpi",%%ymm"#tmp1"; vfmaddsub231pd %%ymm"#c",%%ymm"#alpr",%%ymm"#tmp1";"\
@@ -207,13 +207,13 @@
     "cmpq $4,%7; jb "#ndim"9992f;"\
     #ndim"9991:\n\t"\
     COMPUTE_m4(ndim)\
-    "subq $4,%7; cmpq $4,%7; jnb "#ndim"9991f;"\
+    "subq $4,%7; cmpq $4,%7; jnb "#ndim"9991b;"\
     #ndim"9992:\n\t"\
     "cmpq $2,%7; jb "#ndim"9993f;"\
     COMPUTE_m2(ndim) "subq $2,%7;"\
     #ndim"9993:\n\t"\
     "testq %7,%7; jz "#ndim"9994f;"\
-    COMPUTE_m1(ndim)
+    COMPUTE_m1(ndim)\
     #ndim"9994:\n\t"\
     "movq %%r14,%1; movq %%r13,%5; movq %%r11,%7; vzeroupper;"\
     :"+r"(a_ptr),"+r"(b_ptr),"+r"(c_ptr),"+r"(c_tmp),"+r"(ldc_in_bytes),"+r"(K),"+r"(alp),"+r"(M),"+r"(b_pref)\
