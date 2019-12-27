@@ -1,10 +1,10 @@
 /* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 for k_count, %5 for c_store */
-/* r12 = k << 4(const), r13 = k(const), r14 = b_head_pos(const)*/
+/* r12 = k << 4(const), r13 = k(const), r14 = b_head_pos(const), r15 = tmp */
 
 #include "common.h"
 #include <stdint.h>
 
-//recommended settings: GEMM_P = 256, GEMM_Q = 256.
+//recommended settings: GEMM_P = 320, GEMM_Q = 320.
 
 /* m = 8 *//* ymm0 for alpha, ymm1-ymm3 for temporary use, ymm4-ymm15 for accumulators */
 #define KERNEL_k1m8n1 \
@@ -50,12 +50,15 @@
 #define SAVE_m8n12 SAVE_m8n8  unit_save_m8n2(%%ymm12,%%ymm13) unit_save_m8n2(%%ymm14,%%ymm15)
 #define COMPUTE_m8(ndim) \
     INIT_m8n##ndim\
-    "movq %%r13,%4; movq %%r14,%1; movq %2,%5;"\
+    "movq %%r13,%4; movq %%r14,%1; movq %2,%5; xorq %%r15,%%r15;"\
     "cmpq $24,%4; jb "#ndim"882f;"\
     #ndim"881:\n\t"\
+    "cmpq $126,%%r15; movq $126,%%r15; cmoveq %3,%%r15;"\
+    "prefetcht0 64(%1); prefetcht0 64(%1,%%r12,1); prefetcht0 64(%1,%%r12,2);"\
     "prefetcht0 512(%0);" KERNEL_k1m8n##ndim KERNEL_k1m8n##ndim\
     "prefetcht0 512(%0);" KERNEL_k1m8n##ndim KERNEL_k1m8n##ndim\
-    "prefetcht1 (%5); prefetcht1 63(%5); addq %3,%5;"\
+    "prefetcht1 (%5); leaq -63(%5,%%r15,1),%5;"\
+    "prefetcht0 64(%1); prefetcht0 64(%1,%%r12,1); prefetcht0 64(%1,%%r12,2);"\
     "prefetcht0 512(%0);" KERNEL_k1m8n##ndim KERNEL_k1m8n##ndim\
     "prefetcht0 512(%0);" KERNEL_k1m8n##ndim KERNEL_k1m8n##ndim\
     "prefetcht1 (%8); addq $16,%8;"\
@@ -227,7 +230,7 @@
 
 /* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 = "+r"(K), %5 = "+r"(ctemp) */
 /* %6 = "+r"(&alpha), %7 = "+r"(M), %8 = "+r"(next_b) */
-/* r11 = m(const), r12 = k << 4(const), r13 = k(const), r14 = b_head_pos(const) */
+/* r11 = m(const), r12 = k << 4(const), r13 = k(const), r14 = b_head_pos(const),r15 = tmp */
 
 #define COMPUTE(ndim) {\
     next_b = b_pointer + ndim * K;\
@@ -252,7 +255,7 @@
     "33105"#ndim":\n\t"\
     "movq %%r13,%4; movq %%r14,%1; movq %%r11,%7;"\
     :"+r"(a_pointer),"+r"(b_pointer),"+r"(c_pointer),"+r"(ldc_in_bytes),"+r"(K),"+r"(ctemp),"+r"(const_val),"+r"(M),"+r"(next_b)\
-    ::"r11","r12","r13","r14",\
+    ::"r11","r12","r13","r14","r15"\
     "ymm0","ymm1","ymm2","ymm3","ymm4","ymm5","ymm6","ymm7","ymm8","ymm9","ymm10","ymm11","ymm12","ymm13","ymm14","ymm15","cc","memory");\
     a_pointer -= M * K; b_pointer += ndim * K; c_pointer += 2*(LDC * ndim - M);\
 }
