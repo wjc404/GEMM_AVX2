@@ -53,15 +53,11 @@
     "cmpq $24,%4; jb "#ndim"004042f;"\
     #ndim"004041:\n\t"\
     "cmpq $126,%%r15; movq $126,%%r15; cmoveq %3,%%r15;"\
-    KERNEL_k1m4n##ndim\
-    KERNEL_k1m4n##ndim\
-    KERNEL_k1m4n##ndim\
-    KERNEL_k1m4n##ndim\
+    "prefetcht0 512(%0);" KERNEL_k1m4n##ndim KERNEL_k1m4n##ndim\
+    "prefetcht0 512(%0);" KERNEL_k1m4n##ndim KERNEL_k1m4n##ndim\
     "prefetcht1 (%5); leaq -63(%5,%%r15,1),%5;"\
-    KERNEL_k1m4n##ndim\
-    KERNEL_k1m4n##ndim\
-    KERNEL_k1m4n##ndim\
-    KERNEL_k1m4n##ndim\
+    "prefetcht0 512(%0);" KERNEL_k1m4n##ndim KERNEL_k1m4n##ndim\
+    "prefetcht0 512(%0);" KERNEL_k1m4n##ndim KERNEL_k1m4n##ndim\
     "prefetcht1 (%8); addq $32,%8;"\
     "subq $8,%4; cmpq $24,%4; jnb "#ndim"004041b;"\
     "movq %2,%5;"\
