@@ -1,5 +1,5 @@
-﻿/* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 for k_count, %5 for c_store */
-/* r12 = k << 5(const), r13 = k(const), r14 = b_head_pos(const)*/
+/* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 for k_count, %5 for c_store */
+/* r12 = k << 5(const), r13 = k(const), r14 = b_head_pos(const), r15 = tmp */
 
 #include "common.h"
 #include <stdint.h>
@@ -49,24 +49,21 @@
 #define SAVE_m4(ndim) SAVE_h_m4n##ndim "addq $64,%2;"
 #define COMPUTE_m4(ndim) \
     INIT_m4n##ndim\
-    "movq %%r13,%4; movq %%r14,%1; movq %2,%5;"\
+    "movq %%r13,%4; movq %%r14,%1; movq %2,%5; xorq %%r15,%%r15;"\
     "cmpq $24,%4; jb "#ndim"004042f;"\
     #ndim"004041:\n\t"\
+    "cmpq $126,%%r15; movq $126,%%r15; cmoveq %3,%%r15;"\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
-    KERNEL_k1m4n##ndim\
-    KERNEL_k1m4n##ndim\
-    "prefetcht1 (%5); prefetcht1 63(%5); addq %3,%5;"\
-    KERNEL_k1m4n##ndim\
-    KERNEL_k1m4n##ndim\
+    "prefetcht1 (%5); leaq -63(%5,%%r15,1),%5;"\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     KERNEL_k1m4n##ndim\
     "prefetcht1 (%8); addq $32,%8;"\
-    "subq $12,%4; cmpq $24,%4; jnb "#ndim"004041b;"\
+    "subq $8,%4; cmpq $24,%4; jnb "#ndim"004041b;"\
     "movq %2,%5;"\
     #ndim"004042:\n\t"\
     "testq %4,%4; jz "#ndim"004043f;"\
@@ -196,7 +193,7 @@
     "33105"#ndim":\n\t"\
     "movq %%r13,%4; movq %%r14,%1; movq %%r11,%7;"\
     :"+r"(a_pointer),"+r"(b_pointer),"+r"(c_pointer),"+r"(ldc_in_bytes),"+r"(K),"+r"(ctemp),"+r"(const_val),"+r"(M),"+r"(next_b)\
-    ::"r11","r12","r13","r14","ymm0","ymm1","ymm2","ymm3","ymm4","ymm5","ymm6","ymm7","ymm8","ymm9","ymm10","ymm11","ymm12","ymm13","ymm14",\
+    ::"r11","r12","r13","r14","r15","ymm0","ymm1","ymm2","ymm3","ymm4","ymm5","ymm6","ymm7","ymm8","ymm9","ymm10","ymm11","ymm12","ymm13","ymm14",\
     "ymm15","cc","memory");\
     a_pointer -= M * K; b_pointer += ndim * K; c_pointer += 2*(LDC * ndim - M);\
 }
