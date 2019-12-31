@@ -62,12 +62,13 @@
     "prefetcht1 (%5); subq $31,%5;"\
     KERNEL_k2m8n##ndim KERNEL_k2m8n##ndim\
     "addq %%r15,%5; prefetcht1 (%8); addq $16,%8;"\
-    "subq $8,%4; cmpq $24,%4; jnb "#ndim"881b;"\
+    "subq $8,%4; cmpq $16,%4; jnb "#ndim"881b;"\
     "movq %2,%5;"\
     #ndim"882:\n\t"\
     "testq %4,%4; jz "#ndim"883f;"\
-    "prefetcht0 (%5); prefetcht0 31(%5); addq %3,%5;"\
+    "prefetcht0 (%5); prefetcht0 31(%5);"\
     KERNEL_k1m8n##ndim\
+    "prefetcht0 (%5,%3,4); prefetcht0 31(%5,%3,4); addq %3,%5;"\
     "decq %4; jmp "#ndim"882b;"\
     #ndim"883:\n\t"\
     "prefetcht0 (%%r14); prefetcht0 64(%%r14);"\
