@@ -15,13 +15,26 @@
 #define KERNEL_h_k1m8n4 \
     KERNEL_h_k1m8n2 "vbroadcastsd 8(%1),%%ymm3; vfmadd231ps %%ymm1,%%ymm3,%%ymm6; vfmadd231ps %%ymm2,%%ymm3,%%ymm7;"
 #define KERNEL_k1m8n4 KERNEL_h_k1m8n4 "addq $16,%1;"
-#define unit_kernel_k1m8n4(c1,c2,c3,c4,...) \
-    "vbroadcastsd  ("#__VA_ARGS__"),%%ymm3; vfmadd231ps %%ymm1,%%ymm3,"#c1"; vfmadd231ps %%ymm2,%%ymm3,"#c2";"\
-    "vbroadcastsd 8("#__VA_ARGS__"),%%ymm3; vfmadd231ps %%ymm1,%%ymm3,"#c3"; vfmadd231ps %%ymm2,%%ymm3,"#c4";"
-#define KERNEL_h_k1m8n8 KERNEL_h_k1m8n4 unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,%1,%%r12,1)
+#define unit_kernel_k1m8n4(c1,c2,c3,c4,boff1,boff2,...) \
+    "vbroadcastsd "#boff1"("#__VA_ARGS__"),%%ymm3; vfmadd231ps %%ymm1,%%ymm3,"#c1"; vfmadd231ps %%ymm2,%%ymm3,"#c2";"\
+    "vbroadcastsd "#boff2"("#__VA_ARGS__"),%%ymm3; vfmadd231ps %%ymm1,%%ymm3,"#c3"; vfmadd231ps %%ymm2,%%ymm3,"#c4";"
+#define KERNEL_h_k1m8n8 KERNEL_h_k1m8n4 unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,0,8,%1,%%r12,1)
 #define KERNEL_k1m8n8 KERNEL_h_k1m8n8 "addq $16,%1;"
-#define KERNEL_h_k1m8n12 KERNEL_h_k1m8n8 unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,%1,%%r12,2)
+#define KERNEL_h_k1m8n12 KERNEL_h_k1m8n8 unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,0,8,%1,%%r12,2)
 #define KERNEL_k1m8n12 KERNEL_h_k1m8n12 "addq $16,%1;"
+#define KERNEL_k2m8n1 KERNEL_k1m8n1 KERNEL_k1m8n1
+#define KERNEL_k2m8n2 KERNEL_k1m8n2 KERNEL_k1m8n2
+#define KERNEL_k2m8n4 KERNEL_k1m8n4 KERNEL_k1m8n4
+#define KERNEL_k2m8n8 KERNEL_k1m8n8 KERNEL_k1m8n8
+#define KERNEL_k2m8n12 \
+    "vmovsldup (%0),%%ymm1; vmovshdup (%0),%%ymm2;"\
+    unit_kernel_k1m8n4(%%ymm4,%%ymm5,%%ymm6,%%ymm7,0,8,%1)\
+    unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,0,8,%1,%%r12,1)\
+    unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,0,8,%1,%%r12,2)\
+    "vmovsldup 32(%0),%%ymm1; vmovshdup 32(%0),%%ymm2; prefetcht0 512(%0); addq $64,%0;"\
+    unit_kernel_k1m8n4(%%ymm4,%%ymm5,%%ymm6,%%ymm7,16,24,%1)\
+    unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,16,24,%1,%%r12,1)\
+    unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,16,24,%1,%%r12,2) "addq $32,%1;"
 #define INIT_m8n1 "vpxor %%ymm4,%%ymm4,%%ymm4;"
 #define INIT_m8n2 INIT_m8n1 "vpxor %%ymm5,%%ymm5,%%ymm5;"
 #define INIT_m8n4 INIT_m8n2 "vpxor %%ymm6,%%ymm6,%%ymm6;vpxor %%ymm7,%%ymm7,%%ymm7;"
@@ -45,14 +58,10 @@
     "cmpq $24,%4; jb "#ndim"882f;"\
     #ndim"881:\n\t"\
     "cmpq $62,%%r15; movq $62,%%r15; cmoveq %3,%%r15;"\
-    "prefetcht0 128(%1); prefetcht0 128(%1,%%r12,1); prefetcht0 128(%1,%%r12,2);"\
-    "prefetcht0 384(%0);" KERNEL_k1m8n##ndim KERNEL_k1m8n##ndim\
-    "prefetcht0 384(%0);" KERNEL_k1m8n##ndim KERNEL_k1m8n##ndim\
-    "prefetcht1 (%5); leaq -31(%5,%%r15,1),%5;"\
-    "prefetcht0 128(%1); prefetcht0 128(%1,%%r12,1); prefetcht0 128(%1,%%r12,2);"\
-    "prefetcht0 384(%0);" KERNEL_k1m8n##ndim KERNEL_k1m8n##ndim\
-    "prefetcht0 384(%0);" KERNEL_k1m8n##ndim KERNEL_k1m8n##ndim\
-    "prefetcht1 (%8); addq $16,%8;"\
+    KERNEL_k2m8n##ndim KERNEL_k2m8n##ndim\
+    "prefetcht1 (%5); subq $31,%5;"\
+    KERNEL_k2m8n##ndim KERNEL_k2m8n##ndim\
+    "addq %%r15,%5; prefetcht1 (%8); addq $16,%8;"\
     "subq $8,%4; cmpq $24,%4; jnb "#ndim"881b;"\
     "movq %2,%5;"\
     #ndim"882:\n\t"\
