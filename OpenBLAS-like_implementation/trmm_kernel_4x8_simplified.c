@@ -48,14 +48,14 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }//i->bm/4 loop tail
         if ( bm & 2 ){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*2;
           ptrbb = bb + off*8;
 #endif
           INIT_m2n8
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+2;	// number of values in A
@@ -64,7 +64,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL _k1m2n8
           SAVE_m2n8
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 2; // number of values in A
@@ -79,14 +79,14 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*1;
           ptrbb = bb + off*8;
 #endif
           INIT_m1n8
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+1;	// number of values in A
@@ -95,7 +95,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m1n8
           SAVE_m1n8
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 1; // number of values in A
@@ -109,7 +109,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           off += 1; // number of values in A
 #endif
         }
-#if defined(TRMMKERNEL) && !defined(LEFT)
+#if !defined(LEFT)
         off += 8;
 #endif
         k = (bk<<3);
@@ -146,14 +146,14 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }//i -> bm/4 loop tail
         if ( bm & 2 ){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*2;
           ptrbb = bb + off*4;
 #endif
           INIT_m2n4
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+2;	// number of values in A
@@ -162,7 +162,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m2n4
           SAVE_m2n4
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 2; // number of values in A
@@ -177,14 +177,14 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*1;
           ptrbb = bb + off*4;
 #endif
           INIT_m1n4
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+1;	// number of values in A
@@ -193,7 +193,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m1n4
           SAVE_m1n4
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 1; // number of values in A
@@ -207,7 +207,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           off += 1; // number of values in A
 #endif
         }
-#if defined(TRMMKERNEL) && !defined(LEFT)
+#if !defined(LEFT)
         off += 4;
 #endif
         k = (bk<<2);
@@ -215,19 +215,19 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         c_ptr += ldc*4-bm;
       }// condition j -> bn&4 tail
       for (j=0; j<(bn&2); j+=2){
-#if defined(TRMMKERNEL) && defined(LEFT)
+#if defined(LEFT)
         off = offset;
 #endif
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*4;
           ptrbb = bb + off*2;
 #endif
           INIT_m2n4
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+4;	// number of values in A
@@ -236,7 +236,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m2n4
           SAVE_m2n4
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 4; // number of values in A
@@ -251,14 +251,14 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 2 ){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*2;
           ptrbb = bb + off*2;
 #endif
           INIT_m2n2
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+2;	// number of values in A
@@ -267,7 +267,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m2n2
           SAVE_m2n2
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 2; // number of values in A
@@ -282,14 +282,14 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*1;
           ptrbb = bb + off*2;
 #endif
           INIT_m1n2
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+1;	// number of values in A
@@ -298,7 +298,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m1n2
           SAVE_m1n2
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 1; // number of values in A
@@ -312,7 +312,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           off += 1; // number of values in A
 #endif
         }
-#if defined(TRMMKERNEL) && !defined(LEFT)
+#if !defined(LEFT)
         off += 2;
 #endif
         k = (bk<<1);
@@ -321,19 +321,19 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         c_ptr += ldc*2-bm;
       }
       for (j=0; j<(bn&1); j+=1){
-#if defined(TRMMKERNEL) &&  defined(LEFT)
+#if defined(LEFT)
         off = offset;
 #endif
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*4;
           ptrbb = bb + off*1;
 #endif
           INIT_m4n1
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+4;	// number of values in A
@@ -342,7 +342,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m4n1
           SAVE_m4n1
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 4; // number of values in A
@@ -357,14 +357,14 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 2 ){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*2;
           ptrbb = bb + off*1;
 #endif
           INIT_m2n1
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+2;	// number of values in A
@@ -373,7 +373,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m2n1
           SAVE_m2n1
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 2; // number of values in A
@@ -388,14 +388,14 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-#if (defined(LEFT) &&  defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           ptrbb = bb;
 #else
           ptrba += off*1;
           ptrbb = bb + off*1;
 #endif
           INIT_m1n1
-#if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
+#if (backwards)
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+1;	// number of values in A
@@ -404,7 +404,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m1n1
           SAVE_m1n1
-#if (defined(LEFT) && defined(TRANSA)) || (!defined(LEFT) && !defined(TRANSA))
+#if (!backwards)
           temp = bk - off;
 #ifdef LEFT
           temp -= 1; // number of values in A
@@ -418,7 +418,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           off += 1; // number of values in A
 #endif
         }
-#if defined(TRMMKERNEL) && !defined(LEFT)
+#if !defined(LEFT)
         off += 1;
 #endif
         k = (bk<<0);
