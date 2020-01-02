@@ -128,7 +128,7 @@
 
 int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FLOAT* C,BLASLONG ldc ,BLASLONG offset){
       BLASLONG i,j,k;
-      FLOAT *c_ptr,*c_tmp,*ptrba,*ptrbb;
+      FLOAT *c_ptr,*c_tmp,*ptrba,*ptrbb,*b_head;
       BLASLONG off, temp;
       ACCLIST
       TMPLIST
@@ -136,14 +136,14 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #ifndef LEFT
       off = -offset;
 #endif
-      c_ptr = C;
+      c_ptr = C; b_head = bb;
       for (j=0; j<bn/8; j++){
 #ifdef LEFT
         off = offset;
 #endif
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(4,8)
           INIT_m4n8
           for (k=0; k<temp; k++)  KERNEL_k1m4n8
@@ -154,7 +154,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }//i->bm/4 loop tail
         if ( bm & 2 ){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(2,8)
           INIT_m2n8
           for (k=0; k<temp; k++) KERNEL_k1m2n8
@@ -165,7 +165,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(1,8)
           INIT_m1n8
           for (k=0; k<temp; k++) KERNEL_k1m1n8
@@ -178,7 +178,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #ifndef LEFT
         off += 8;
 #endif
-        bb = bb + bk*8;
+        b_head += bk*8;
         c_ptr += ldc*8-bm;
       }//j -> bn/8 loop tail
 
@@ -188,7 +188,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(4,4)
           INIT_m4n4
           for (k=0; k<temp; k++) KERNEL_k1m4n4
@@ -199,7 +199,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }//i -> bm/4 loop tail
         if ( bm & 2 ){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(2,4)
           INIT_m2n4
           for (k=0; k<temp; k++) KERNEL_k1m2n4
@@ -210,7 +210,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(1,4)
           INIT_m1n4
           for (k=0; k<temp; k++) KERNEL_k1m1n4
@@ -223,7 +223,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #ifndef LEFT
         off += 4;
 #endif
-        bb = bb + bk*4;
+        b_head += bk*4;
         c_ptr += ldc*4-bm;
       }// condition j -> bn&4 tail
       for (j=0; j<(bn&2); j+=2){
@@ -232,7 +232,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(4,2)
           INIT_m4n2
           for (k=0; k<temp; k++) KERNEL_k1m4n2
@@ -243,7 +243,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 2 ){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(2,2)
           INIT_m2n2
           for (k=0; k<temp; k++) KERNEL_k1m2n2
@@ -254,7 +254,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(1,2)
           INIT_m1n2
           for (k=0; k<temp; k++) KERNEL_k1m1n2
@@ -267,7 +267,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #ifndef LEFT
         off += 2;
 #endif
-        bb = bb + bk*2;
+        b_head += bk*2;
         c_ptr += ldc*2-bm;
       }
       for (j=0; j<(bn&1); j+=1){
@@ -276,7 +276,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(4,1)
           INIT_m4n1
           for (k=0; k<temp; k++) KERNEL_k1m4n1
@@ -287,7 +287,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 2 ){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(2,1)
           INIT_m2n1
           for (k=0; k<temp; k++) KERNEL_k1m2n1
@@ -298,7 +298,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-          ptrbb = bb;
+          ptrbb = b_head;
           INIT_set_k_and_pointers(1,1)
           INIT_m1n1
           for (k=0; k<temp; k++) KERNEL_k1m1n1
@@ -311,7 +311,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #ifndef LEFT
         off += 1;
 #endif
-        bb = bb + bk;
+        b_head += bk;
         c_ptr += ldc-bm;
       }
       return 0;
