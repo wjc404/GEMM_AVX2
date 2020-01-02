@@ -146,7 +146,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(4,8)
           INIT_m4n8
-          for (k=0; k<temp; k++)  KERNEL_k1m4n8
+          for (k=0; k<temp; k++) {KERNEL_k1m4n8}
           SAVE_m4n8 //don't forget to update c_ptr
           SAVE_set_pointers(4,8)
 #ifdef LEFT
@@ -157,7 +157,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(2,8)
           INIT_m2n8
-          for (k=0; k<temp; k++) KERNEL_k1m2n8
+          for (k=0; k<temp; k++) {KERNEL_k1m2n8}
           SAVE_m2n8
           SAVE_set_pointers(2,8)
 #ifdef LEFT
@@ -168,7 +168,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(1,8)
           INIT_m1n8
-          for (k=0; k<temp; k++) KERNEL_k1m1n8
+          for (k=0; k<temp; k++) {KERNEL_k1m1n8}
           SAVE_m1n8
           SAVE_set_pointers(1,8)
 #ifdef LEFT
@@ -191,7 +191,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(4,4)
           INIT_m4n4
-          for (k=0; k<temp; k++) KERNEL_k1m4n4
+          for (k=0; k<temp; k++) {KERNEL_k1m4n4}
           SAVE_m4n4
           SAVE_set_pointers(4,4)
 #ifdef LEFT
@@ -202,7 +202,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(2,4)
           INIT_m2n4
-          for (k=0; k<temp; k++) KERNEL_k1m2n4
+          for (k=0; k<temp; k++) {KERNEL_k1m2n4}
           SAVE_m2n4
           SAVE_set_pointers(2,4)
 #ifdef LEFT
@@ -213,7 +213,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(1,4)
           INIT_m1n4
-          for (k=0; k<temp; k++) KERNEL_k1m1n4
+          for (k=0; k<temp; k++) {KERNEL_k1m1n4}
           SAVE_m1n4
           SAVE_set_pointers(1,4)
 #ifdef LEFT
@@ -235,7 +235,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(4,2)
           INIT_m4n2
-          for (k=0; k<temp; k++) KERNEL_k1m4n2
+          for (k=0; k<temp; k++) {KERNEL_k1m4n2}
           SAVE_m4n2
           SAVE_set_pointers(4,2)
 #ifdef LEFT
@@ -246,7 +246,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(2,2)
           INIT_m2n2
-          for (k=0; k<temp; k++) KERNEL_k1m2n2
+          for (k=0; k<temp; k++) {KERNEL_k1m2n2}
           SAVE_m2n2
           SAVE_set_pointers(2,2)
 #ifdef LEFT
@@ -257,7 +257,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(1,2)
           INIT_m1n2
-          for (k=0; k<temp; k++) KERNEL_k1m1n2
+          for (k=0; k<temp; k++) {KERNEL_k1m1n2}
           SAVE_m1n2
           SAVE_set_pointers(1,2)
 #ifdef LEFT
@@ -279,7 +279,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(4,1)
           INIT_m4n1
-          for (k=0; k<temp; k++) KERNEL_k1m4n1
+          for (k=0; k<temp; k++) {KERNEL_k1m4n1}
           SAVE_m4n1
           SAVE_set_pointers(4,1)
 #ifdef LEFT
@@ -290,7 +290,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(2,1)
           INIT_m2n1
-          for (k=0; k<temp; k++) KERNEL_k1m2n1
+          for (k=0; k<temp; k++) {KERNEL_k1m2n1}
           SAVE_m2n1
           SAVE_set_pointers(2,1)
 #ifdef LEFT
@@ -301,7 +301,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrbb = b_head;
           INIT_set_k_and_pointers(1,1)
           INIT_m1n1
-          for (k=0; k<temp; k++) KERNEL_k1m1n1
+          for (k=0; k<temp; k++) {KERNEL_k1m1n1}
           SAVE_m1n1
           SAVE_set_pointers(1,1)
 #ifdef LEFT
