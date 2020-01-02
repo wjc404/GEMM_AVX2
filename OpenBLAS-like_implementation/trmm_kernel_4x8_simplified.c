@@ -76,51 +76,51 @@
   c_tmp+=ldc; c_tmp[0]=c71*alpha; c_tmp[1]=c72*alpha; c_tmp[2]=c73*alpha; c_tmp[3]=c74*alpha;
 #define KERNEL_h_k1m1n1 \
   a01=ptrba[0]; ptrba++;\
-  b00=ptrbb[0]; c01=a01*b00;
+  b00=ptrbb[0]; c01+=a01*b00;
 #define KERNEL_h_k1m1n2 KERNEL_h_k1m1n1\
-  b00=ptrbb[1]; c11=a01*b00;
+  b00=ptrbb[1]; c11+=a01*b00;
 #define KERNEL_h_k1m1n4 KERNEL_h_k1m1n2\
-  b00=ptrbb[2]; c21=a01*b00;\
-  b00=ptrbb[3]; c31=a01*b00;
+  b00=ptrbb[2]; c21+=a01*b00;\
+  b00=ptrbb[3]; c31+=a01*b00;
 #define KERNEL_h_k1m1n8 KERNEL_h_k1m1n4\
-  b00=ptrbb[4]; c41=a01*b00;\
-  b00=ptrbb[5]; c51=a01*b00;\
-  b00=ptrbb[6]; c61=a01*b00;\
-  b00=ptrbb[7]; c71=a01*b00;
+  b00=ptrbb[4]; c41+=a01*b00;\
+  b00=ptrbb[5]; c51+=a01*b00;\
+  b00=ptrbb[6]; c61+=a01*b00;\
+  b00=ptrbb[7]; c71+=a01*b00;
 #define KERNEL_k1m1n1 KERNEL_h_k1m1n1 ptrbb++;
 #define KERNEL_k1m1n2 KERNEL_h_k1m1n2 ptrbb+=2;
 #define KERNEL_k1m1n4 KERNEL_h_k1m1n4 ptrbb+=4;
 #define KERNEL_k1m1n8 KERNEL_h_k1m1n8 ptrbb+=8;
 #define KERNEL_h_k1m2n1 \
   a01=ptrba[0]; a02=ptrba[1]; ptrba+=2;\
-  b00=ptrbb[0]; c01=a01*b00; c02=a02*b00;
+  b00=ptrbb[0]; c01+=a01*b00; c02+=a02*b00;
 #define KERNEL_h_k1m2n2 KERNEL_h_k1m2n1\
-  b00=ptrbb[1]; c11=a01*b00; c12=a02*b00;
+  b00=ptrbb[1]; c11+=a01*b00; c12+=a02*b00;
 #define KERNEL_h_k1m2n4 KERNEL_h_k1m2n2\
-  b00=ptrbb[2]; c21=a01*b00; c22=a02*b00;\
-  b00=ptrbb[3]; c31=a01*b00; c32=a02*b00;
+  b00=ptrbb[2]; c21+=a01*b00; c22+=a02*b00;\
+  b00=ptrbb[3]; c31+=a01*b00; c32+=a02*b00;
 #define KERNEL_h_k1m2n8 KERNEL_h_k1m2n4\
-  b00=ptrbb[4]; c41=a01*b00; c42=a02*b00;\
-  b00=ptrbb[5]; c51=a01*b00; c52=a02*b00;\
-  b00=ptrbb[6]; c61=a01*b00; c62=a02*b00;\
-  b00=ptrbb[7]; c71=a01*b00; c72=a02*b00;
+  b00=ptrbb[4]; c41+=a01*b00; c42+=a02*b00;\
+  b00=ptrbb[5]; c51+=a01*b00; c52+=a02*b00;\
+  b00=ptrbb[6]; c61+=a01*b00; c62+=a02*b00;\
+  b00=ptrbb[7]; c71+=a01*b00; c72+=a02*b00;
 #define KERNEL_k1m2n1 KERNEL_h_k1m2n1 ptrbb++;
 #define KERNEL_k1m2n2 KERNEL_h_k1m2n2 ptrbb+=2;
 #define KERNEL_k1m2n4 KERNEL_h_k1m2n4 ptrbb+=4;
 #define KERNEL_k1m2n8 KERNEL_h_k1m2n8 ptrbb+=8;
 #define KERNEL_h_k1m4n1 \
   a01=ptrba[0]; a02=ptrba[1]; a03=ptrba[2]; a04=ptrba[3]; ptrba+=4;\
-  b00=ptrbb[0]; c01=a01*b00; c02=a02*b00; c03=a03+b00; c04=a04*b00;
+  b00=ptrbb[0]; c01+=a01*b00; c02+=a02*b00; c03+=a03+b00; c04+=a04*b00;
 #define KERNEL_h_k1m4n2 KERNEL_h_k1m4n1\
-  b00=ptrbb[1]; c11=a01*b00; c12=a02*b00; c13=a03+b00; c14=a04*b00;
+  b00=ptrbb[1]; c11+=a01*b00; c12+=a02*b00; c13+=a03+b00; c14+=a04*b00;
 #define KERNEL_h_k1m4n4 KERNEL_h_k1m4n2\
-  b00=ptrbb[2]; c21=a01*b00; c22=a02*b00; c23=a03+b00; c24=a04*b00;\
-  b00=ptrbb[3]; c31=a01*b00; c32=a02*b00; c33=a03+b00; c34=a04*b00;
+  b00=ptrbb[2]; c21+=a01*b00; c22+=a02*b00; c23+=a03+b00; c24+=a04*b00;\
+  b00=ptrbb[3]; c31+=a01*b00; c32+=a02*b00; c33+=a03+b00; c34+=a04*b00;
 #define KERNEL_h_k1m4n8 KERNEL_h_k1m4n4\
-  b00=ptrbb[4]; c41=a01*b00; c42=a02*b00; c43=a03+b00; c44=a04*b00;\
-  b00=ptrbb[5]; c51=a01*b00; c52=a02*b00; c53=a03+b00; c54=a04*b00;\
-  b00=ptrbb[6]; c61=a01*b00; c62=a02*b00; c63=a03+b00; c64=a04*b00;\
-  b00=ptrbb[7]; c71=a01*b00; c72=a02*b00; c73=a03+b00; c74=a04*b00;
+  b00=ptrbb[4]; c41+=a01*b00; c42+=a02*b00; c43+=a03+b00; c44+=a04*b00;\
+  b00=ptrbb[5]; c51+=a01*b00; c52+=a02*b00; c53+=a03+b00; c54+=a04*b00;\
+  b00=ptrbb[6]; c61+=a01*b00; c62+=a02*b00; c63+=a03+b00; c64+=a04*b00;\
+  b00=ptrbb[7]; c71+=a01*b00; c72+=a02*b00; c73+=a03+b00; c74+=a04*b00;
 #define KERNEL_k1m4n1 KERNEL_h_k1m4n1 ptrbb++;
 #define KERNEL_k1m4n2 KERNEL_h_k1m4n2 ptrbb+=2;
 #define KERNEL_k1m4n4 KERNEL_h_k1m4n4 ptrbb+=4;
