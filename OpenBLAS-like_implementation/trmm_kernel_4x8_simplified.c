@@ -1,9 +1,26 @@
 #include "common.h"
+#define ACCLIST \
+  FLOAT c01,c02,c03,c04; FLOAT c11,c12,c13,c14; FLOAT c21,c22,c23,c24; FLOAT c31,c32,c33,c34;\
+  FLOAT c41,c42,c43,c44; FLOAT c51,c52,c53,c54; FLOAT c61,c62,c63,c64; FLOAT c71,c72,c73,c74;
+#define INIT_m1n1 c01=0.0;
+#define INIT_m1n2 INIT_m1n1 c11=0.0;
+#define INIT_m1n4 INIT_m1n2 c21=0.0; c31=0.0;
+#define INIT_m1n8 INIT_m1n4 c41=0.0; c51=0.0; c61=0.0; c71=0.0;
+#define INIT_m2n1 c01=c02=0.0;
+#define INIT_m2n2 INIT_m2n1 c11=c12=0.0;
+#define INIT_m2n4 INIT_m2n2 c21=c22=0.0; c31=c32=0.0;
+#define INIT_m2n8 INIT_m2n4 c41=c42=0.0; c51=c52=0.0; c61=c62=0.0; c71=c72=0.0;
+#define INIT_m4n1 c01=c02=c03=c04=0.0;
+#define INIT_m4n2 INIT_m4n1 c11=c12=c13=c14=0.0;
+#define INIT_m4n4 INIT_m4n2 c21=c22=c23=c24=0.0; c31=c32=c33=c34=0.0;
+#define INIT_m4n8 INIT_m4n4 c41=c42=c43=c44=0.0; c51=c52=c53=c54=0.0; c61=c62=c63=c64=0.0; c71=c72=c73=c74=0.0;
+
 //this file is a modification of the file "trmm_kernel_4x8.c" from OpenBLAS, with definitions of some macros omitted.
 int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FLOAT* C,BLASLONG ldc ,BLASLONG offset){
       BLASLONG i,j,k;
       FLOAT *c_ptr,*ptrba,*ptrbb;
       BLASLONG off, temp;
+      ACCLIST
 #if LEFT != TRANSA
   #define BACKWARDS 1
 #else
