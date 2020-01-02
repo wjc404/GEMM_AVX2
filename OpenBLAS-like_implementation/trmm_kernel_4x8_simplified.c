@@ -9,6 +9,20 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #else
   #define BACKWARDS 0
 #endif
+      
+#if BACKWARDS == 1
+  #define INIT_set_k_and_pointers(a_copy,b_copy) \
+    ptrba += off*(a_copy);\
+    ptrbb += off*(b_copy);\
+    temp = bk - off;
+#else
+  #ifdef LEFT
+    #define INIT_set_k_and_pointers(a_copy,b_copy) temp = off + (a_copy);
+  #else
+    #define INIT_set_k_and_pointers(a_copy,b_copy) temp = off + (b_copy);
+  #endif
+#endif
+
 #ifndef LEFT
       off = -offset;
 #endif
@@ -20,17 +34,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*4; // number of values in A
-          ptrbb += off*8; // number of values in B
-          temp = bk - off;
-#else
-  #ifdef LEFT
-          temp = off + 4;
-  #else
-          temp = off + 8;
-  #endif
-#endif
+          INIT_set_k_and_pointers(4,8)
           INIT_m4n8
           for (k=0; k<temp; k++)  KERNEL_k1m4n8
           SAVE_m4n8 //don't forget to update c_ptr
@@ -50,17 +54,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         }//i->bm/4 loop tail
         if ( bm & 2 ){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*2;
-          ptrbb += off*8;
-          temp = bk-off;
-#else
-  #ifdef LEFT
-          temp = off+2;	// number of values in A
-  #else
-          temp = off+8;	// number of values in B
-  #endif
-#endif
+          INIT_set_k_and_pointers(2,8)
           INIT_m2n8
           for (k=0; k<temp; k++) KERNEL _k1m2n8
           SAVE_m2n8
@@ -80,17 +74,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         }
         if ( bm & 1 ){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*1;
-          ptrbb += off*8;
-          temp = bk-off;
-#else
-  #ifdef LEFT
-          temp = off+1;	// number of values in A
-  #else
-          temp = off+8;	// number of values in B
-  #endif
-#endif
+          INIT_set_k_and_pointers(1,8)
           INIT_m1n8
           for (k=0; k<temp; k++) KERNEL_k1m1n8
           SAVE_m1n8
@@ -122,20 +106,8 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*4; // number of values in A
-          ptrbb += off*4; // number of values in B
-#endif
+          INIT_set_k_and_pointers(4,4)
           INIT_m4n4
-#if BACKWARDS == 1
-          temp = bk - off;
-#else
-  #ifdef LEFT
-          temp = off + 4;
-  #else
-          temp = off + 4;
-  #endif
-#endif
           for (k=0; k<temp; k++) KERNEL_k1m4n4
           SAVE_m4n4
 #if BACKWARDS == 0
@@ -153,22 +125,9 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }//i -> bm/4 loop tail
         if ( bm & 2 ){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
-          ptrba += off*2;
-          ptrbb = bb + off*4;
-#endif
+          INIT_set_k_and_pointers(2,4)
           INIT_m2n4
-#if BACKWARDS == 1
-          temp = bk-off;
-#else
-  #if defined(LEFT)
-          temp = off+2;	// number of values in A
-  #else
-          temp = off+4;	// number of values in B
-  #endif
-#endif
           for (k=0; k<temp; k++) KERNEL_k1m2n4
           SAVE_m2n4
 #if BACKWARDS == 0
@@ -187,17 +146,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         }
         if ( bm & 1 ){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*1;
-          ptrbb += off*4;
-          temp = bk-off;
-#else
-  #ifdef LEFT
-          temp = off+1;	// number of values in A
-  #else
-          temp = off+4;	// number of values in B
-  #endif
-#endif
+          INIT_set_k_and_pointers(1,4)
           INIT_m1n4
           for (k=0; k<temp; k++) KERNEL_k1m1n4
           SAVE_m1n4
@@ -228,20 +177,10 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*4;
-          ptrbb += off*2;
-          temp = bk-off;
-#else
-  #ifdef LEFT
-          temp = off+4;	// number of values in A
-  #else
-          temp = off+2;	// number of values in B
-  #endif
-#endif
-          INIT_m2n4
-          for (k=0; k<temp; k++) KERNEL_k1m2n4
-          SAVE_m2n4
+          INIT_set_k_and_pointers(4,2)
+          INIT_m4n2
+          for (k=0; k<temp; k++) KERNEL_k1m4n2
+          SAVE_m4n2
 #if BACKWARDS == 0
           temp = bk - off;
   #ifdef LEFT
@@ -258,17 +197,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         }
         if ( bm & 2 ){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*2;
-          ptrbb += off*2;
-          temp = bk-off;
-#else
-  #ifdef LEFT
-          temp = off+2;	// number of values in A
-  #else
-          temp = off+2;	// number of values in B
-  #endif
-#endif
+          INIT_set_k_and_pointers(2,2)
           INIT_m2n2
           for (k=0; k<temp; k++) KERNEL_k1m2n2
           SAVE_m2n2
@@ -288,17 +217,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         }
         if ( bm & 1 ){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*1;
-          ptrbb += off*2;
-          temp = bk-off;
-#else
-  #ifdef LEFT
-          temp = off+1;	// number of values in A
-  #else
-          temp = off+2;	// number of values in B
-  #endif
-#endif
+          INIT_set_k_and_pointers(1,2)
           INIT_m1n2
           for (k=0; k<temp; k++) KERNEL_k1m1n2
           SAVE_m1n2
@@ -329,17 +248,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*4;
-          ptrbb += off*1;
-          temp = bk-off;
-#else
-  #ifdef LEFT
-          temp = off+4;	// number of values in A
-  #else
-          temp = off+1;	// number of values in B
-  #endif
-#endif
+          INIT_set_k_and_pointers(4,1)
           INIT_m4n1
           for (k=0; k<temp; k++) KERNEL_k1m4n1
           SAVE_m4n1
@@ -359,17 +268,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         }
         if ( bm & 2 ){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*2;
-          ptrbb += off*1;
-          temp = bk-off;
-#else
-  #ifdef LEFT
-          temp = off+2;	// number of values in A
-  #else
-          temp = off+1;	// number of values in B
-  #endif
-#endif
+          INIT_set_k_and_pointers(2,1)
           INIT_m2n1
           for (k=0; k<temp; k++) KERNEL_k1m2n1
           SAVE_m2n1
@@ -389,17 +288,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
         }
         if ( bm & 1 ){
           ptrbb = bb;
-#if BACKWARDS == 1
-          ptrba += off*1;
-          ptrbb += off*1;
-          temp = bk-off;
-#else
-  #if defined(LEFT)
-          temp = off+1;	// number of values in A
-  #else
-          temp = off+1;	// number of values in B
-  #endif
-#endif
+          INIT_set_k_and_pointers(1,1)
           INIT_m1n1
           for (k=0; k<temp; k++) KERNEL_k1m1n1
           SAVE_m1n1
