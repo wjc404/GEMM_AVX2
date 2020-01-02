@@ -23,9 +23,6 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #if BACKWARDS == 1
           ptrba += off*4; // number of values in A
           ptrbb += off*8; // number of values in B
-#endif
-          INIT_m4n8
-#if BACKWARDS == 1
           temp = bk - off;
 #else
   #ifdef LEFT
@@ -34,6 +31,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           temp = off + 8;
   #endif
 #endif
+          INIT_m4n8
           for (k=0; k<temp; k++)  KERNEL_k1m4n8
           SAVE_m4n8 //don't forget to update c_ptr
 #if BACKWARDS == 0
@@ -51,29 +49,26 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }//i->bm/4 loop tail
         if ( bm & 2 ){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
-          ptrba += off*2;
-          ptrbb = bb + off*8;
-#endif
-          INIT_m2n8
 #if BACKWARDS == 1
+          ptrba += off*2;
+          ptrbb += off*8;
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+2;	// number of values in A
 #else
           temp = off+8;	// number of values in B
 #endif
+          INIT_m2n8
           for (k=0; k<temp; k++) KERNEL _k1m2n8
           SAVE_m2n8
 #if BACKWARDS == 0
           temp = bk - off;
-#ifdef LEFT
+  #ifdef LEFT
           temp -= 2; // number of values in A
-#else
+  #else
           temp -= 8; // number of values in B
-#endif
+  #endif
           ptrba += temp*2;
           ptrbb += temp*8;
 #endif
@@ -82,29 +77,26 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
-          ptrba += off*1;
-          ptrbb = bb + off*8;
-#endif
-          INIT_m1n8
 #if BACKWARDS == 1
+          ptrba += off*1;
+          ptrbb += off*8;
           temp = bk-off;
 #elif defined(LEFT)
           temp = off+1;	// number of values in A
 #else
           temp = off+8;	// number of values in B
 #endif
+          INIT_m1n8
           for (k=0; k<temp; k++) KERNEL_k1m1n8
           SAVE_m1n8
 #if BACKWARDS == 0
           temp = bk - off;
-#ifdef LEFT
+  #ifdef LEFT
           temp -= 1; // number of values in A
-#else
+  #else
           temp -= 8; // number of values in B
-#endif
+  #endif
           ptrba += temp*1;
           ptrbb += temp*8;
 #endif
@@ -112,7 +104,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           off += 1; // number of values in A
 #endif
         }
-#if !defined(LEFT)
+#ifndef LEFT
         off += 8;
 #endif
         bb = bb + bk*8;
