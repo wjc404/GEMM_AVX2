@@ -54,10 +54,12 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrba += off*2;
           ptrbb += off*8;
           temp = bk-off;
-#elif defined(LEFT)
-          temp = off+2;	// number of values in A
 #else
+  #ifdef LEFT
+          temp = off+2;	// number of values in A
+  #else
           temp = off+8;	// number of values in B
+  #endif
 #endif
           INIT_m2n8
           for (k=0; k<temp; k++) KERNEL _k1m2n8
@@ -82,10 +84,12 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           ptrba += off*1;
           ptrbb += off*8;
           temp = bk-off;
-#elif defined(LEFT)
-          temp = off+1;	// number of values in A
 #else
+  #ifdef LEFT
+          temp = off+1;	// number of values in A
+  #else
           temp = off+8;	// number of values in B
+  #endif
 #endif
           INIT_m1n8
           for (k=0; k<temp; k++) KERNEL_k1m1n8
@@ -158,10 +162,12 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           INIT_m2n4
 #if BACKWARDS == 1
           temp = bk-off;
-#elif defined(LEFT)
-          temp = off+2;	// number of values in A
 #else
+  #if defined(LEFT)
+          temp = off+2;	// number of values in A
+  #else
           temp = off+4;	// number of values in B
+  #endif
 #endif
           for (k=0; k<temp; k++) KERNEL_k1m2n4
           SAVE_m2n4
@@ -180,20 +186,19 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
+#if BACKWARDS == 1
           ptrba += off*1;
-          ptrbb = bb + off*4;
+          ptrbb += off*4;
+          temp = bk-off;
+#else
+  #ifdef LEFT
+          temp = off+1;	// number of values in A
+  #else
+          temp = off+4;	// number of values in B
+  #endif
 #endif
           INIT_m1n4
-#if BACKWARDS == 1
-          temp = bk-off;
-#elif defined(LEFT)
-          temp = off+1;	// number of values in A
-#else
-          temp = off+4;	// number of values in B
-#endif
           for (k=0; k<temp; k++) KERNEL_k1m1n4
           SAVE_m1n4
 #if BACKWARDS == 0
@@ -210,41 +215,40 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           off += 1; // number of values in A
 #endif
         }
-#if !defined(LEFT)
+#ifndef LEFT
         off += 4;
 #endif
         bb = bb + bk*4;
         c_ptr += ldc*4-bm;
       }// condition j -> bn&4 tail
       for (j=0; j<(bn&2); j+=2){
-#if defined(LEFT)
+#ifdef LEFT
         off = offset;
 #endif
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
+#if BACKWARDS == 1
           ptrba += off*4;
-          ptrbb = bb + off*2;
+          ptrbb += off*2;
+          temp = bk-off;
+#else
+  #ifdef LEFT
+          temp = off+4;	// number of values in A
+  #else
+          temp = off+2;	// number of values in B
+  #endif
 #endif
           INIT_m2n4
-#if BACKWARDS == 1
-          temp = bk-off;
-#elif defined(LEFT)
-          temp = off+4;	// number of values in A
-#else
-          temp = off+2;	// number of values in B
-#endif
           for (k=0; k<temp; k++) KERNEL_k1m2n4
           SAVE_m2n4
 #if BACKWARDS == 0
           temp = bk - off;
-#ifdef LEFT
+  #ifdef LEFT
           temp -= 4; // number of values in A
-#else
+  #else
           temp -= 2; // number of values in B
-#endif
+  #endif
           ptrba += temp*4;
           ptrbb += temp*2;
 #endif
@@ -253,29 +257,28 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 2 ){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
+#if BACKWARDS == 1
           ptrba += off*2;
-          ptrbb = bb + off*2;
+          ptrbb += off*2;
+          temp = bk-off;
+#else
+  #ifdef LEFT
+          temp = off+2;	// number of values in A
+  #else
+          temp = off+2;	// number of values in B
+  #endif
 #endif
           INIT_m2n2
-#if BACKWARDS == 1
-          temp = bk-off;
-#elif defined(LEFT)
-          temp = off+2;	// number of values in A
-#else
-          temp = off+2;	// number of values in B
-#endif
           for (k=0; k<temp; k++) KERNEL_k1m2n2
           SAVE_m2n2
 #if BACKWARDS == 0
           temp = bk - off;
-#ifdef LEFT
+  #ifdef LEFT
           temp -= 2; // number of values in A
-#else
+  #else
           temp -= 2; // number of values in B
-#endif
+  #endif
           ptrba += temp*2;
           ptrbb += temp*2;
 #endif
@@ -284,29 +287,28 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
+#if BACKWARDS == 1
           ptrba += off*1;
-          ptrbb = bb + off*2;
+          ptrbb += off*2;
+          temp = bk-off;
+#else
+  #ifdef LEFT
+          temp = off+1;	// number of values in A
+  #else
+          temp = off+2;	// number of values in B
+  #endif
 #endif
           INIT_m1n2
-#if BACKWARDS == 1
-          temp = bk-off;
-#elif defined(LEFT)
-          temp = off+1;	// number of values in A
-#else
-          temp = off+2;	// number of values in B
-#endif
           for (k=0; k<temp; k++) KERNEL_k1m1n2
           SAVE_m1n2
 #if BACKWARDS == 0
           temp = bk - off;
-#ifdef LEFT
+  #ifdef LEFT
           temp -= 1; // number of values in A
-#else
+  #else
           temp -= 2; // number of values in B
-#endif
+  #endif
           ptrba += temp*1;
           ptrbb += temp*2;
 #endif
@@ -314,41 +316,40 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           off += 1; // number of values in A
 #endif
         }
-#if !defined(LEFT)
+#ifndef LEFT
         off += 2;
 #endif
         bb = bb + bk*2;
         c_ptr += ldc*2-bm;
       }
       for (j=0; j<(bn&1); j+=1){
-#if defined(LEFT)
+#ifdef LEFT
         off = offset;
 #endif
         ptrba = ba;
         for (i=0; i<bm/4; i+=1){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
+#if BACKWARDS == 1
           ptrba += off*4;
-          ptrbb = bb + off*1;
+          ptrbb += off*1;
+          temp = bk-off;
+#else
+  #ifdef LEFT
+          temp = off+4;	// number of values in A
+  #else
+          temp = off+1;	// number of values in B
+  #endif
 #endif
           INIT_m4n1
-#if BACKWARDS == 1
-          temp = bk-off;
-#elif defined(LEFT)
-          temp = off+4;	// number of values in A
-#else
-          temp = off+1;	// number of values in B
-#endif
           for (k=0; k<temp; k++) KERNEL_k1m4n1
           SAVE_m4n1
 #if BACKWARDS == 0
           temp = bk - off;
-#ifdef LEFT
+  #ifdef LEFT
           temp -= 4; // number of values in A
-#else
+  #else
           temp -= 1; // number of values in B
-#endif
+  #endif
           ptrba += temp*4;
           ptrbb += temp*1;
 #endif
@@ -357,29 +358,28 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 2 ){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
+#if BACKWARDS == 1
           ptrba += off*2;
-          ptrbb = bb + off*1;
+          ptrbb += off*1;
+          temp = bk-off;
+#else
+  #ifdef LEFT
+          temp = off+2;	// number of values in A
+  #else
+          temp = off+1;	// number of values in B
+  #endif
 #endif
           INIT_m2n1
-#if BACKWARDS == 1
-          temp = bk-off;
-#elif defined(LEFT)
-          temp = off+2;	// number of values in A
-#else
-          temp = off+1;	// number of values in B
-#endif
           for (k=0; k<temp; k++) KERNEL_k1m2n1
           SAVE_m2n1
 #if BACKWARDS == 0
           temp = bk - off;
-#ifdef LEFT
+  #ifdef LEFT
           temp -= 2; // number of values in A
-#else
+  #else
           temp -= 1; // number of values in B
-#endif
+  #endif
           ptrba += temp*2;
           ptrbb += temp*1;
 #endif
@@ -388,29 +388,28 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
 #endif
         }
         if ( bm & 1 ){
-#if BACKWARDS == 0
           ptrbb = bb;
-#else
+#if BACKWARDS == 1
           ptrba += off*1;
-          ptrbb = bb + off*1;
+          ptrbb += off*1;
+          temp = bk-off;
+#else
+  #if defined(LEFT)
+          temp = off+1;	// number of values in A
+  #else
+          temp = off+1;	// number of values in B
+  #endif
 #endif
           INIT_m1n1
-#if BACKWARDS == 1
-          temp = bk-off;
-#elif defined(LEFT)
-          temp = off+1;	// number of values in A
-#else
-          temp = off+1;	// number of values in B
-#endif
           for (k=0; k<temp; k++) KERNEL_k1m1n1
           SAVE_m1n1
 #if BACKWARDS == 0
           temp = bk - off;
-#ifdef LEFT
+  #ifdef LEFT
           temp -= 1; // number of values in A
-#else
+  #else
           temp -= 1; // number of values in B
-#endif
+  #endif
           ptrba += temp*1;
           ptrbb += temp*1;
 #endif
@@ -418,7 +417,7 @@ int CNAME(BLASLONG bm,BLASLONG bn,BLASLONG bk,FLOAT alpha,FLOAT* ba,FLOAT* bb,FL
           off += 1; // number of values in A
 #endif
         }
-#if !defined(LEFT)
+#ifndef LEFT
         off += 1;
 #endif
         bb = bb + bk;
