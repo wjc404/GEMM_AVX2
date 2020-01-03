@@ -1,5 +1,5 @@
-/* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 for k_count, %5 for c_store, %6 = &alpha, %7 = m_count, %8 = b_pref */
-/* r11 = m, r12 = k << 4(const), r13 = k(const), r14 = b_head_pos(const), r15 for assisting prefetch */
+/* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 for k_count, %5 for c_store, %6 = &alpha, %7 = b_pref */
+/* r11 = m_counter, r12 = k << 4(const), r13 = k(const), r14 = b_head_pos(const), r15 for assisting prefetch */
 
 //recommended settings: GEMM_P = 320, GEMM_Q = 320.
 
@@ -61,7 +61,7 @@
     KERNEL_k2m8n##ndim KERNEL_k2m8n##ndim\
     "prefetcht1 (%5); subq $31,%5;"\
     KERNEL_k2m8n##ndim KERNEL_k2m8n##ndim\
-    "addq %%r15,%5; prefetcht1 (%8); addq $16,%8;"\
+    "addq %%r15,%5; prefetcht1 (%7); addq $16,%7;"\
     "subq $8,%4; cmpq $16,%4; jnb "#ndim"881b;"\
     "movq %2,%5;"\
     #ndim"882:\n\t"\
@@ -228,27 +228,27 @@
     next_b = b_pointer + ndim * K;\
     __asm__ __volatile__(\
     "vbroadcastss (%6),%%ymm0;"\
-    "movq %4,%%r13; movq %4,%%r12; salq $4,%%r12; movq %1,%%r14; movq %7,%%r11;"\
-    "cmpq $8,%7;jb 33101"#ndim"f;"\
+    "movq %4,%%r13; movq %4,%%r12; salq $4,%%r12; movq %1,%%r14; movq %8,%%r11;"\
+    "cmpq $8,%%r11;jb 33101"#ndim"f;"\
     "33109"#ndim":\n\t"\
     COMPUTE_m8(ndim)\
-    "subq $8,%7;cmpq $8,%7;jnb 33109"#ndim"b;"\
+    "subq $8,%%r12;cmpq $8,%%r11;jnb 33109"#ndim"b;"\
     "33101"#ndim":\n\t"\
-    "cmpq $4,%7;jb 33103"#ndim"f;"\
+    "cmpq $4,%%r11;jb 33103"#ndim"f;"\
     COMPUTE_m4(ndim)\
-    "subq $4,%7;"\
+    "subq $4,%%r11;"\
     "33103"#ndim":\n\t"\
-    "cmpq $2,%7;jb 33104"#ndim"f;"\
+    "cmpq $2,%%r11;jb 33104"#ndim"f;"\
     COMPUTE_m2(ndim)\
-    "subq $2,%7;"\
+    "subq $2,%%r11;"\
     "33104"#ndim":\n\t"\
-    "testq %7,%7;jz 33105"#ndim"f;"\
+    "testq %%r11,%%r11;jz 33105"#ndim"f;"\
     COMPUTE_m1(ndim)\
     "33105"#ndim":\n\t"\
-    "movq %%r13,%4; movq %%r14,%1; movq %%r11,%7; vzeroupper;"\
-    :"+r"(a_pointer),"+r"(b_pointer),"+r"(c_pointer),"+r"(ldc_in_bytes),"+r"(K),"+r"(ctemp),"+r"(const_val),"+r"(M),"+r"(next_b)\
-    ::"r11","r12","r13","r14","r15",\
-    "ymm0","ymm1","ymm2","ymm3","ymm4","ymm5","ymm6","ymm7","ymm8","ymm9","ymm10","ymm11","ymm12","ymm13","ymm14","ymm15","cc","memory");\
+    "movq %%r13,%4; movq %%r14,%1; vzeroupper;"\
+    :"+r"(a_pointer),"+r"(b_pointer),"+r"(c_pointer),"+r"(ldc_in_bytes),"+r"(K),"+r"(ctemp),"+r"(const_val),"+r"(next_b)\
+    :"m"(M):"r11","r12","r13","r14","r15",\
+    "xmm0","xmm1","xmm2","xmm3","xmm4","xmm5","xmm6","xmm7","xmm8","xmm9","xmm10","xmm11","xmm12","xmm13","xmm14","xmm15","cc","memory");\
     a_pointer -= M * K; b_pointer += ndim * K; c_pointer += (LDC * ndim - M);\
 }
 
