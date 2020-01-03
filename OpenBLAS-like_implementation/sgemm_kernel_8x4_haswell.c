@@ -133,13 +133,54 @@
 #define KERNEL_h_k1m4n4 \
     KERNEL_h_k1m4n2 "vmovddup 8(%1),%%xmm3; vfmadd231ps %%xmm1,%%xmm3,%%xmm6; vfmadd231ps %%xmm2,%%xmm3,%%xmm7;"
 #define KERNEL_k1m4n4 KERNEL_h_k1m4n4 "addq $16,%1;"
-#define unit_kernel_k1m4n4(c1,c2,c3,c4,...) \
-    "vmovddup  ("#__VA_ARGS__"),%%xmm3; vfmadd231ps %%xmm1,%%xmm3,"#c1"; vfmadd231ps %%xmm2,%%xmm3,"#c2";"\
-    "vmovddup 8("#__VA_ARGS__"),%%xmm3; vfmadd231ps %%xmm1,%%xmm3,"#c3"; vfmadd231ps %%xmm2,%%xmm3,"#c4";"
-#define KERNEL_h_k1m4n8 KERNEL_h_k1m4n4 unit_kernel_k1m4n4(%%xmm8,%%xmm9,%%xmm10,%%xmm11,%1,%%r12,4)
+#define unit_kernel_k1m4n4(c1,c2,c3,c4,offb1,offb2,...) \
+    "vmovddup "#offb1"("#__VA_ARGS__"),%%xmm3; vfmadd231ps %%xmm1,%%xmm3,"#c1"; vfmadd231ps %%xmm2,%%xmm3,"#c2";"\
+    "vmovddup "#offb2"("#__VA_ARGS__"),%%xmm3; vfmadd231ps %%xmm1,%%xmm3,"#c3"; vfmadd231ps %%xmm2,%%xmm3,"#c4";"
+#define KERNEL_h_k1m4n8 KERNEL_h_k1m4n4 unit_kernel_k1m4n4(%%xmm8,%%xmm9,%%xmm10,%%xmm11,0,8,%1,%%r12,4)
 #define KERNEL_k1m4n8 KERNEL_h_k1m4n8 "addq $16,%1;"
-#define KERNEL_h_k1m4n12 KERNEL_h_k1m4n8 unit_kernel_k1m4n4(%%xmm12,%%xmm13,%%xmm14,%%xmm15,%1,%%r12,8)
+#define KERNEL_h_k1m4n12 KERNEL_h_k1m4n8 unit_kernel_k1m4n4(%%xmm12,%%xmm13,%%xmm14,%%xmm15,0,8,%1,%%r12,8)
 #define KERNEL_k1m4n12 KERNEL_h_k1m4n12 "addq $16,%1;"
+#if defined TRMMKERNEL && !defined LEFT && defined TRANSA
+  #define kernel_kstart_m4n8 KERNEL_k1m4n4 KERNEL_k1m4n4 KERNEL_k1m4n4 KERNEL_k1m4n4
+  #define kernel_kstart_m4n12 kernel_kstart_m4n8 KERNEL_k1m4n8 KERNEL_k1m4n8 KERNEL_k1m4n8 KERNEL_k1m4n8
+  #define k_start_m4n8 4
+  #define k_start_m4n12 8
+#else
+  #define kernel_kstart_m4n8 ""
+  #define kernel_kstart_m4n12 ""
+  #define k_start_m4n8 0
+  #define k_start_m4n12 0
+#endif
+#define kernel_kstart_m4n4 ""
+#define kernel_kstart_m4n2 ""
+#define kernel_kstart_m4n1 ""
+#define k_start_m4n4 0
+#define k_start_m4n2 0
+#define k_start_m4n1 0
+#if defined TRMMKERNEL && !defined LEFT && !defined TRANSA
+  #define unit_kernel_endn4_k1m4n8(offa1,offb1,offb2) \
+    "vmovsldup "#offa1"(%0),%%xmm1; vmovshdup "#offa1"(%0),%%xmm2;"\
+    unit_kernel_k1m4n4(%%xmm8,%%xmm9,%%xmm10,%%xmm11,offb1,offb2,%1,%%r12,4)
+  #define unit_kernel_endn4_k1m4n12(offa1,offb1,offb2) \
+    "vmovsldup "#offa1"(%0),%%xmm1; vmovshdup "#offa1"(%0),%%xmm2;"\
+    unit_kernel_k1m4n4(%%xmm12,%%xmm13,%%xmm14,%%xmm15,offb1,offb2,%1,%%r12,8)
+  #define unit_kernel_endn8_k1m4n12(offa1,offb1,offb2) unit_kernel_endn4_k1m4n8(offa1,offb1,offb2)\
+    unit_kernel_k1m4n4(%%xmm12,%%xmm13,%%xmm14,%%xmm15,offb1,offb2,%1,%%r12,8)
+  #define kernel_kend_m4n8 \
+    unit_kernel_endn4_k1m4n8(0,0,8) unit_kernel_endn4_k1m4n8(16,16,24)\
+    unit_kernel_endn4_k1m4n8(32,32,40) unit_kernel_endn4_k1m4n8(48,48,56)
+  #define kernel_kend_m4n12 \
+    unit_kernel_endn8_k1m4n12(0,0,8) unit_kernel_endn8_k1m4n12(16,16,24)\
+    unit_kernel_endn8_k1m4n12(32,32,40) unit_kernel_endn8_k1m4n12(48,48,56)\
+    unit_kernel_endn4_k1m4n12(64,64,72) unit_kernel_endn4_k1m4n12(80,80,88)\
+    unit_kernel_endn4_k1m4n12(96,96,104) unit_kernel_endn4_k1m4n12(112,112,120)
+#else
+  #define kernel_kend_m4n8 ""
+  #define kernel_kend_m4n12 ""
+#endif
+#define kernel_kend_m4n4 ""
+#define kernel_kend_m4n2 ""
+#define kernel_kend_m4n1 ""
 #define INIT_m4n1 "vpxor %%xmm4,%%xmm4,%%xmm4;"
 #define INIT_m4n2 INIT_m4n1 "vpxor %%xmm5,%%xmm5,%%xmm5;"
 #define INIT_m4n4 INIT_m4n2 "vpxor %%xmm6,%%xmm6,%%xmm6;vpxor %%xmm7,%%xmm7,%%xmm7;"
