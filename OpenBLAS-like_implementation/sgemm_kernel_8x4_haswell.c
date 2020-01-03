@@ -5,10 +5,8 @@
 
 #ifdef TRMMKERNEL
   #define mult_alpha(acc,alpha,...) "vmulps "#acc","#alpha","#acc";"
-  #define mult_vec_alpha(acc,alpha,src) "vmulps "#acc","#alpha","#acc";"
 #else
   #define mult_alpha(acc,alpha,...) "vfmadd213ps ("#__VA_ARGS__"),"#alpha","#acc";"
-  #define mult_vec_alpha(acc,alpha,src) "vfmadd213ps "#src","#alpha","#acc";"
 #endif
 
 /* m = 8 *//* ymm0 for alpha, ymm1-ymm3 for temporary use, ymm4-ymm15 for accumulators */
@@ -135,16 +133,22 @@
     "vmovsd (%0),%%xmm1; addq $8,%0;"\
     "vbroadcastss (%1),%%xmm2; vfmadd231ps %%xmm1,%%xmm2,%%xmm4;"\
     "addq $4,%1;"
-#define SAVE_m2n1 \
-    "vmovsd (%2),%%xmm1; vfmadd213ps %%xmm1,%%xmm0,%%xmm4; vmovsd %%xmm4,(%2);"
+#ifdef TRMMKERNEL
+ #define SAVE_m2n1 "vmulps %%xmm4,%%xmm0,%%xmm4; vmovsd %%xmm4,(%2);"
+#else
+ #define SAVE_m2n1 "vmovsd (%2),%%xmm1; vfmadd213ps %%xmm1,%%xmm0,%%xmm4; vmovsd %%xmm4,(%2);"
+#endif
 #define INIT_m2n2 INIT_m2n1 "vpxor %%xmm5,%%xmm5,%%xmm5;"
 #define KERNEL_k1m2n2 \
     "vmovsd (%0),%%xmm1; addq $8,%0;"\
     "vbroadcastss  (%1),%%xmm2; vfmadd231ps %%xmm1,%%xmm2,%%xmm4;"\
     "vbroadcastss 4(%1),%%xmm3; vfmadd231ps %%xmm1,%%xmm3,%%xmm5;"\
     "addq $8,%1;"
-#define SAVE_m2n2 SAVE_m2n1 \
-    "vmovsd (%2,%3,1),%%xmm1; vfmadd213ps %%xmm1,%%xmm0,%%xmm5; vmovsd %%xmm5,(%2,%3,1);"
+#ifdef TRMMKERNEL
+  #define SAVE_m2n2 SAVE_m2n1 "vmulps %%xmm5,%%xmm0,%%xmm5; vmovsd %%xmm5,(%2,%3,1);"
+#else
+  #define SAVE_m2n2 SAVE_m2n1 "vmovsd (%2,%3,1),%%xmm1; vfmadd213ps %%xmm1,%%xmm0,%%xmm5; vmovsd %%xmm5,(%2,%3,1);"
+#endif
 #define INIT_m2n4  INIT_m2n2
 #define INIT_m2n8  INIT_m2n4 "vpxor %%xmm6,%%xmm6,%%xmm6; vpxor %%xmm7,%%xmm7,%%xmm7;"
 #define INIT_m2n12 INIT_m2n8 "vpxor %%xmm8,%%xmm8,%%xmm8; vpxor %%xmm9,%%xmm9,%%xmm9;"
@@ -163,12 +167,19 @@
     "vbroadcastss  (%0),%%xmm10; vfmadd231ps %%xmm3,%%xmm10,%%xmm4; vfmadd231ps %%xmm2,%%xmm10,%%xmm6; vfmadd231ps %%xmm1,%%xmm10,%%xmm8;"\
     "vbroadcastss 4(%0),%%xmm10; vfmadd231ps %%xmm3,%%xmm10,%%xmm5; vfmadd231ps %%xmm2,%%xmm10,%%xmm7; vfmadd231ps %%xmm1,%%xmm10,%%xmm9;"\
     "addq $8,%0;"
-#define unit_save_m2n4(c1,c2) \
+#ifdef TRMMKERNEL
+  #define unit_save_m2n4(c1,c2) \
+    "vunpcklps "#c2","#c1",%%xmm1; vunpckhps "#c2","#c1",%%xmm2;"\
+    "vmulps %%xmm1,%%xmm0,%%xmm1; vmovsd %%xmm1,(%5); vmovhpd %%xmm1,(%5,%3,1); leaq (%5,%3,2),%5;"\
+    "vmulps %%xmm2,%%xmm0,%%xmm2; vmovsd %%xmm2,(%5); vmovhpd %%xmm2,(%5,%3,1); leaq (%5,%3,2),%5;"
+#else
+  #define unit_save_m2n4(c1,c2) \
     "vunpcklps "#c2","#c1",%%xmm1; vunpckhps "#c2","#c1",%%xmm2;"\
     "vmovsd (%5),%%xmm3; vmovhpd (%5,%3,1),%%xmm3,%%xmm3; vfmadd213ps %%xmm3,%%xmm0,%%xmm1;"\
     "vmovsd %%xmm1,(%5); vmovhpd %%xmm1,(%5,%3,1); leaq (%5,%3,2),%5;"\
     "vmovsd (%5),%%xmm3; vmovhpd (%5,%3,1),%%xmm3,%%xmm3; vfmadd213ps %%xmm3,%%xmm0,%%xmm2;"\
     "vmovsd %%xmm2,(%5); vmovhpd %%xmm2,(%5,%3,1); leaq (%5,%3,2),%5;"
+#endif
 #define SAVE_m2n4 "movq %2,%5;" unit_save_m2n4(%%xmm4,%%xmm5)
 #define SAVE_m2n8   SAVE_m2n4    unit_save_m2n4(%%xmm6,%%xmm7)
 #define SAVE_m2n12  SAVE_m2n8   unit_save_m2n4(%%xmm8,%%xmm9)
