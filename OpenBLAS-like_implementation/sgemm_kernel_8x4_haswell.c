@@ -10,12 +10,21 @@
 #endif
 
 if defined TRMMKERNEL && !defined LEFT && defined TRANSA
+  #define kernel_kstart_n8(mdim) \
+    KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4
+  #define kernel_kstart_n12(mdim) kernel_kstart_n8(mdim) \
+    KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8
   #define k_start_n8 4
   #define k_start_n12 8
 #else
+  #define kernel_kstart_n8(mdim) ""
+  #define kernel_kstart_n12(mdim) ""
   #define k_start_n8 0
   #define k_start_n12 0
 #endif
+#define kernel_kstart_n4(mdim) ""
+#define kernel_kstart_n2(mdim) ""
+#define kernel_kstart_n1(mdim) ""
 #define k_start_n4 0
 #define k_start_n2 0
 #define k_start_n1 0
@@ -52,16 +61,6 @@ if defined TRMMKERNEL && !defined LEFT && defined TRANSA
     unit_kernel_k1m8n4(%%ymm4,%%ymm5,%%ymm6,%%ymm7,16,24,%1)\
     unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,16,24,%1,%%r12,4)\
     unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,16,24,%1,%%r12,8) "addq $32,%1;"
-#if defined TRMMKERNEL && !defined LEFT && defined TRANSA
-  #define kernel_kstart_m8n8 KERNEL_k2m8n4 KERNEL_k2m8n4
-  #define kernel_kstart_m8n12 kernel_kstart_m8n8 KERNEL_k2m8n8 KERNEL_k2m8n8
-#else
-  #define kernel_kstart_m8n8 ""
-  #define kernel_kstart_m8n12 ""
-#endif
-#define kernel_kstart_m8n4 ""
-#define kernel_kstart_m8n2 ""
-#define kernel_kstart_m8n1 ""
 #if defined TRMMKERNEL && !defined LEFT && !defined TRANSA
   #define unit_kernel_endn4_k1m8n8(offa1,offb1,offb2) \
     "vmovsldup "#offa1"(%0),%%ymm1; vmovshdup "#offa1"(%0),%%ymm2;"\
@@ -144,16 +143,6 @@ if defined TRMMKERNEL && !defined LEFT && defined TRANSA
 #define KERNEL_k1m4n8 KERNEL_h_k1m4n8 "addq $16,%1;"
 #define KERNEL_h_k1m4n12 KERNEL_h_k1m4n8 unit_kernel_k1m4n4(%%xmm12,%%xmm13,%%xmm14,%%xmm15,0,8,%1,%%r12,8)
 #define KERNEL_k1m4n12 KERNEL_h_k1m4n12 "addq $16,%1;"
-#if defined TRMMKERNEL && !defined LEFT && defined TRANSA
-  #define kernel_kstart_m4n8 KERNEL_k1m4n4 KERNEL_k1m4n4 KERNEL_k1m4n4 KERNEL_k1m4n4
-  #define kernel_kstart_m4n12 kernel_kstart_m4n8 KERNEL_k1m4n8 KERNEL_k1m4n8 KERNEL_k1m4n8 KERNEL_k1m4n8
-#else
-  #define kernel_kstart_m4n8 ""
-  #define kernel_kstart_m4n12 ""
-#endif
-#define kernel_kstart_m4n4 ""
-#define kernel_kstart_m4n2 ""
-#define kernel_kstart_m4n1 ""
 #if defined TRMMKERNEL && !defined LEFT && !defined TRANSA
   #define unit_kernel_endn4_k1m4n8(offa1,offb1,offb2) \
     "vmovsldup "#offa1"(%0),%%xmm1; vmovshdup "#offa1"(%0),%%xmm2;"\
