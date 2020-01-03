@@ -232,7 +232,7 @@
     "cmpq $8,%%r11;jb 33101"#ndim"f;"\
     "33109"#ndim":\n\t"\
     COMPUTE_m8(ndim)\
-    "subq $8,%%r12;cmpq $8,%%r11;jnb 33109"#ndim"b;"\
+    "subq $8,%%r11;cmpq $8,%%r11;jnb 33109"#ndim"b;"\
     "33101"#ndim":\n\t"\
     "cmpq $4,%%r11;jb 33103"#ndim"f;"\
     COMPUTE_m4(ndim)\
