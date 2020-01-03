@@ -9,6 +9,17 @@
   #define mult_alpha(acc,alpha,...) "vfmadd213ps ("#__VA_ARGS__"),"#alpha","#acc";"
 #endif
 
+if defined TRMMKERNEL && !defined LEFT && defined TRANSA
+  #define k_start_n8 4
+  #define k_start_n12 8
+#else
+  #define k_start_n8 0
+  #define k_start_n12 0
+#endif
+#define k_start_n4 0
+#define k_start_n2 0
+#define k_start_n1 0
+
 /* m = 8 *//* ymm0 for alpha, ymm1-ymm3 for temporary use, ymm4-ymm15 for accumulators */
 #define KERNEL_k1m8n1 \
     "vmovups (%0),%%ymm1; addq $32,%0;"\
@@ -44,20 +55,13 @@
 #if defined TRMMKERNEL && !defined LEFT && defined TRANSA
   #define kernel_kstart_m8n8 KERNEL_k2m8n4 KERNEL_k2m8n4
   #define kernel_kstart_m8n12 kernel_kstart_m8n8 KERNEL_k2m8n8 KERNEL_k2m8n8
-  #define k_start_m8n8 4
-  #define k_start_m8n12 8
 #else
   #define kernel_kstart_m8n8 ""
   #define kernel_kstart_m8n12 ""
-  #define k_start_m8n8 0
-  #define k_start_m8n12 0
 #endif
 #define kernel_kstart_m8n4 ""
 #define kernel_kstart_m8n2 ""
 #define kernel_kstart_m8n1 ""
-#define k_start_m8n4 0
-#define k_start_m8n2 0
-#define k_start_m8n1 0
 #if defined TRMMKERNEL && !defined LEFT && !defined TRANSA
   #define unit_kernel_endn4_k1m8n8(offa1,offb1,offb2) \
     "vmovsldup "#offa1"(%0),%%ymm1; vmovshdup "#offa1"(%0),%%ymm2;"\
@@ -143,20 +147,13 @@
 #if defined TRMMKERNEL && !defined LEFT && defined TRANSA
   #define kernel_kstart_m4n8 KERNEL_k1m4n4 KERNEL_k1m4n4 KERNEL_k1m4n4 KERNEL_k1m4n4
   #define kernel_kstart_m4n12 kernel_kstart_m4n8 KERNEL_k1m4n8 KERNEL_k1m4n8 KERNEL_k1m4n8 KERNEL_k1m4n8
-  #define k_start_m4n8 4
-  #define k_start_m4n12 8
 #else
   #define kernel_kstart_m4n8 ""
   #define kernel_kstart_m4n12 ""
-  #define k_start_m4n8 0
-  #define k_start_m4n12 0
 #endif
 #define kernel_kstart_m4n4 ""
 #define kernel_kstart_m4n2 ""
 #define kernel_kstart_m4n1 ""
-#define k_start_m4n4 0
-#define k_start_m4n2 0
-#define k_start_m4n1 0
 #if defined TRMMKERNEL && !defined LEFT && !defined TRANSA
   #define unit_kernel_endn4_k1m4n8(offa1,offb1,offb2) \
     "vmovsldup "#offa1"(%0),%%xmm1; vmovshdup "#offa1"(%0),%%xmm2;"\
