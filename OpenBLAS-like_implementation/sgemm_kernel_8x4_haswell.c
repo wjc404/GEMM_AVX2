@@ -199,16 +199,24 @@
     "vmovss (%1),%%xmm3; addq $4,%1;"\
     "vmovss (%0),%%xmm1; vfmadd231ss %%xmm3,%%xmm1,%%xmm4;"\
     "addq $4,%0;"
-#define SAVE_m1n1 \
-    "vfmadd213ss (%2),%%xmm0,%%xmm4; vmovss %%xmm4,(%2);"
+#ifdef TRMMKERNEL
+  #define SAVE_m1n1 "vmulss %%xmm4,%%xmm0,%%xmm4; vmovss %%xmm4,(%2);"
+#else
+  #define SAVE_m1n1 "vfmadd213ss (%2),%%xmm0,%%xmm4; vmovss %%xmm4,(%2);"
+#endif
 #define INIT_m1n2 INIT_m1n1
 #define KERNEL_k1m1n2 \
     "vmovsd (%1),%%xmm3; addq $8,%1;"\
     "vbroadcastss  (%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm4;"\
     "addq $4,%0;"
-#define SAVE_m1n2 \
+#ifdef TRMMKERNEL
+  #define SAVE_m1n2 \
+    "vmulps %%xmm4,%%xmm0,%%xmm4; vmovss %%xmm4,(%2); vextractps $1,%%xmm4,(%2,%3,1);"
+#else
+  #define SAVE_m1n2 \
     "vmovss (%2),%%xmm3; vinsertps $16,(%2,%3,1),%%xmm3,%%xmm3; vfmadd213ps %%xmm3,%%xmm0,%%xmm4;"\
     "vmovss %%xmm4,(%2); vextractps $1,%%xmm4,(%2,%3,1);"
+#endif
 #define INIT_m1n4  INIT_m1n2
 #define INIT_m1n8  INIT_m1n4 "vpxor %%xmm5,%%xmm5,%%xmm5;"
 #define INIT_m1n12 INIT_m1n8 "vpxor %%xmm6,%%xmm6,%%xmm6;"
@@ -224,12 +232,19 @@
     "vmovups (%1),%%xmm3; vmovups (%1,%%r12,1),%%xmm2; vmovups (%1,%%r12,2),%%xmm1; addq $16,%1;"\
     "vbroadcastss  (%0),%%xmm10; vfmadd231ps %%xmm3,%%xmm10,%%xmm4; vfmadd231ps %%xmm2,%%xmm10,%%xmm5; vfmadd231ps %%xmm1,%%xmm10,%%xmm6;"\
     "addq $4,%0;"
-#define unit_save_m1n4(c1) \
+#ifdef TRMMKERNEL
+  #define unit_save_m1n4(c1) \
+    "vpxor %%xmm10,%%xmm10,%%xmm10; vmovsd "#c1",%%xmm10,%%xmm2; vmovhlps "#c1",%%xmm10,%%xmm1;"\
+    "vmulps %%xmm2,%%xmm0,%%xmm2; vmovss %%xmm2,(%5); vextractps $1,%%xmm2,(%5,%3,1); leaq (%5,%3,2),%5;"\
+    "vmulps %%xmm1,%%xmm0,%%xmm1; vmovss %%xmm1,(%5); vextractps $1,%%xmm1,(%5,%3,1); leaq (%5,%3,2),%5;"
+#else
+  #define unit_save_m1n4(c1) \
     "vpxor %%xmm10,%%xmm10,%%xmm10; vmovsd "#c1",%%xmm10,%%xmm2; vmovhlps "#c1",%%xmm10,%%xmm1;"\
     "vmovss (%5),%%xmm3; vinsertps $16,(%5,%3,1),%%xmm3,%%xmm3; vfmadd213ps %%xmm3,%%xmm0,%%xmm2;"\
     "vmovss %%xmm2,(%5); vextractps $1,%%xmm2,(%5,%3,1); leaq (%5,%3,2),%5;"\
     "vmovss (%5),%%xmm3; vinsertps $16,(%5,%3,1),%%xmm3,%%xmm3; vfmadd213ps %%xmm3,%%xmm0,%%xmm1;"\
     "vmovss %%xmm1,(%5); vextractps $1,%%xmm1,(%5,%3,1); leaq (%5,%3,2),%5;"
+#endif
 #define SAVE_m1n4 "movq %2,%5;" unit_save_m1n4(%%xmm4)
 #define SAVE_m1n8  SAVE_m1n4    unit_save_m1n4(%%xmm5)
 #define SAVE_m1n12 SAVE_m1n8    unit_save_m1n4(%%xmm6)
