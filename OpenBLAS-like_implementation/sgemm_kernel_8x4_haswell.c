@@ -44,13 +44,20 @@
 #if defined TRMMKERNEL && !defined LEFT && defined TRANSA
   #define kernel_kstart_m8n8 KERNEL_k2m8n4 KERNEL_k2m8n4
   #define kernel_kstart_m8n12 kernel_kstart_m8n8 KERNEL_k2m8n8 KERNEL_k2m8n8
+  #define k_start_m8n8 4
+  #define k_start_m8n12 8
 #else
   #define kernel_kstart_m8n8 ""
   #define kernel_kstart_m8n12 ""
+  #define k_start_m8n8 0
+  #define k_start_m8n12 0
 #endif
 #define kernel_kstart_m8n4 ""
 #define kernel_kstart_m8n2 ""
 #define kernel_kstart_m8n1 ""
+#define k_start_m8n4 0
+#define k_start_m8n2 0
+#define k_start_m8n1 0
 #if defined TRMMKERNEL && !defined LEFT && !defined TRANSA
   #define unit_kernel_endn4_k1m8n8(offa1,offb1,offb2) \
     "vmovsldup "#offa1"(%0),%%ymm1; vmovshdup "#offa1"(%0),%%ymm2;"\
