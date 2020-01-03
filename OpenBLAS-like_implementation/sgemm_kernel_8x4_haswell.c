@@ -3,6 +3,14 @@
 
 //recommended settings: GEMM_P = 320, GEMM_Q = 320.
 
+#ifdef TRMMKERNEL
+  #define mult_alpha(acc,alpha,...) "vmulps "#acc","#alpha","#acc";"
+  #define mult_vec_alpha(acc,alpha,src) "vmulps "#acc","#alpha","#acc";"
+#else
+  #define mult_alpha(acc,alpha,...) "vfmadd213ps ("#__VA_ARGS__"),"#alpha","#acc";"
+  #define mult_vec_alpha(acc,alpha,src) "vfmadd213ps "#src","#alpha","#acc";"
+#endif
+
 /* m = 8 *//* ymm0 for alpha, ymm1-ymm3 for temporary use, ymm4-ymm15 for accumulators */
 #define KERNEL_k1m8n1 \
     "vmovups (%0),%%ymm1; addq $32,%0;"\
@@ -42,11 +50,11 @@
     "vpxor "#c1","#c1","#c1";vpxor "#c2","#c2","#c2";vpxor "#c3","#c3","#c3";vpxor "#c4","#c4","#c4";"
 #define INIT_m8n8  INIT_m8n4 unit_init_m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11)
 #define INIT_m8n12 INIT_m8n8 unit_init_m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15)
-#define SAVE_m8n1 "vfmadd213ps (%2),%%ymm0,%%ymm4; vmovups %%ymm4,(%2);"
+#define SAVE_m8n1 mult_alpha(%%ymm4,%%ymm0,%2) "vmovups %%ymm4,(%2);"
 #define unit_save_m8n2(c1,c2) \
     "vunpcklps "#c2","#c1",%%ymm2; vunpckhps "#c2","#c1",%%ymm3; vunpcklpd %%ymm3,%%ymm2,"#c1"; vunpckhpd %%ymm3,%%ymm2,"#c2";"\
-    "vfmadd213ps (%5),%%ymm0,"#c1"; vmovups "#c1",(%5);"\
-    "vfmadd213ps (%5,%3,1),%%ymm0,"#c2"; vmovups "#c2",(%5,%3,1);"\
+    mult_alpha(c1,%%ymm0,%5) "vmovups "#c1",(%5);"\
+    mult_alpha(c2,%%ymm0,%5,%3,1) "vmovups "#c2",(%5,%3,1);"\
     "leaq (%5,%3,2),%5;"
 #define SAVE_m8n2 "movq %2,%5;" unit_save_m8n2(%%ymm4,%%ymm5)
 #define SAVE_m8n4  SAVE_m8n2  unit_save_m8n2(%%ymm6,%%ymm7)
@@ -101,11 +109,11 @@
 #define INIT_m4n8  INIT_m4n4 unit_init_m4n4(%%xmm8,%%xmm9,%%xmm10,%%xmm11)
 #define INIT_m4n12 INIT_m4n8 unit_init_m4n4(%%xmm12,%%xmm13,%%xmm14,%%xmm15)
 #define SAVE_m4n1 \
-    "vfmadd213ps (%2),%%xmm0,%%xmm4; vmovups %%xmm4,(%2);"
+    mult_alpha(%%xmm4,%%xmm0,%2) "vmovups %%xmm4,(%2);"
 #define unit_save_m4n2(c1,c2) \
     "vunpcklps "#c2","#c1",%%xmm2; vunpckhps "#c2","#c1",%%xmm3; vunpcklpd %%xmm3,%%xmm2,"#c1"; vunpckhpd %%xmm3,%%xmm2,"#c2";"\
-    "vfmadd213ps (%5),%%xmm0,"#c1"; vmovups "#c1",(%5);"\
-    "vfmadd213ps (%5,%3,1),%%xmm0,"#c2"; vmovups "#c2",(%5,%3,1);"\
+    mult_alpha(c1,%%xmm0,%5) "vmovups "#c1",(%5);"\
+    mult_alpha(c2,%%xmm0,%5,%3,1) "vmovups "#c2",(%5,%3,1);"\
     "leaq (%5,%3,2),%5;"
 #define SAVE_m4n2 "movq %2,%5;" unit_save_m4n2(%%xmm4,%%xmm5)
 #define SAVE_m4n4  SAVE_m4n2  unit_save_m4n2(%%xmm6,%%xmm7)
