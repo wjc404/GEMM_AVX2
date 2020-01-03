@@ -41,6 +41,40 @@
     unit_kernel_k1m8n4(%%ymm4,%%ymm5,%%ymm6,%%ymm7,16,24,%1)\
     unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,16,24,%1,%%r12,4)\
     unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,16,24,%1,%%r12,8) "addq $32,%1;"
+#if defined TRMMKERNEL && !defined LEFT && defined TRANSA
+  #define kernel_kstart_m8n8 KERNEL_k2m8n4 KERNEL_k2m8n4
+  #define kernel_kstart_m8n12 kernel_kstart_m8n8 KERNEL_k2m8n8 KERNEL_k2m8n8
+#else
+  #define kernel_kstart_m8n8 ""
+  #define kernel_kstart_m8n12 ""
+#endif
+#define kernel_kstart_m8n4 ""
+#define kernel_kstart_m8n2 ""
+#define kernel_kstart_m8n1 ""
+#if defined TRMMKERNEL && !defined LEFT && !defined TRANSA
+  #define unit_kernel_endn4_k1m8n8(offa1,offb1,offb2) \
+    "vmovsldup "#offa1"(%0),%%ymm1; vmovshdup "#offa1"(%0),%%ymm2;"\
+    unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,offb1,offb2,%1,%%r12,4)
+  #define unit_kernel_endn4_k1m8n12(offa1,offb1,offb2) \
+    "vmovsldup "#offa1"(%0),%%ymm1; vmovshdup "#offa1"(%0),%%ymm2;"\
+    unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,offb1,offb2,%1,%%r12,8)
+  #define unit_kernel_endn8_k1m8n12(offa1,offb1,offb2) unit_kernel_endn4_k1m8n8(offa1,offb1,offb2)\
+    unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,offb1,offb2,%1,%%r12,8)
+  #define kernel_kend_m8n8 \
+    unit_kernel_endn4_k1m8n8(0,0,8) unit_kernel_endn4_k1m8n8(32,16,24)\
+    unit_kernel_endn4_k1m8n8(64,32,40) unit_kernel_endn4_k1m8n8(96,48,56)
+  #define kernel_kend_m8n12 \
+    unit_kernel_endn8_k1m8n12(0,0,8) unit_kernel_endn8_k1m8n12(32,16,24)\
+    unit_kernel_endn8_k1m8n12(64,32,40) unit_kernel_endn8_k1m8n12(96,48,56)\
+    unit_kernel_endn4_k1m8n12(128,64,72) unit_kernel_endn4_k1m8n12(160,80,88)\
+    unit_kernel_endn4_k1m8n12(192,96,104) unit_kernel_endn4_k1m8n12(224,112,120)
+#else
+  #define kernel_kend_m8n8 ""
+  #define kernel_kend_m8n12 ""
+#endif
+#define kernel_kend_m8n4 ""
+#define kernel_kend_m8n2 ""
+#define kernel_kend_m8n1 ""
 #define INIT_m8n1 "vpxor %%ymm4,%%ymm4,%%ymm4;"
 #define INIT_m8n2 INIT_m8n1 "vpxor %%ymm5,%%ymm5,%%ymm5;"
 #define INIT_m8n4 INIT_m8n2 "vpxor %%ymm6,%%ymm6,%%ymm6;vpxor %%ymm7,%%ymm7,%%ymm7;"
