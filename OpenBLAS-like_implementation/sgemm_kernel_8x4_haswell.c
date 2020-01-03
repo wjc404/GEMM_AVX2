@@ -1,5 +1,5 @@
 /* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 for k_count, %5 for c_store, %6 = &alpha, %7 = b_pref */
-/* r11 = m_counter, r12 = k << 4(const), r13 = k(const), r14 = b_head_pos(const), r15 for assisting prefetch */
+/* r11 = m_counter, r12 = k << 2(const), r13 = k(const), r14 = b_head_pos(const), r15 for assisting prefetch */
 
 //recommended settings: GEMM_P = 320, GEMM_Q = 320.
 
@@ -24,9 +24,9 @@
 #define unit_kernel_k1m8n4(c1,c2,c3,c4,boff1,boff2,...) \
     "vbroadcastsd "#boff1"("#__VA_ARGS__"),%%ymm3; vfmadd231ps %%ymm1,%%ymm3,"#c1"; vfmadd231ps %%ymm2,%%ymm3,"#c2";"\
     "vbroadcastsd "#boff2"("#__VA_ARGS__"),%%ymm3; vfmadd231ps %%ymm1,%%ymm3,"#c3"; vfmadd231ps %%ymm2,%%ymm3,"#c4";"
-#define KERNEL_h_k1m8n8 KERNEL_h_k1m8n4 unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,0,8,%1,%%r12,1)
+#define KERNEL_h_k1m8n8 KERNEL_h_k1m8n4 unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,0,8,%1,%%r12,4)
 #define KERNEL_k1m8n8 KERNEL_h_k1m8n8 "addq $16,%1;"
-#define KERNEL_h_k1m8n12 KERNEL_h_k1m8n8 unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,0,8,%1,%%r12,2)
+#define KERNEL_h_k1m8n12 KERNEL_h_k1m8n8 unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,0,8,%1,%%r12,8)
 #define KERNEL_k1m8n12 KERNEL_h_k1m8n12 "addq $16,%1;"
 #define KERNEL_k2m8n1 KERNEL_k1m8n1 KERNEL_k1m8n1
 #define KERNEL_k2m8n2 KERNEL_k1m8n2 KERNEL_k1m8n2
@@ -35,12 +35,12 @@
 #define KERNEL_k2m8n12 \
     "vmovsldup (%0),%%ymm1; vmovshdup (%0),%%ymm2;"\
     unit_kernel_k1m8n4(%%ymm4,%%ymm5,%%ymm6,%%ymm7,0,8,%1)\
-    unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,0,8,%1,%%r12,1)\
-    unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,0,8,%1,%%r12,2)\
+    unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,0,8,%1,%%r12,4)\
+    unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,0,8,%1,%%r12,8)\
     "vmovsldup 32(%0),%%ymm1; vmovshdup 32(%0),%%ymm2; prefetcht0 512(%0); addq $64,%0;"\
     unit_kernel_k1m8n4(%%ymm4,%%ymm5,%%ymm6,%%ymm7,16,24,%1)\
-    unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,16,24,%1,%%r12,1)\
-    unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,16,24,%1,%%r12,2) "addq $32,%1;"
+    unit_kernel_k1m8n4(%%ymm8,%%ymm9,%%ymm10,%%ymm11,16,24,%1,%%r12,4)\
+    unit_kernel_k1m8n4(%%ymm12,%%ymm13,%%ymm14,%%ymm15,16,24,%1,%%r12,8) "addq $32,%1;"
 #define INIT_m8n1 "vpxor %%ymm4,%%ymm4,%%ymm4;"
 #define INIT_m8n2 INIT_m8n1 "vpxor %%ymm5,%%ymm5,%%ymm5;"
 #define INIT_m8n4 INIT_m8n2 "vpxor %%ymm6,%%ymm6,%%ymm6;vpxor %%ymm7,%%ymm7,%%ymm7;"
@@ -95,9 +95,9 @@
 #define unit_kernel_k1m4n4(c1,c2,c3,c4,...) \
     "vmovddup  ("#__VA_ARGS__"),%%xmm3; vfmadd231ps %%xmm1,%%xmm3,"#c1"; vfmadd231ps %%xmm2,%%xmm3,"#c2";"\
     "vmovddup 8("#__VA_ARGS__"),%%xmm3; vfmadd231ps %%xmm1,%%xmm3,"#c3"; vfmadd231ps %%xmm2,%%xmm3,"#c4";"
-#define KERNEL_h_k1m4n8 KERNEL_h_k1m4n4 unit_kernel_k1m4n4(%%xmm8,%%xmm9,%%xmm10,%%xmm11,%1,%%r12,1)
+#define KERNEL_h_k1m4n8 KERNEL_h_k1m4n4 unit_kernel_k1m4n4(%%xmm8,%%xmm9,%%xmm10,%%xmm11,%1,%%r12,4)
 #define KERNEL_k1m4n8 KERNEL_h_k1m4n8 "addq $16,%1;"
-#define KERNEL_h_k1m4n12 KERNEL_h_k1m4n8 unit_kernel_k1m4n4(%%xmm12,%%xmm13,%%xmm14,%%xmm15,%1,%%r12,2)
+#define KERNEL_h_k1m4n12 KERNEL_h_k1m4n8 unit_kernel_k1m4n4(%%xmm12,%%xmm13,%%xmm14,%%xmm15,%1,%%r12,8)
 #define KERNEL_k1m4n12 KERNEL_h_k1m4n12 "addq $16,%1;"
 #define INIT_m4n1 "vpxor %%xmm4,%%xmm4,%%xmm4;"
 #define INIT_m4n2 INIT_m4n1 "vpxor %%xmm5,%%xmm5,%%xmm5;"
@@ -158,12 +158,12 @@
     "vbroadcastss 4(%0),%%xmm2; vfmadd231ps %%xmm3,%%xmm2,%%xmm5;"\
     "addq $8,%0;"
 #define KERNEL_k1m2n8 \
-    "vmovups (%1),%%xmm3; vmovups (%1,%%r12,1),%%xmm2; addq $16,%1;"\
+    "vmovups (%1),%%xmm3; vmovups (%1,%%r12,4),%%xmm2; addq $16,%1;"\
     "vbroadcastss  (%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm4; vfmadd231ps %%xmm2,%%xmm1,%%xmm6;"\
     "vbroadcastss 4(%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm5; vfmadd231ps %%xmm2,%%xmm1,%%xmm7;"\
     "addq $8,%0;"
 #define KERNEL_k1m2n12 \
-    "vmovups (%1),%%xmm3; vmovups (%1,%%r12,1),%%xmm2; vmovups (%1,%%r12,2),%%xmm1; addq $16,%1;"\
+    "vmovups (%1),%%xmm3; vmovups (%1,%%r12,4),%%xmm2; vmovups (%1,%%r12,8),%%xmm1; addq $16,%1;"\
     "vbroadcastss  (%0),%%xmm10; vfmadd231ps %%xmm3,%%xmm10,%%xmm4; vfmadd231ps %%xmm2,%%xmm10,%%xmm6; vfmadd231ps %%xmm1,%%xmm10,%%xmm8;"\
     "vbroadcastss 4(%0),%%xmm10; vfmadd231ps %%xmm3,%%xmm10,%%xmm5; vfmadd231ps %%xmm2,%%xmm10,%%xmm7; vfmadd231ps %%xmm1,%%xmm10,%%xmm9;"\
     "addq $8,%0;"
@@ -225,11 +225,11 @@
     "vbroadcastss  (%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm4;"\
     "addq $4,%0;"
 #define KERNEL_k1m1n8 \
-    "vmovups (%1),%%xmm3; vmovups (%1,%%r12,1),%%xmm2; addq $16,%1;"\
+    "vmovups (%1),%%xmm3; vmovups (%1,%%r12,4),%%xmm2; addq $16,%1;"\
     "vbroadcastss  (%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm4; vfmadd231ps %%xmm2,%%xmm1,%%xmm5;"\
     "addq $4,%0;"
 #define KERNEL_k1m1n12 \
-    "vmovups (%1),%%xmm3; vmovups (%1,%%r12,1),%%xmm2; vmovups (%1,%%r12,2),%%xmm1; addq $16,%1;"\
+    "vmovups (%1),%%xmm3; vmovups (%1,%%r12,4),%%xmm2; vmovups (%1,%%r12,8),%%xmm1; addq $16,%1;"\
     "vbroadcastss  (%0),%%xmm10; vfmadd231ps %%xmm3,%%xmm10,%%xmm4; vfmadd231ps %%xmm2,%%xmm10,%%xmm5; vfmadd231ps %%xmm1,%%xmm10,%%xmm6;"\
     "addq $4,%0;"
 #ifdef TRMMKERNEL
@@ -262,7 +262,7 @@
     next_b = b_pointer + ndim * K;\
     __asm__ __volatile__(\
     "vbroadcastss (%6),%%ymm0;"\
-    "movq %4,%%r13; movq %4,%%r12; salq $4,%%r12; movq %1,%%r14; movq %8,%%r11;"\
+    "movq %4,%%r13; movq %4,%%r12; salq $2,%%r12; movq %1,%%r14; movq %8,%%r11;"\
     "cmpq $8,%%r11;jb 33101"#ndim"f;"\
     "33109"#ndim":\n\t"\
     COMPUTE_m8(ndim)\
