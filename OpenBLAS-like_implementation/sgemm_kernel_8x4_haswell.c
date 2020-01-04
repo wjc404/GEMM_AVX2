@@ -38,23 +38,17 @@
 
 #if defined TRMMKERNEL && !defined LEFT && defined TRANSA
   #define kernel_kstart_n8(mdim) \
-    KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4
-  #define kernel_kstart_n12(mdim) kernel_kstart_n8(mdim) \
-    KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8
-  #define k_start_n8 4
-  #define k_start_n12 8
+    KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 "subq $4,%4;"
+  #define kernel_kstart_n12(mdim) \
+    KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4\
+    KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 "subq $8,%4;"
 #else
   #define kernel_kstart_n8(mdim) ""
   #define kernel_kstart_n12(mdim) ""
-  #define k_start_n8 0
-  #define k_start_n12 0
 #endif
 #define kernel_kstart_n4(mdim) ""
 #define kernel_kstart_n2(mdim) ""
 #define kernel_kstart_n1(mdim) ""
-#define k_start_n4 0
-#define k_start_n2 0
-#define k_start_n1 0
 
 /* m = 8 *//* ymm0 for alpha, ymm1-ymm3 for temporary use, ymm4-ymm15 for accumulators */
 #define KERNEL_k1m8n1 \
@@ -132,7 +126,7 @@
 #define COMPUTE_m8(ndim) \
     INIT_m8n##ndim\
     init_set_k "movq %%r14,%1;" head_set_pa_pb(8,ndim) "movq %2,%5; movq $0,%%r15;"\
-    kernel_kstart_n##ndim(8) "subq $"#k_start_n##ndim",%4;"\
+    kernel_kstart_n##ndim(8)\
     "cmpq $64,%4; jb "#ndim"882f;"\
     #ndim"881:\n\t"\
     "cmpq $62,%%r15; movq $62,%%r15; cmoveq %3,%%r15;"\
@@ -216,7 +210,7 @@
 #define COMPUTE_m4(ndim) \
     INIT_m4n##ndim\
     init_set_k "movq %%r14,%1;" head_set_pa_pb(4,ndim)\
-    kernel_kstart_n##ndim(4) "subq $"#k_start_n##ndim",%4;"\
+    kernel_kstart_n##ndim(4)\
     #ndim"442:\n\t"\
     "testq %4,%4; jz "#ndim"443f;"\
     KERNEL_k1m4n##ndim\
@@ -311,7 +305,7 @@
 #define COMPUTE_m2(ndim) \
     INIT_m2n##ndim\
     init_set_k "movq %%r14,%1;" head_set_pa_pb(2,ndim)\
-    kernel_kstart_n##ndim(2) "subq $"#k_start_n##ndim",%4;"\
+    kernel_kstart_n##ndim(2)\
     #ndim"222:\n\t"\
     "testq %4,%4; jz "#ndim"223f;"\
     KERNEL_k1m2n##ndim\
@@ -402,7 +396,7 @@
 #define COMPUTE_m1(ndim) \
     INIT_m1n##ndim\
     init_set_k "movq %%r14,%1;" head_set_pa_pb(1,ndim)\
-    kernel_kstart_n##ndim(1) "subq $"#k_start_n##ndim",%4;"\
+    kernel_kstart_n##ndim(1)\
     #ndim"112:\n\t"\
     "testq %4,%4; jz "#ndim"113f;"\
     KERNEL_k1m1n##ndim\
