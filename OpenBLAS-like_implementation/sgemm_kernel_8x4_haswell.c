@@ -23,6 +23,18 @@
   #define init_set_pointers(a_copy,b_copy) ""
   #define save_set_pointers(a_copy,b_copy) ""
 #endif
+#define init_set_pa_pb_n12(mdim) init_set_pointers(mdim,4)
+#define init_set_pa_pb_n8(mdim) init_set_pointers(mdim,4)
+#define init_set_pa_pb_n4(mdim) init_set_pointers(mdim,4)
+#define init_set_pa_pb_n2(mdim) init_set_pointers(mdim,2)
+#define init_set_pa_pb_n1(mdim) init_set_pointers(mdim,1)
+#define head_set_pa_pb(mdim,ndim) init_set_pa_pb_n##ndim(mdim)
+#define save_set_pa_pb_n12(mdim) save_set_pointers(mdim,4)
+#define save_set_pa_pb_n8(mdim) save_set_pointers(mdim,4)
+#define save_set_pa_pb_n4(mdim) save_set_pointers(mdim,4)
+#define save_set_pa_pb_n2(mdim) save_set_pointers(mdim,2)
+#define save_set_pa_pb_n1(mdim) save_set_pointers(mdim,1)
+#define tail_set_pa_pb(mdim,ndim) save_set_pa_pb_n##ndim(mdim)
 
 #if defined TRMMKERNEL && !defined LEFT && defined TRANSA
   #define kernel_kstart_n8(mdim) \
@@ -119,7 +131,7 @@
 #define SAVE_m8n12 SAVE_m8n8  unit_save_m8n2(%%ymm12,%%ymm13) unit_save_m8n2(%%ymm14,%%ymm15)
 #define COMPUTE_m8(ndim) \
     INIT_m8n##ndim\
-    init_set_k "movq %%r14,%1;" "movq %2,%5; movq $0,%%r15;"\
+    init_set_k "movq %%r14,%1;" head_set_pa_pb(8,ndim) "movq %2,%5; movq $0,%%r15;"\
     "cmpq $64,%4; jb "#ndim"882f;"\
     #ndim"881:\n\t"\
     "cmpq $62,%%r15; movq $62,%%r15; cmoveq %3,%%r15;"\
@@ -137,7 +149,7 @@
     "subq $4,%4; jmp "#ndim"882b;"\
     #ndim"883:\n\t"\
     "prefetcht0 (%%r14); prefetcht0 64(%%r14);"\
-    SAVE_m8n##ndim "addq $32,%2;"
+    tail_set_pa_pb(8,ndim) SAVE_m8n##ndim "addq $32,%2;"
 
 /* m = 4 *//* xmm0 for alpha, xmm1-xmm3 for temporary use, xmm4-xmm15 for accumulators */
 #define KERNEL_k1m4n1 \
@@ -202,13 +214,13 @@
 #define SAVE_m4n12 SAVE_m4n8  unit_save_m4n2(%%xmm12,%%xmm13) unit_save_m4n2(%%xmm14,%%xmm15)
 #define COMPUTE_m4(ndim) \
     INIT_m4n##ndim\
-    init_set_k "movq %%r14,%1;"\
+    init_set_k "movq %%r14,%1;" head_set_pa_pb(4,ndim)\
     #ndim"442:\n\t"\
     "testq %4,%4; jz "#ndim"443f;"\
     KERNEL_k1m4n##ndim\
     "subq $4,%4; jmp "#ndim"442b;"\
     #ndim"443:\n\t"\
-    SAVE_m4n##ndim "addq $16,%2;"
+    tail_set_pa_pb(4,ndim) SAVE_m4n##ndim "addq $16,%2;"
 
 /* m = 2 *//* xmm0 for alpha, xmm1-xmm3 and xmm10 for temporary use, xmm4-xmm9 for accumulators */
 #define INIT_m2n1 "vpxor %%xmm4,%%xmm4,%%xmm4;"
@@ -296,13 +308,13 @@
 #define SAVE_m2n12  SAVE_m2n8   unit_save_m2n4(%%xmm8,%%xmm9)
 #define COMPUTE_m2(ndim) \
     INIT_m2n##ndim\
-    init_set_k "movq %%r14,%1;"\
+    init_set_k "movq %%r14,%1;" head_set_pa_pb(2,ndim)\
     #ndim"222:\n\t"\
     "testq %4,%4; jz "#ndim"223f;"\
     KERNEL_k1m2n##ndim\
     "subq $4,%4; jmp "#ndim"222b;"\
     #ndim"223:\n\t"\
-    SAVE_m2n##ndim "addq $8,%2;"
+    tail_set_pa_pb(2,ndim) SAVE_m2n##ndim "addq $8,%2;"
 
 /* m = 1 *//* xmm0 for alpha, xmm1-xmm3 and xmm10 for temporary use, xmm4-xmm6 for accumulators */
 #define INIT_m1n1 "vpxor %%xmm4,%%xmm4,%%xmm4;"
@@ -386,13 +398,13 @@
 #define SAVE_m1n12 SAVE_m1n8    unit_save_m1n4(%%xmm6)
 #define COMPUTE_m1(ndim) \
     INIT_m1n##ndim\
-    init_set_k "movq %%r14,%1;"\
+    init_set_k "movq %%r14,%1;" head_set_pa_pb(1,ndim)\
     #ndim"112:\n\t"\
     "testq %4,%4; jz "#ndim"113f;"\
     KERNEL_k1m1n##ndim\
     "subq $4,%4; jmp "#ndim"112b;"\
     #ndim"113:\n\t"\
-    SAVE_m1n##ndim "addq $4,%2;"
+    tail_set_pa_pb(1,ndim) SAVE_m1n##ndim "addq $4,%2;"
 
 #define COMPUTE(ndim) {\
     next_b = b_pointer + ndim * K;\
