@@ -1,5 +1,5 @@
 /* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 for k_count, %5 for c_store, %6 = &alpha, %7 = b_pref */
-/* r11 = m_counter, r12 = k << 2(const), r13 = k_skip, r14 = b_head_pos(const), r15 for assisting prefetch */
+/* r11 = m_counter, r12 = k << 2(const), r13 = k_skip << 2, r14 = b_head_pos(const), r15 for assisting prefetch */
 
 //recommended settings: GEMM_P = 320, GEMM_Q = 320.
 
@@ -383,7 +383,7 @@ if defined TRMMKERNEL && !defined LEFT && defined TRANSA
     next_b = b_pointer + ndim * K;\
     __asm__ __volatile__(\
     "vbroadcastss (%6),%%ymm0;"\
-    "movq %4,%%r12; salq $2,%%r12; movq %1,%%r14; movq %8,%%r11; movq %9,%%r13;"\
+    "movq %4,%%r12; salq $2,%%r12; movq %1,%%r14; movq %8,%%r11; movq %9,%%r13; salq $2,%%r13;"\
     "cmpq $8,%%r11;jb 33101"#ndim"f;"\
     "33109"#ndim":\n\t"\
     COMPUTE_m8(ndim)\
