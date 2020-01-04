@@ -235,6 +235,34 @@ if defined TRMMKERNEL && !defined LEFT && defined TRANSA
     "vbroadcastss  (%0),%%xmm10; vfmadd231ps %%xmm3,%%xmm10,%%xmm4; vfmadd231ps %%xmm2,%%xmm10,%%xmm6; vfmadd231ps %%xmm1,%%xmm10,%%xmm8;"\
     "vbroadcastss 4(%0),%%xmm10; vfmadd231ps %%xmm3,%%xmm10,%%xmm5; vfmadd231ps %%xmm2,%%xmm10,%%xmm7; vfmadd231ps %%xmm1,%%xmm10,%%xmm9;"\
     "addq $8,%0;"
+#if defined TRMMKERNEL && !defined LEFT && !defined TRANSA
+  #define unit_kernel_endn4_k1m2n8(aoff1,aoff2,boff) \
+    "vmovups "#boff"(%1,%%r12,4),%%xmm3;"\
+    "vbroadcastss "#aoff1"(%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm6;"\
+    "vbroadcastss "#aoff2"(%0),%%xmm2; vfmadd231ps %%xmm3,%%xmm2,%%xmm7;"
+  #define unit_kernel_endn4_k1m2n12(aoff1,aoff2,boff) \
+    "vmovups "#boff"(%1,%%r12,8),%%xmm3;"\
+    "vbroadcastss "#aoff1"(%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm8;"\
+    "vbroadcastss "#aoff2"(%0),%%xmm2; vfmadd231ps %%xmm3,%%xmm2,%%xmm9;"
+  #define unit_kernel_endn8_k1m2n12(aoff1,aoff2,boff) \
+    "vmovups "#boff"(%1,%%r12,4),%%xmm3; vmovups "#boff"(%1,%%r12,8),%%xmm2;"\
+    "vbroadcastss "#aoff1"(%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm6; vfmadd231ps %%xmm2,%%xmm1,%%xmm8;"\
+    "vbroadcastss "#aoff2"(%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm7; vfmadd231ps %%xmm2,%%xmm1,%%xmm9;"
+  #define kernel_kend_m2n8 \
+    unit_kernel_endn4_k1m2n8(0,4,0) unit_kernel_endn4_k1m2n8(8,12,16)\
+    unit_kernel_endn4_k1m2n8(16,20,32) unit_kernel_endn4_k1m2n8(24,28,48)
+  #define kernel_kend_m2n12 \
+    unit_kernel_endn8_k1m2n12(0,4,0) unit_kernel_endn8_k1m2n12(8,12,16)\
+    unit_kernel_endn8_k1m2n12(16,20,32) unit_kernel_endn8_k1m2n12(24,28,48)\
+    unit_kernel_endn4_k1m2n12(32,36,64) unit_kernel_endn4_k1m2n12(40,44,80)\
+    unit_kernel_endn4_k1m2n12(48,52,96) unit_kernel_endn4_k1m2n12(56,60,112)
+#else
+  #define kernel_kend_m2n8 ""
+  #define kernel_kend_m2n12 ""
+#endif
+#define kernel_kend_m2n4 ""
+#define kernel_kend_m2n2 ""
+#define kernel_kend_m2n1 ""
 #ifdef TRMMKERNEL
   #define unit_save_m2n4(c1,c2) \
     "vunpcklps "#c2","#c1",%%xmm1; vunpckhps "#c2","#c1",%%xmm2;"\
