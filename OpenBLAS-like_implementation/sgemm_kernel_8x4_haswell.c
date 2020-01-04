@@ -328,6 +328,31 @@ if defined TRMMKERNEL && !defined LEFT && defined TRANSA
     "vmovups (%1),%%xmm3; vmovups (%1,%%r12,4),%%xmm2; vmovups (%1,%%r12,8),%%xmm1; addq $16,%1;"\
     "vbroadcastss  (%0),%%xmm10; vfmadd231ps %%xmm3,%%xmm10,%%xmm4; vfmadd231ps %%xmm2,%%xmm10,%%xmm5; vfmadd231ps %%xmm1,%%xmm10,%%xmm6;"\
     "addq $4,%0;"
+#if defined TRMMKERNEL && !defined LEFT && !defined TRANSA
+  #define unit_kernel_endn4_k1m1n8(aoff,boff) \
+    "vmovups "#boff"(%1,%%r12,4),%%xmm3;"\
+    "vbroadcastss "#aoff"(%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm5;"
+  #define unit_kernel_endn4_k1m1n12(aoff,boff) \
+    "vmovups "#boff"(%1,%%r12,8),%%xmm3;"\
+    "vbroadcastss "#aoff"(%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm6;"
+  #define unit_kernel_endn8_k1m1n12(aoff,boff) \
+    "vmovups "#boff"(%1,%%r12,4),%%xmm3; vmovups "#boff"(%1,%%r12,8),%%xmm2;"\
+    "vbroadcastss "#aoff"(%0),%%xmm1; vfmadd231ps %%xmm3,%%xmm1,%%xmm5; vfmadd231ps %%xmm2,%%xmm1,%%xmm6;"
+  #define kernel_kend_m1n8 \
+    unit_kernel_endn4_k1m1n8(0,0) unit_kernel_endn4_k1m1n8(4,16)\
+    unit_kernel_endn4_k1m1n8(8,32) unit_kernel_endn4_k1m1n8(12,48)
+  #define kernel_kend_m1n12 \
+    unit_kernel_endn8_k1m1n12(0,0) unit_kernel_endn8_k1m1n12(4,16)\
+    unit_kernel_endn8_k1m1n12(8,32) unit_kernel_endn8_k1m1n12(12,48)\
+    unit_kernel_endn4_k1m1n12(16,64) unit_kernel_endn4_k1m1n12(20,80)\
+    unit_kernel_endn4_k1m1n12(24,96) unit_kernel_endn4_k1m1n12(28,112)
+#else
+  #define kernel_kend_m1n8 ""
+  #define kernel_kend_m1n12 ""
+#endif
+#define kernel_kend_m1n4 ""
+#define kernel_kend_m1n2 ""
+#define kernel_kend_m1n1 ""
 #ifdef TRMMKERNEL
   #define unit_save_m1n4(c1) \
     "vpxor %%xmm10,%%xmm10,%%xmm10; vmovsd "#c1",%%xmm10,%%xmm2; vmovhlps "#c1",%%xmm10,%%xmm1;"\
