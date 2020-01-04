@@ -1,5 +1,5 @@
 /* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 for k_count, %5 for c_store, %6 = &alpha, %7 = b_pref */
-/* r11 = m_counter, r12 = k << 2(const), r14 = b_head_pos(const), r15 for assisting prefetch */
+/* r11 = m_counter, r12 = k << 2(const), r13 = k_skip, r14 = b_head_pos(const), r15 for assisting prefetch */
 
 //recommended settings: GEMM_P = 320, GEMM_Q = 320.
 
@@ -383,7 +383,7 @@ if defined TRMMKERNEL && !defined LEFT && defined TRANSA
     next_b = b_pointer + ndim * K;\
     __asm__ __volatile__(\
     "vbroadcastss (%6),%%ymm0;"\
-    "movq %4,%%r12; salq $2,%%r12; movq %1,%%r14; movq %8,%%r11;"\
+    "movq %4,%%r12; salq $2,%%r12; movq %1,%%r14; movq %8,%%r11; movq %9,%%r13;"\
     "cmpq $8,%%r11;jb 33101"#ndim"f;"\
     "33109"#ndim":\n\t"\
     COMPUTE_m8(ndim)\
@@ -402,7 +402,7 @@ if defined TRMMKERNEL && !defined LEFT && defined TRANSA
     "33105"#ndim":\n\t"\
     "movq %%r12,%4; sarq $2,%4; movq %%r14,%1; vzeroupper;"\
     :"+r"(a_pointer),"+r"(b_pointer),"+r"(c_pointer),"+r"(ldc_in_bytes),"+r"(K),"+r"(ctemp),"+r"(const_val),"+r"(next_b)\
-    :"m"(M):"r11","r12","r14","r15",\
+    :"m"(M),"m"(k_skip_input):"r11","r12","r13","r14","r15",\
     "xmm0","xmm1","xmm2","xmm3","xmm4","xmm5","xmm6","xmm7","xmm8","xmm9","xmm10","xmm11","xmm12","xmm13","xmm14","xmm15","cc","memory");\
     a_pointer -= M * K; b_pointer += ndim * K; c_pointer += (LDC * ndim - M);\
 }
@@ -419,7 +419,7 @@ CNAME(BLASLONG m, BLASLONG n, BLASLONG k, float alpha, float * __restrict__ A, f
     int64_t ldc_in_bytes = (int64_t)LDC * sizeof(float);
     float constval = alpha;
     float *const_val=&constval;
-    int64_t M = (int64_t)m, K = (int64_t)k;
+    int64_t M = (int64_t)m, K = (int64_t)k, k_skip_input = 0;
     BLASLONG n_count = n;
     float *a_pointer = A,*b_pointer = B,*c_pointer = C,*ctemp = C,*next_b = B;
     for(;n_count>11;n_count-=12) COMPUTE(12)
