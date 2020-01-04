@@ -132,6 +132,7 @@
 #define COMPUTE_m8(ndim) \
     INIT_m8n##ndim\
     init_set_k "movq %%r14,%1;" head_set_pa_pb(8,ndim) "movq %2,%5; movq $0,%%r15;"\
+    kernel_kstart_n##ndim(8) "subq $"#k_start_n##ndim",%4;"\
     "cmpq $64,%4; jb "#ndim"882f;"\
     #ndim"881:\n\t"\
     "cmpq $62,%%r15; movq $62,%%r15; cmoveq %3,%%r15;"\
@@ -148,7 +149,7 @@
     "prefetcht0 (%5,%3,4); prefetcht0 31(%5,%3,4); addq %3,%5;"\
     "subq $4,%4; jmp "#ndim"882b;"\
     #ndim"883:\n\t"\
-    "prefetcht0 (%%r14); prefetcht0 64(%%r14);"\
+    kernel_kend_m8n##ndim "prefetcht0 (%%r14); prefetcht0 64(%%r14);"\
     tail_set_pa_pb(8,ndim) SAVE_m8n##ndim "addq $32,%2;"
 
 /* m = 4 *//* xmm0 for alpha, xmm1-xmm3 for temporary use, xmm4-xmm15 for accumulators */
@@ -215,12 +216,13 @@
 #define COMPUTE_m4(ndim) \
     INIT_m4n##ndim\
     init_set_k "movq %%r14,%1;" head_set_pa_pb(4,ndim)\
+    kernel_kstart_n##ndim(4) "subq $"#k_start_n##ndim",%4;"\
     #ndim"442:\n\t"\
     "testq %4,%4; jz "#ndim"443f;"\
     KERNEL_k1m4n##ndim\
     "subq $4,%4; jmp "#ndim"442b;"\
     #ndim"443:\n\t"\
-    tail_set_pa_pb(4,ndim) SAVE_m4n##ndim "addq $16,%2;"
+    kernel_kend_m4n##ndim tail_set_pa_pb(4,ndim) SAVE_m4n##ndim "addq $16,%2;"
 
 /* m = 2 *//* xmm0 for alpha, xmm1-xmm3 and xmm10 for temporary use, xmm4-xmm9 for accumulators */
 #define INIT_m2n1 "vpxor %%xmm4,%%xmm4,%%xmm4;"
@@ -309,12 +311,13 @@
 #define COMPUTE_m2(ndim) \
     INIT_m2n##ndim\
     init_set_k "movq %%r14,%1;" head_set_pa_pb(2,ndim)\
+    kernel_kstart_n##ndim(2) "subq $"#k_start_n##ndim",%4;"\
     #ndim"222:\n\t"\
     "testq %4,%4; jz "#ndim"223f;"\
     KERNEL_k1m2n##ndim\
     "subq $4,%4; jmp "#ndim"222b;"\
     #ndim"223:\n\t"\
-    tail_set_pa_pb(2,ndim) SAVE_m2n##ndim "addq $8,%2;"
+    kernel_kend_m2n##ndim tail_set_pa_pb(2,ndim) SAVE_m2n##ndim "addq $8,%2;"
 
 /* m = 1 *//* xmm0 for alpha, xmm1-xmm3 and xmm10 for temporary use, xmm4-xmm6 for accumulators */
 #define INIT_m1n1 "vpxor %%xmm4,%%xmm4,%%xmm4;"
@@ -399,12 +402,13 @@
 #define COMPUTE_m1(ndim) \
     INIT_m1n##ndim\
     init_set_k "movq %%r14,%1;" head_set_pa_pb(1,ndim)\
+    kernel_kstart_n##ndim(1) "subq $"#k_start_n##ndim",%4;"\
     #ndim"112:\n\t"\
     "testq %4,%4; jz "#ndim"113f;"\
     KERNEL_k1m1n##ndim\
     "subq $4,%4; jmp "#ndim"112b;"\
     #ndim"113:\n\t"\
-    tail_set_pa_pb(1,ndim) SAVE_m1n##ndim "addq $4,%2;"
+    kernel_kend_m1n##ndim tail_set_pa_pb(1,ndim) SAVE_m1n##ndim "addq $4,%2;"
 
 #define COMPUTE(ndim) {\
     next_b = b_pointer + ndim * K;\
