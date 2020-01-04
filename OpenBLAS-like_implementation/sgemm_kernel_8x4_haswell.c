@@ -33,7 +33,6 @@
 #define save_set_pa_pb_n4(mdim) save_set_pointers(mdim,4)
 #define save_set_pa_pb_n2(mdim) save_set_pointers(mdim,2)
 #define save_set_pa_pb_n1(mdim) save_set_pointers(mdim,1)
-#define tail_set_pa_pb(mdim,ndim) save_set_pa_pb_n##ndim(mdim)
 
 #if defined TRMMKERNEL && !defined LEFT && defined TRANSA
   #define kernel_kstart_n8(mdim) \
