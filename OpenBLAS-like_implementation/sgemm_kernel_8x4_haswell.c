@@ -9,10 +9,19 @@
   #define mult_alpha(acc,alpha,...) "vfmadd213ps ("#__VA_ARGS__"),"#alpha","#acc";"
 #endif
 
-#if defined TRMMKERNEL && LEFT != TRANSA
-  #define init_set_pointers(a_copy,b_copy) "leaq (%0,%%r13,"#a_copy"),%0; leaq (%1,%%r13,"#b_copy"),%1;"
+#ifdef TRMMKERNEL
+  #define init_set_k "movq %%r12,%4; subq %%r13,%4;"
+  #if LEFT != TRANSA
+    #define init_set_pointers(a_copy,b_copy) "leaq (%0,%%r13,"#a_copy"),%0; leaq (%1,%%r13,"#b_copy"),%1;"
+    #define save_set_pointers(a_copy,b_copy) ""
+  #else
+    #define init_set_pointers(a_copy,b_copy) ""
+    #define save_set_pointers(a_copy,b_copy) "leaq (%0,%%r13,"#a_copy"),%0; leaq (%1,%%r13,"#b_copy"),%1;"
+  #endif
 #else
+  #define init_set_k "movq %%r12,%4;"
   #define init_set_pointers(a_copy,b_copy) ""
+  #define save_set_pointers(a_copy,b_copy) ""
 #endif
 
 #if defined TRMMKERNEL && !defined LEFT && defined TRANSA
@@ -110,7 +119,7 @@
 #define SAVE_m8n12 SAVE_m8n8  unit_save_m8n2(%%ymm12,%%ymm13) unit_save_m8n2(%%ymm14,%%ymm15)
 #define COMPUTE_m8(ndim) \
     INIT_m8n##ndim\
-    "movq %%r12,%4; movq %%r14,%1; movq %2,%5; movq $0,%%r15;"\
+    init_set_k "movq %%r14,%1;" "movq %2,%5; movq $0,%%r15;"\
     "cmpq $64,%4; jb "#ndim"882f;"\
     #ndim"881:\n\t"\
     "cmpq $62,%%r15; movq $62,%%r15; cmoveq %3,%%r15;"\
@@ -193,7 +202,7 @@
 #define SAVE_m4n12 SAVE_m4n8  unit_save_m4n2(%%xmm12,%%xmm13) unit_save_m4n2(%%xmm14,%%xmm15)
 #define COMPUTE_m4(ndim) \
     INIT_m4n##ndim\
-    "movq %%r12,%4; movq %%r14,%1;"\
+    init_set_k "movq %%r14,%1;"\
     #ndim"442:\n\t"\
     "testq %4,%4; jz "#ndim"443f;"\
     KERNEL_k1m4n##ndim\
@@ -287,7 +296,7 @@
 #define SAVE_m2n12  SAVE_m2n8   unit_save_m2n4(%%xmm8,%%xmm9)
 #define COMPUTE_m2(ndim) \
     INIT_m2n##ndim\
-    "movq %%r12,%4; movq %%r14,%1;"\
+    init_set_k "movq %%r14,%1;"\
     #ndim"222:\n\t"\
     "testq %4,%4; jz "#ndim"223f;"\
     KERNEL_k1m2n##ndim\
@@ -377,7 +386,7 @@
 #define SAVE_m1n12 SAVE_m1n8    unit_save_m1n4(%%xmm6)
 #define COMPUTE_m1(ndim) \
     INIT_m1n##ndim\
-    "movq %%r12,%4; movq %%r14,%1;"\
+    init_set_k "movq %%r14,%1;"\
     #ndim"112:\n\t"\
     "testq %4,%4; jz "#ndim"113f;"\
     KERNEL_k1m1n##ndim\
