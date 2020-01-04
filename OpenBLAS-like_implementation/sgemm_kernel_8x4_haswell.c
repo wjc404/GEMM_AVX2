@@ -9,7 +9,13 @@
   #define mult_alpha(acc,alpha,...) "vfmadd213ps ("#__VA_ARGS__"),"#alpha","#acc";"
 #endif
 
-if defined TRMMKERNEL && !defined LEFT && defined TRANSA
+#if defined TRMMKERNEL && LEFT != TRANSA
+  #define init_set_pointers(a_copy,b_copy) "leaq (%0,%%r13,"#a_copy"),%0; leaq (%1,%%r13,"#b_copy"),%1;"
+#else
+  #define init_set_pointers(a_copy,b_copy) ""
+#endif
+
+#if defined TRMMKERNEL && !defined LEFT && defined TRANSA
   #define kernel_kstart_n8(mdim) \
     KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4
   #define kernel_kstart_n12(mdim) kernel_kstart_n8(mdim) \
