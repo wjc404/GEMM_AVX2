@@ -22,6 +22,19 @@
   #define TAIL_SET_OFFSET(ndim) {}
 #endif
 
+#if defined TRMMKERNEL && defined LEFT
+  #ifdef TRANSA
+    #define init_update_kskip(val) "subq $"#val",%%r13;"
+    #define save_update_kskip(val) ""
+  #else
+    #define init_update_kskip(val) ""
+    #define save_update_kskip(val) "addq $"#val",%%r13;"
+  #endif
+#else
+  #define init_update_kskip(val) ""
+  #define save_update_kskip(val) ""
+#endif
+
 #ifdef TRMMKERNEL
   #define init_set_k "movq %%r12,%4; subq %%r13,%4;"
   #if LEFT != TRANSA
@@ -138,7 +151,7 @@
 #define SAVE_m8n8  SAVE_m8n4  unit_save_m8n2(%%ymm8,%%ymm9)   unit_save_m8n2(%%ymm10,%%ymm11)
 #define SAVE_m8n12 SAVE_m8n8  unit_save_m8n2(%%ymm12,%%ymm13) unit_save_m8n2(%%ymm14,%%ymm15)
 #define COMPUTE_m8(ndim) \
-    INIT_m8n##ndim\
+    init_update_kskip(32) INIT_m8n##ndim\
     init_set_k "movq %%r14,%1;" init_set_pa_pb_n##ndim(8) "movq %2,%5; movq $0,%%r15;"\
     kernel_kstart_n##ndim(8)\
     "cmpq $64,%4; jb "#ndim"882f;"\
@@ -158,7 +171,7 @@
     "subq $4,%4; jmp "#ndim"882b;"\
     #ndim"883:\n\t"\
     kernel_kend_m8n##ndim "prefetcht0 (%%r14); prefetcht0 64(%%r14);"\
-    save_set_pa_pb_n##ndim(8) SAVE_m8n##ndim "addq $32,%2;"
+    save_set_pa_pb_n##ndim(8) SAVE_m8n##ndim "addq $32,%2;" save_update_kskip(32)
 
 /* m = 4 *//* xmm0 for alpha, xmm1-xmm3 for temporary use, xmm4-xmm15 for accumulators */
 #define KERNEL_k1m4n1 \
@@ -222,7 +235,7 @@
 #define SAVE_m4n8  SAVE_m4n4  unit_save_m4n2(%%xmm8,%%xmm9)   unit_save_m4n2(%%xmm10,%%xmm11)
 #define SAVE_m4n12 SAVE_m4n8  unit_save_m4n2(%%xmm12,%%xmm13) unit_save_m4n2(%%xmm14,%%xmm15)
 #define COMPUTE_m4(ndim) \
-    INIT_m4n##ndim\
+    init_update_kskip(16) INIT_m4n##ndim\
     init_set_k "movq %%r14,%1;" init_set_pa_pb_n##ndim(4)\
     kernel_kstart_n##ndim(4)\
     #ndim"442:\n\t"\
@@ -230,7 +243,7 @@
     KERNEL_k1m4n##ndim\
     "subq $4,%4; jmp "#ndim"442b;"\
     #ndim"443:\n\t"\
-    kernel_kend_m4n##ndim save_set_pa_pb_n##ndim(4) SAVE_m4n##ndim "addq $16,%2;"
+    kernel_kend_m4n##ndim save_set_pa_pb_n##ndim(4) SAVE_m4n##ndim "addq $16,%2;" save_update_kskip(16)
 
 /* m = 2 *//* xmm0 for alpha, xmm1-xmm3 and xmm10 for temporary use, xmm4-xmm9 for accumulators */
 #define INIT_m2n1 "vpxor %%xmm4,%%xmm4,%%xmm4;"
@@ -317,7 +330,7 @@
 #define SAVE_m2n8   SAVE_m2n4    unit_save_m2n4(%%xmm6,%%xmm7)
 #define SAVE_m2n12  SAVE_m2n8   unit_save_m2n4(%%xmm8,%%xmm9)
 #define COMPUTE_m2(ndim) \
-    INIT_m2n##ndim\
+    init_update_kskip(8) INIT_m2n##ndim\
     init_set_k "movq %%r14,%1;" init_set_pa_pb_n##ndim(2)\
     kernel_kstart_n##ndim(2)\
     #ndim"222:\n\t"\
@@ -325,7 +338,7 @@
     KERNEL_k1m2n##ndim\
     "subq $4,%4; jmp "#ndim"222b;"\
     #ndim"223:\n\t"\
-    kernel_kend_m2n##ndim save_set_pa_pb_n##ndim(2) SAVE_m2n##ndim "addq $8,%2;"
+    kernel_kend_m2n##ndim save_set_pa_pb_n##ndim(2) SAVE_m2n##ndim "addq $8,%2;" save_update_kskip(8)
 
 /* m = 1 *//* xmm0 for alpha, xmm1-xmm3 and xmm10 for temporary use, xmm4-xmm6 for accumulators */
 #define INIT_m1n1 "vpxor %%xmm4,%%xmm4,%%xmm4;"
@@ -408,7 +421,7 @@
 #define SAVE_m1n8  SAVE_m1n4    unit_save_m1n4(%%xmm5)
 #define SAVE_m1n12 SAVE_m1n8    unit_save_m1n4(%%xmm6)
 #define COMPUTE_m1(ndim) \
-    INIT_m1n##ndim\
+    init_update_kskip(4) INIT_m1n##ndim\
     init_set_k "movq %%r14,%1;" init_set_pa_pb_n##ndim(1)\
     kernel_kstart_n##ndim(1)\
     #ndim"112:\n\t"\
@@ -416,7 +429,7 @@
     KERNEL_k1m1n##ndim\
     "subq $4,%4; jmp "#ndim"112b;"\
     #ndim"113:\n\t"\
-    kernel_kend_m1n##ndim save_set_pa_pb_n##ndim(1) SAVE_m1n##ndim "addq $4,%2;"
+    kernel_kend_m1n##ndim save_set_pa_pb_n##ndim(1) SAVE_m1n##ndim "addq $4,%2;" save_update_kskip(4)
 
 #define COMPUTE(ndim) {\
     HEAD_SET_OFFSET(ndim) next_b = b_pointer + ndim * K;\
