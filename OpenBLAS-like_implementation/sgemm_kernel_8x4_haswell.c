@@ -419,7 +419,7 @@
     kernel_kend_m1n##ndim save_set_pa_pb_n##ndim(1) SAVE_m1n##ndim "addq $4,%2;"
 
 #define COMPUTE(ndim) {\
-    next_b = b_pointer + ndim * K;\
+    HEAD_SET_OFFSET(ndim) next_b = b_pointer + ndim * K;\
     __asm__ __volatile__(\
     "vbroadcastss (%6),%%ymm0;"\
     "movq %4,%%r12; salq $2,%%r12; movq %1,%%r14; movq %8,%%r11;" INIT_SET_KSKIP\
@@ -443,7 +443,7 @@
     :"+r"(a_pointer),"+r"(b_pointer),"+r"(c_pointer),"+r"(ldc_in_bytes),"+r"(K),"+r"(ctemp),"+r"(const_val),"+r"(next_b)\
     :"m"(M),"m"(off):"r11","r12","r13","r14","r15",\
     "xmm0","xmm1","xmm2","xmm3","xmm4","xmm5","xmm6","xmm7","xmm8","xmm9","xmm10","xmm11","xmm12","xmm13","xmm14","xmm15","cc","memory");\
-    a_pointer -= M * K; b_pointer += ndim * K; c_pointer += (LDC * ndim - M);\
+    TAIL_SET_OFFSET(ndim) a_pointer -= M * K; b_pointer += ndim * K; c_pointer += (LDC * ndim - M);\
 }
 
 //#include "common.h"
