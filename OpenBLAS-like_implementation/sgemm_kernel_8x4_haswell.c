@@ -12,13 +12,16 @@
 #ifdef TRMMKERNEL
   #define init_set_k "movq %%r12,%4; subq %%r13,%4;"
   #if LEFT != TRANSA
+    #define INIT_SET_KSKIP "movq %9,%%r13; salq $2,%%r13;"
     #define init_set_pointers(a_copy,b_copy) "leaq (%0,%%r13,"#a_copy"),%0; leaq (%1,%%r13,"#b_copy"),%1;"
     #define save_set_pointers(a_copy,b_copy) ""
   #else
+    #define INIT_SET_KSKIP "movq %4,%%r13; subq %9,%%r13; salq $2,%%r13;"
     #define init_set_pointers(a_copy,b_copy) ""
     #define save_set_pointers(a_copy,b_copy) "leaq (%0,%%r13,"#a_copy"),%0; leaq (%1,%%r13,"#b_copy"),%1;"
   #endif
 #else
+  #define INIT_SET_KSKIP "xorq %%r13,%%r13;"
   #define init_set_k "movq %%r12,%4;"
   #define init_set_pointers(a_copy,b_copy) ""
   #define save_set_pointers(a_copy,b_copy) ""
@@ -406,7 +409,7 @@
     next_b = b_pointer + ndim * K;\
     __asm__ __volatile__(\
     "vbroadcastss (%6),%%ymm0;"\
-    "movq %4,%%r12; salq $2,%%r12; movq %1,%%r14; movq %8,%%r11; movq %9,%%r13; salq $2,%%r13;"\
+    "movq %4,%%r12; salq $2,%%r12; movq %1,%%r14; movq %8,%%r11;" INIT_SET_KSKIP\
     "cmpq $8,%%r11;jb 33101"#ndim"f;"\
     "33109"#ndim":\n\t"\
     COMPUTE_m8(ndim)\
