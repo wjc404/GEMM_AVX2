@@ -9,6 +9,19 @@
   #define mult_alpha(acc,alpha,...) "vfmadd213ps ("#__VA_ARGS__"),"#alpha","#acc";"
 #endif
 
+#if defined TRMMKERNEL && !defined LEFT
+  #ifdef TRANSA
+    #define HEAD_SET_OFFSET(ndim) {}
+    #define TAIL_SET_OFFSET(ndim) {off+=ndim;}
+  #else
+    #define HEAD_SET_OFFSET(ndim) {off+=(ndim>4?4:ndim);}
+    #define TAIL_SET_OFFSET(ndim) {off+=(ndim>4?(ndim-4):0);}
+  #endif
+#else
+  #define HEAD_SET_OFFSET(ndim) {}
+  #define TAIL_SET_OFFSET(ndim) {}
+#endif
+
 #ifdef TRMMKERNEL
   #define init_set_k "movq %%r12,%4; subq %%r13,%4;"
   #if LEFT != TRANSA
