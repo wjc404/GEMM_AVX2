@@ -463,6 +463,13 @@ CNAME(BLASLONG m, BLASLONG n, BLASLONG k, float alpha, float * __restrict__ A, f
     float constval = alpha;
     float *const_val=&constval;
     int64_t M = (int64_t)m, K = (int64_t)k, off = 0;
+#ifdef TRMMKERNEL
+  #ifdef LEFT
+    off = offset;
+  #else
+    off = -offset;
+  #endif
+#endif
     BLASLONG n_count = n;
     float *a_pointer = A,*b_pointer = B,*c_pointer = C,*ctemp = C,*next_b = B;
     for(;n_count>11;n_count-=12) COMPUTE(12)
