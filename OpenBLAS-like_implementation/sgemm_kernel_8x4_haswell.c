@@ -65,10 +65,10 @@
 
 #if defined TRMMKERNEL && !defined LEFT && defined TRANSA
   #define kernel_kstart_n8(mdim) \
-    KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 "subq $4,%4;"
+    KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 "subq $16,%4;"
   #define kernel_kstart_n12(mdim) \
     KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4 KERNEL_k1m##mdim##n4\
-    KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 "subq $8,%4;"
+    KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 KERNEL_k1m##mdim##n8 "subq $32,%4;"
 #else
   #define kernel_kstart_n8(mdim) ""
   #define kernel_kstart_n12(mdim) ""
