@@ -11,7 +11,7 @@ d y y ... y
 
 #include "common.h"
 
-static inline void solve(BLASLONG m, BLASLONG n, FLOAT *a, FLOAT *b, FLOAT *c, BLASLONG ldc) { //solve m*n elements of b
+static void solve(BLASLONG m, BLASLONG n, FLOAT *a, FLOAT *b, FLOAT *c, BLASLONG ldc) { //solve m*n elements of b
 //a[m][m]: column-major
 //b[m][n]: row-major
 //c[n][ldc]: column-major
@@ -22,28 +22,30 @@ static inline void solve(BLASLONG m, BLASLONG n, FLOAT *a, FLOAT *b, FLOAT *c, B
     for (j = 0; j < n; j ++) {
       b0 = c[j*ldc+i]*a0;
       c[j*ldc+i] = b[i*n+j] = b0;
-      for (k = 0; k < i; k ++) c[j*ldc+k] -= b0*a[i*n+k];
+      for (k = 0; k < i; k ++) c[j*ldc+k] -= b0*a[i*m+k];
     }
   }
 }
 //int GEMM_KERNEL(BLASLONG m, BLASLONG n, BLASLONG k, FLOAT alpha, FLOAT *A, FLOAT *B, FLOAT *C, BLASLONG ldc);
+#define GEMM_KERNEL GEMM_KERNEL_N
 
 #define COMPUTE(a_copy,b_copy) {\
   aa = a + m_count * k;\
-  cc = c + m_count;\
+  cc = ch + m_count;\
   if (k - kk > 0)\
-    GEMM_KERNEL(a_copy,b_copy,k - kk,-1.0,aa + a_copy * kk,b + b_copy * kk,cc,ldc);\
-  solve(a_copy,b_copy,aa + (kk-a_copy) * a_copy,b + (kk-a_copy) * b_copy, cc, ldc);\
+    GEMM_KERNEL(a_copy,b_copy,k - kk,-1.0,aa + a_copy * kk,bh + b_copy * kk,cc,ldc);\
+  solve(a_copy,b_copy,aa + (kk-a_copy) * a_copy,bh + (kk-a_copy) * b_copy, cc, ldc);\
   kk -= a_copy;\
 }
 
 int CNAME(BLASLONG m, BLASLONG n, BLASLONG k, FLOAT dummy1, FLOAT *a, FLOAT *b, FLOAT *c, BLASLONG ldc, BLASLONG offset){
   BLASLONG i, j;
-  FLOAT *aa, *cc;
+  FLOAT *aa, *cc, *bh, *ch;
   BLASLONG kk,m_count;
-  j = n / GEMM_UNROLL_N; m_count=m;
+  j = n / GEMM_UNROLL_N;
+  bh = b; ch = c;
   while (j > 0) {
-    kk = m + offset; //kk = num_of_unsolved_b_elements_in_the_column
+    kk = m + offset; m_count = m; //kk = num_of_unsolved_b_elements_in_the_column
     for (i = 1; i < GEMM_UNROLL_M; i *= 2){
 	  if (m & i) {
         m_count -= i;
@@ -54,8 +56,8 @@ int CNAME(BLASLONG m, BLASLONG n, BLASLONG k, FLOAT dummy1, FLOAT *a, FLOAT *b, 
       m_count -= GEMM_UNROLL_M;
       COMPUTE(GEMM_UNROLL_M,GEMM_UNROLL_N)
     }
-    b += GEMM_UNROLL_N * k;
-    c += GEMM_UNROLL_N * ldc;
+    bh += GEMM_UNROLL_N * k;
+    ch += GEMM_UNROLL_N * ldc;
     j --;
   }
   if (n % GEMM_UNROLL_N > 0) {
@@ -73,10 +75,10 @@ int CNAME(BLASLONG m, BLASLONG n, BLASLONG k, FLOAT dummy1, FLOAT *a, FLOAT *b, 
           m_count -= GEMM_UNROLL_M;
           COMPUTE(GEMM_UNROLL_M,j)
 	    }
-	    b += j * k;
-	    c += j * ldc;
+	    bh += j * k;
+	    ch += j * ldc;
       }
-      j = j >> 1;
+      j = (j>>1);
     }
   }
   return 0;
