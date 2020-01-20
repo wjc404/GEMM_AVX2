@@ -3,9 +3,9 @@
 d y y ... y
 0 d y ... y
 0 0 d ... y
-. . .   . 
-. . .   . 
-. . .   . 
+. . .     . 
+. . .     . 
+. . .     . 
 0 0 0 ... d
 */
 
@@ -47,10 +47,10 @@ int CNAME(BLASLONG m, BLASLONG n, BLASLONG k, FLOAT dummy1, FLOAT *a, FLOAT *b, 
   while (j > 0) {
     kk = m + offset; m_count = m; //kk = num_of_unsolved_b_elements_in_the_column
     for (i = 1; i < GEMM_UNROLL_M; i *= 2){
-	  if (m & i) {
+      if (m & i) {
         m_count -= i;
-	    COMPUTE(i,GEMM_UNROLL_N)
-	  }
+        COMPUTE(i,GEMM_UNROLL_N)
+      }
     }
     for(i=m/GEMM_UNROLL_M;i>0;i--) {
       m_count -= GEMM_UNROLL_M;
@@ -64,19 +64,19 @@ int CNAME(BLASLONG m, BLASLONG n, BLASLONG k, FLOAT dummy1, FLOAT *a, FLOAT *b, 
     j = (GEMM_UNROLL_N >> 1);
     while (j > 0) {
       if (n & j) {
-	    kk = m + offset; m_count = m;
-	    for (i = 1; i < GEMM_UNROLL_M; i *= 2){
-	      if (m & i) {
+        kk = m + offset; m_count = m;
+        for (i = 1; i < GEMM_UNROLL_M; i *= 2){
+          if (m & i) {
             m_count -= i;
-	        COMPUTE(i,j)
-	      }
-	    }
+            COMPUTE(i,j)
+          }
+        }
         for(i=m/GEMM_UNROLL_M;i>0;i--){
           m_count -= GEMM_UNROLL_M;
           COMPUTE(GEMM_UNROLL_M,j)
-	    }
-	    bh += j * k;
-	    ch += j * ldc;
+        }
+        bh += j * k;
+        ch += j * ldc;
       }
       j = (j>>1);
     }
