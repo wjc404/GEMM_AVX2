@@ -426,8 +426,8 @@ static void SCALE_MULT(float *dat,float *sca, BLASLONG lead_dim, BLASLONG dim_fi
       current_dat += lead_dim - dim_first;
     }
 }
-#define BLOCKDIM_K 320 //GEMM_Q in OpenBLAS
-#define BLOCKDIM_M 320 //GEMM_P in OpenBLAS
+#define BLOCKDIM_K 384 //GEMM_Q in OpenBLAS
+#define BLOCKDIM_M 384 //GEMM_P in OpenBLAS
 #define NOTRANSA ((*transa)=='N'||(*transa)=='n')
 #define NOTRANSB ((*transb)=='N'||(*transb)=='n')
 //gcc -march=haswell --shared -fPIC -O2 sgemm_kernel_6x16_haswell.c -o sgemm_6x16.so
