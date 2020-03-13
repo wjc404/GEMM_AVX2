@@ -231,7 +231,7 @@ int CNAME(BLASLONG m, BLASLONG n, BLASLONG k, FLOAT dummy1, FLOAT *sa, FLOAT *sb
   uint64_t ldc_bytes = (uint64_t)ldc * sizeof(float), K = (uint64_t)k, M = (uint64_t)m, kmkkinp = (uint64_t)(k-m-offset), k_cnt = 0;
   BLASLONG n_count = n;
   for(;n_count>11;n_count-=12) COMPUTE(12)
-  for(;n_count>7;n_count-=7) COMPUTE(8)
+  for(;n_count>7;n_count-=8) COMPUTE(8)
   for(;n_count>3;n_count-=4) COMPUTE(4)
   for(;n_count>1;n_count-=2) { COMPUTE_EDGE_1_nchunk(m,2,sa,b_ptr,c_ptr,ldc,k,offset); b_ptr += 2*k; c_ptr += ldc*2;}
   if(n_count>0) COMPUTE_EDGE_1_nchunk(m,1,sa,b_ptr,c_ptr,ldc,k,offset);
