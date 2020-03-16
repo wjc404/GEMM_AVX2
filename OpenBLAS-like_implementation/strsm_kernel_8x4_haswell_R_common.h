@@ -211,11 +211,11 @@
   "vunpcklps %%ymm"#c2",%%ymm"#c1",%%ymm0; vunpckhps %%ymm"#c2",%%ymm"#c1",%%ymm1;"\
   "vunpcklpd %%ymm1,%%ymm0,%%ymm"#c1"; vunpckhpd %%ymm1,%%ymm0,%%ymm"#c2";"\
   "vmovups %%ymm"#c1","#a_off"(%0); vmovups %%ymm"#c2","#a_off"+32(%0);"\
-  "vmovups %%ymm"#c1",(%3); vmovups %%ymm"#c2",(%3,%4,1);"
+  "vmovups %%ymm"#c1",(%3); vmovups %%ymm"#c2",(%3,%4,1); leaq (%3,%4,2),%3;"
 
 #define SAVE_SOLUTION_m4n2(c1,a_off)\
   "vpermilps $216,%%ymm"#c1",%%ymm"#c1"; vpermpd $216,%%ymm"#c1",%%ymm"#c1";"\
-  "vmovups %%ymm"#c1","#a_off"(%0); vmovups %%xmm"#c1",(%3); vextractf128 $1,%%ymm"#c1",(%3,%4,1);"
+  "vmovups %%ymm"#c1","#a_off"(%0); vmovups %%xmm"#c1",(%3); vextractf128 $1,%%ymm"#c1",(%3,%4,1); leaq (%3,%4,2),%3;"
 
 #define SAVE_SOLUTION_m2n4(c1,c2,a_off)\
   "vunpcklps %%xmm"#c2",%%xmm"#c1",%%xmm0; vmovups %%xmm0,"#a_off"(%0); vmovsd %%xmm0,(%3); vmovhpd %%xmm0,(%3,%4,1); leaq (%3,%4,2),%3;"\

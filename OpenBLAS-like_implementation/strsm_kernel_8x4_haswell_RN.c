@@ -6,7 +6,7 @@
   "movq %2,%3;" GEMM_SUM_REORDER_8x4(4,5,6,7,63) "movq %2,%3; addq $32,%2;"\
   SOLVE_leri_m8n2(0,4,5,%1) SUBTRACT_m8n2(8,6,7,%1)\
   SOLVE_ri_m8n2(16,4,5,%1) SUBTRACT_m8n2(24,6,7,%1)\
-  SAVE_SOLUTION_m8n2(4,5,0) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m8n2(4,5,0)\
   SOLVE_leri_m8n2(40,6,7,%1)\
   SOLVE_ri_m8n2(56,6,7,%1)\
   SAVE_SOLUTION_m8n2(6,7,64)
@@ -15,13 +15,13 @@
   "movq %2,%3;" GEMM_SUM_REORDER_8x4(4,5,6,7,63) GEMM_SUM_REORDER_8x4(8,9,10,11,63) "movq %2,%3; addq $32,%2;"\
   SOLVE_leri_m8n2(0,4,5,%1) SUBTRACT_m8n2(8,6,7,%1) SUBTRACT_m8n2(0,8,9,%1,%%r12,4) SUBTRACT_m8n2(8,10,11,%1,%%r12,4)\
   SOLVE_ri_m8n2(16,4,5,%1) SUBTRACT_m8n2(24,6,7,%1) SUBTRACT_m8n2(16,8,9,%1,%%r12,4) SUBTRACT_m8n2(24,10,11,%1,%%r12,4)\
-  SAVE_SOLUTION_m8n2(4,5,0) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m8n2(4,5,0)\
   SOLVE_leri_m8n2(40,6,7,%1) SUBTRACT_m8n2(32,8,9,%1,%%r12,4) SUBTRACT_m8n2(40,10,11,%1,%%r12,4)\
   SOLVE_ri_m8n2(56,6,7,%1) SUBTRACT_m8n2(48,8,9,%1,%%r12,4) SUBTRACT_m8n2(56,10,11,%1,%%r12,4)\
-  SAVE_SOLUTION_m8n2(6,7,64) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m8n2(6,7,64)\
   SOLVE_leri_m8n2(64,8,9,%1,%%r12,4) SUBTRACT_m8n2(72,10,11,%1,%%r12,4)\
   SOLVE_ri_m8n2(80,8,9,%1,%%r12,4) SUBTRACT_m8n2(88,10,11,%1,%%r12,4)\
-  SAVE_SOLUTION_m8n2(8,9,128) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m8n2(8,9,128)\
   SOLVE_leri_m8n2(104,10,11,%1,%%r12,4)\
   SOLVE_ri_m8n2(120,10,11,%1,%%r12,4)\
   SAVE_SOLUTION_m8n2(10,11,192)
@@ -30,19 +30,19 @@
   "movq %2,%3;" GEMM_SUM_REORDER_8x4(4,5,6,7,63) GEMM_SUM_REORDER_8x4(8,9,10,11,63) GEMM_SUM_REORDER_8x4(12,13,14,15,63) "movq %2,%3; addq $32,%2;"\
   SOLVE_leri_m8n2(0,4,5,%1) SUBTRACT_m8n2(8,6,7,%1) SUBTRACT_m8n2(0,8,9,%1,%%r12,4) SUBTRACT_m8n2(8,10,11,%1,%%r12,4) SUBTRACT_m8n2(0,12,13,%1,%%r12,8) SUBTRACT_m8n2(8,14,15,%1,%%r12,8)\
   SOLVE_ri_m8n2(16,4,5,%1) SUBTRACT_m8n2(24,6,7,%1) SUBTRACT_m8n2(16,8,9,%1,%%r12,4) SUBTRACT_m8n2(24,10,11,%1,%%r12,4) SUBTRACT_m8n2(16,12,13,%1,%%r12,8) SUBTRACT_m8n2(24,14,15,%1,%%r12,8)\
-  SAVE_SOLUTION_m8n2(4,5,0) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m8n2(4,5,0)\
   SOLVE_leri_m8n2(40,6,7,%1) SUBTRACT_m8n2(32,8,9,%1,%%r12,4) SUBTRACT_m8n2(40,10,11,%1,%%r12,4) SUBTRACT_m8n2(32,12,13,%1,%%r12,8) SUBTRACT_m8n2(40,14,15,%1,%%r12,8)\
   SOLVE_ri_m8n2(56,6,7,%1) SUBTRACT_m8n2(48,8,9,%1,%%r12,4) SUBTRACT_m8n2(56,10,11,%1,%%r12,4) SUBTRACT_m8n2(48,12,13,%1,%%r12,8) SUBTRACT_m8n2(56,14,15,%1,%%r12,8)\
-  SAVE_SOLUTION_m8n2(6,7,64) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m8n2(6,7,64)\
   SOLVE_leri_m8n2(64,8,9,%1,%%r12,4) SUBTRACT_m8n2(72,10,11,%1,%%r12,4) SUBTRACT_m8n2(64,12,13,%1,%%r12,8) SUBTRACT_m8n2(72,14,15,%1,%%r12,8)\
   SOLVE_ri_m8n2(80,8,9,%1,%%r12,4) SUBTRACT_m8n2(88,10,11,%1,%%r12,4) SUBTRACT_m8n2(80,12,13,%1,%%r12,8) SUBTRACT_m8n2(88,14,15,%1,%%r12,8)\
-  SAVE_SOLUTION_m8n2(8,9,128) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m8n2(8,9,128)\
   SOLVE_leri_m8n2(104,10,11,%1,%%r12,4) SUBTRACT_m8n2(96,12,13,%1,%%r12,8) SUBTRACT_m8n2(104,14,15,%1,%%r12,8)\
   SOLVE_ri_m8n2(120,10,11,%1,%%r12,4) SUBTRACT_m8n2(112,12,13,%1,%%r12,8) SUBTRACT_m8n2(120,14,15,%1,%%r12,8)\
-  SAVE_SOLUTION_m8n2(10,11,192) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m8n2(10,11,192)\
   SOLVE_leri_m8n2(128,12,13,%1,%%r12,8) SUBTRACT_m8n2(136,14,15,%1,%%r12,8)\
   SOLVE_ri_m8n2(144,12,13,%1,%%r12,8) SUBTRACT_m8n2(152,14,15,%1,%%r12,8)\
-  SAVE_SOLUTION_m8n2(12,13,256) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m8n2(12,13,256)\
   SOLVE_leri_m8n2(168,14,15,%1,%%r12,8)\
   SOLVE_ri_m8n2(184,14,15,%1,%%r12,8)\
   SAVE_SOLUTION_m8n2(14,15,320)
@@ -51,7 +51,7 @@
   "movq %2,%3;" GEMM_SUM_REORDER_4x4(4,5,6,7,4,5) "movq %2,%3; addq $16,%2;"\
   SOLVE_leri_m4n2(0,4,%1) SUBTRACT_m4n2(8,5,%1)\
   SOLVE_ri_m4n2(16,4,%1) SUBTRACT_m4n2(24,5,%1)\
-  SAVE_SOLUTION_m4n2(4,0) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m4n2(4,0)\
   SOLVE_leri_m4n2(40,5,%1)\
   SOLVE_ri_m4n2(56,5,%1)\
   SAVE_SOLUTION_m4n2(5,32)
@@ -60,13 +60,13 @@
   "movq %2,%3;" GEMM_SUM_REORDER_4x4(4,5,6,7,4,5) GEMM_SUM_REORDER_4x4(8,9,10,11,6,7) "movq %2,%3; addq $16,%2;"\
   SOLVE_leri_m4n2(0,4,%1) SUBTRACT_m4n2(8,5,%1) SUBTRACT_m4n2(0,6,%1,%%r12,4) SUBTRACT_m4n2(8,7,%1,%%r12,4)\
   SOLVE_ri_m4n2(16,4,%1) SUBTRACT_m4n2(24,5,%1) SUBTRACT_m4n2(16,6,%1,%%r12,4) SUBTRACT_m4n2(24,7,%1,%%r12,4)\
-  SAVE_SOLUTION_m4n2(4,0) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m4n2(4,0)\
   SOLVE_leri_m4n2(40,5,%1) SUBTRACT_m4n2(32,6,%1,%%r12,4) SUBTRACT_m4n2(40,7,%1,%%r12,4)\
   SOLVE_ri_m4n2(56,5,%1) SUBTRACT_m4n2(48,6,%1,%%r12,4) SUBTRACT_m4n2(56,7,%1,%%r12,4)\
-  SAVE_SOLUTION_m4n2(5,32) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m4n2(5,32)\
   SOLVE_leri_m4n2(64,6,%1,%%r12,4) SUBTRACT_m4n2(72,7,%1,%%r12,4)\
   SOLVE_ri_m4n2(80,6,%1,%%r12,4) SUBTRACT_m4n2(88,7,%1,%%r12,4)\
-  SAVE_SOLUTION_m4n2(6,64) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m4n2(6,64)\
   SOLVE_leri_m4n2(104,7,%1,%%r12,4)\
   SOLVE_ri_m4n2(120,7,%1,%%r12,4)\
   SAVE_SOLUTION_m4n2(7,96)
@@ -75,19 +75,19 @@
   "movq %2,%3;" GEMM_SUM_REORDER_4x4(4,5,6,7,4,5) GEMM_SUM_REORDER_4x4(8,9,10,11,6,7) GEMM_SUM_REORDER_4x4(12,13,14,15,8,9) "movq %2,%3; addq $16,%2;"\
   SOLVE_leri_m4n2(0,4,%1) SUBTRACT_m4n2(8,5,%1) SUBTRACT_m4n2(0,6,%1,%%r12,4) SUBTRACT_m4n2(8,7,%1,%%r12,4) SUBTRACT_m4n2(0,8,%1,%%r12,8) SUBTRACT_m4n2(8,9,%1,%%r12,8)\
   SOLVE_ri_m4n2(16,4,%1) SUBTRACT_m4n2(24,5,%1) SUBTRACT_m4n2(16,6,%1,%%r12,4) SUBTRACT_m4n2(24,7,%1,%%r12,4) SUBTRACT_m4n2(16,8,%1,%%r12,8) SUBTRACT_m4n2(24,9,%1,%%r12,8)\
-  SAVE_SOLUTION_m4n2(4,0) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m4n2(4,0)\
   SOLVE_leri_m4n2(40,5,%1) SUBTRACT_m4n2(32,6,%1,%%r12,4) SUBTRACT_m4n2(40,7,%1,%%r12,4) SUBTRACT_m4n2(32,8,%1,%%r12,8) SUBTRACT_m4n2(40,9,%1,%%r12,8)\
   SOLVE_ri_m4n2(56,5,%1) SUBTRACT_m4n2(48,6,%1,%%r12,4) SUBTRACT_m4n2(56,7,%1,%%r12,4) SUBTRACT_m4n2(48,8,%1,%%r12,8) SUBTRACT_m4n2(56,9,%1,%%r12,8)\
-  SAVE_SOLUTION_m4n2(5,32) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m4n2(5,32)\
   SOLVE_leri_m4n2(64,6,%1,%%r12,4) SUBTRACT_m4n2(72,7,%1,%%r12,4) SUBTRACT_m4n2(64,8,%1,%%r12,8) SUBTRACT_m4n2(72,9,%1,%%r12,8)\
   SOLVE_ri_m4n2(80,6,%1,%%r12,4) SUBTRACT_m4n2(88,7,%1,%%r12,4) SUBTRACT_m4n2(80,8,%1,%%r12,8) SUBTRACT_m4n2(88,9,%1,%%r12,8)\
-  SAVE_SOLUTION_m4n2(6,64) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m4n2(6,64)\
   SOLVE_leri_m4n2(104,7,%1,%%r12,4) SUBTRACT_m4n2(96,8,%1,%%r12,8) SUBTRACT_m4n2(104,9,%1,%%r12,8)\
   SOLVE_ri_m4n2(120,7,%1,%%r12,4) SUBTRACT_m4n2(112,8,%1,%%r12,8) SUBTRACT_m4n2(120,9,%1,%%r12,8)\
-  SAVE_SOLUTION_m4n2(7,96) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m4n2(7,96)\
   SOLVE_leri_m4n2(128,8,%1,%%r12,8) SUBTRACT_m4n2(136,9,%1,%%r12,8)\
   SOLVE_ri_m4n2(144,8,%1,%%r12,8) SUBTRACT_m4n2(152,9,%1,%%r12,8)\
-  SAVE_SOLUTION_m4n2(8,128) "leaq (%3,%4,2),%3;"\
+  SAVE_SOLUTION_m4n2(8,128)\
   SOLVE_leri_m4n2(168,9,%1,%%r12,8)\
   SOLVE_ri_m4n2(184,9,%1,%%r12,8)\
   SAVE_SOLUTION_m4n2(9,160)
