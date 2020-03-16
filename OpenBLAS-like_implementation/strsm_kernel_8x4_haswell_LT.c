@@ -19,29 +19,29 @@
 
 #define SOLVE_LT_m2n4 \
   "movq %2,%3;" GEMM_SUM_REORDER_2x4(4,5,4)\
-  SOLVE_up_m2n4(0,4)\
+  SOLVE_uplo_m2n4(0,4)\
   SOLVE_lo_m2n4(8,4) SAVE_b_m2n4(0,4)\
   "movq %2,%3; addq $8,%2;" save_c_m2n4(4)
 
 #define SOLVE_LT_m2n8 \
   "movq %2,%3;" GEMM_SUM_REORDER_2x4(4,5,4) GEMM_SUM_REORDER_2x4(6,7,5)\
-  SOLVE_up_m2n8(0,4,5)\
+  SOLVE_uplo_m2n8(0,4,5)\
   SOLVE_lo_m2n8(8,4,5) SAVE_b_m2n8(0,4,5)\
   "movq %2,%3; addq $8,%2;" save_c_m2n4(4) save_c_m2n4(5)
 
 #define SOLVE_LT_m2n12 \
   "movq %2,%3;" GEMM_SUM_REORDER_2x4(4,5,4) GEMM_SUM_REORDER_2x4(6,7,5) GEMM_SUM_REORDER_2x4(8,9,6)\
-  SOLVE_up_m2n12(0,4,5,6)\
+  SOLVE_uplo_m2n12(0,4,5,6)\
   SOLVE_lo_m2n12(8,4,5,6) SAVE_b_m2n12(0,4,5,6)\
   "movq %2,%3; addq $8,%2;" save_c_m2n4(4) save_c_m2n4(5) save_c_m2n4(6)
 
 #define SOLVE_LT_m4n4 \
   "movq %2,%3;" GEMM_SUM_REORDER_4x4(4,5,6,7,4,5)\
 \
-  SOLVE_up_m2n4(0,4) SUBTRACT_m2n4(8,5)\
+  SOLVE_uplo_m2n4(0,4) SUBTRACT_m2n4(8,5)\
   SOLVE_lo_m2n4(16,4) SUBTRACT_m2n4(24,5) SAVE_b_m2n4(0,4)\
 \
-  SOLVE_up_m2n4(40,5)\
+  SOLVE_uplo_m2n4(40,5)\
   SOLVE_lo_m2n4(56,5) SAVE_b_m2n4(32,5)\
 \
   "movq %2,%3; addq $16,%2;" save_c_m4n4(4,5)
@@ -49,10 +49,10 @@
 #define SOLVE_LT_m4n8 \
   "movq %2,%3;" GEMM_SUM_REORDER_4x4(4,5,6,7,4,5) GEMM_SUM_REORDER_4x4(8,9,10,11,6,7)\
 \
-  SOLVE_up_m2n8(0,4,6) SUBTRACT_m2n8(8,5,7)\
+  SOLVE_uplo_m2n8(0,4,6) SUBTRACT_m2n8(8,5,7)\
   SOLVE_lo_m2n8(16,4,6) SUBTRACT_m2n8(24,5,7) SAVE_b_m2n8(0,4,6)\
 \
-  SOLVE_up_m2n8(40,5,7)\
+  SOLVE_uplo_m2n8(40,5,7)\
   SOLVE_lo_m2n8(56,5,7) SAVE_b_m2n8(32,5,7)\
 \
   "movq %2,%3; addq $16,%2;" save_c_m4n4(4,5) save_c_m4n4(6,7)
@@ -60,10 +60,10 @@
 #define SOLVE_LT_m4n12 \
   "movq %2,%3;" GEMM_SUM_REORDER_4x4(4,5,6,7,4,5) GEMM_SUM_REORDER_4x4(8,9,10,11,6,7) GEMM_SUM_REORDER_4x4(12,13,14,15,8,9)\
 \
-  SOLVE_up_m2n12(0,4,6,8) SUBTRACT_m2n12(8,5,7,9)\
+  SOLVE_uplo_m2n12(0,4,6,8) SUBTRACT_m2n12(8,5,7,9)\
   SOLVE_lo_m2n12(16,4,6,8) SUBTRACT_m2n12(24,5,7,9) SAVE_b_m2n12(0,4,6,8)\
 \
-  SOLVE_up_m2n12(40,5,7,9)\
+  SOLVE_uplo_m2n12(40,5,7,9)\
   SOLVE_lo_m2n12(56,5,7,9) SAVE_b_m2n12(32,5,7,9)\
 \
   "movq %2,%3; addq $16,%2;" save_c_m4n4(4,5) save_c_m4n4(6,7) save_c_m4n4(8,9)
@@ -71,16 +71,16 @@
 #define SOLVE_LT_m8n4 \
   "movq %2,%3;" GEMM_SUM_REORDER_8x4(4,5,6,7,63)\
 \
-  SOLVE_up_m2n4(0,4) SUBTRACT_m2n4(8,5) SUBTRACT_m2n4(16,6) SUBTRACT_m2n4(24,7)\
+  SOLVE_uplo_m2n4(0,4) SUBTRACT_m2n4(8,5) SUBTRACT_m2n4(16,6) SUBTRACT_m2n4(24,7)\
   SOLVE_lo_m2n4(32,4) SUBTRACT_m2n4(40,5) SUBTRACT_m2n4(48,6) SUBTRACT_m2n4(56,7) SAVE_b_m2n4(0,4)\
 \
-  SOLVE_up_m2n4(72,5) SUBTRACT_m2n4(80,6) SUBTRACT_m2n4(88,7)\
+  SOLVE_uplo_m2n4(72,5) SUBTRACT_m2n4(80,6) SUBTRACT_m2n4(88,7)\
   SOLVE_lo_m2n4(104,5) SUBTRACT_m2n4(112,6) SUBTRACT_m2n4(120,7) SAVE_b_m2n4(32,5)\
 \
-  SOLVE_up_m2n4(144,6) SUBTRACT_m2n4(152,7)\
+  SOLVE_uplo_m2n4(144,6) SUBTRACT_m2n4(152,7)\
   SOLVE_lo_m2n4(176,6) SUBTRACT_m2n4(184,7) SAVE_b_m2n4(64,6)\
 \
-  SOLVE_up_m2n4(216,7)\
+  SOLVE_uplo_m2n4(216,7)\
   SOLVE_lo_m2n4(248,7) SAVE_b_m2n4(96,7)\
 \
   "movq %2,%3; addq $32,%2;" save_c_m8n4(4,5,6,7)
@@ -88,16 +88,16 @@
 #define SOLVE_LT_m8n8 \
   "movq %2,%3;" GEMM_SUM_REORDER_8x4(4,5,6,7,63) GEMM_SUM_REORDER_8x4(8,9,10,11,63)\
 \
-  SOLVE_up_m2n8(0,4,8) SUBTRACT_m2n8(8,5,9) SUBTRACT_m2n8(16,6,10) SUBTRACT_m2n8(24,7,11)\
+  SOLVE_uplo_m2n8(0,4,8) SUBTRACT_m2n8(8,5,9) SUBTRACT_m2n8(16,6,10) SUBTRACT_m2n8(24,7,11)\
   SOLVE_lo_m2n8(32,4,8) SUBTRACT_m2n8(40,5,9) SUBTRACT_m2n8(48,6,10) SUBTRACT_m2n8(56,7,11) SAVE_b_m2n8(0,4,8)\
 \
-  SOLVE_up_m2n8(72,5,9) SUBTRACT_m2n8(80,6,10) SUBTRACT_m2n8(88,7,11)\
+  SOLVE_uplo_m2n8(72,5,9) SUBTRACT_m2n8(80,6,10) SUBTRACT_m2n8(88,7,11)\
   SOLVE_lo_m2n8(104,5,9) SUBTRACT_m2n8(112,6,10) SUBTRACT_m2n8(120,7,11) SAVE_b_m2n8(32,5,9)\
 \
-  SOLVE_up_m2n8(144,6,10) SUBTRACT_m2n8(152,7,11)\
+  SOLVE_uplo_m2n8(144,6,10) SUBTRACT_m2n8(152,7,11)\
   SOLVE_lo_m2n8(176,6,10) SUBTRACT_m2n8(184,7,11) SAVE_b_m2n8(64,6,10)\
 \
-  SOLVE_up_m2n8(216,7,11)\
+  SOLVE_uplo_m2n8(216,7,11)\
   SOLVE_lo_m2n8(248,7,11) SAVE_b_m2n8(96,7,11)\
 \
   "movq %2,%3; addq $32,%2;" save_c_m8n4(4,5,6,7) save_c_m8n4(8,9,10,11)
@@ -105,16 +105,16 @@
 #define SOLVE_LT_m8n12 \
   "movq %2,%3;" GEMM_SUM_REORDER_8x4(4,5,6,7,63) GEMM_SUM_REORDER_8x4(8,9,10,11,63) GEMM_SUM_REORDER_8x4(12,13,14,15,63)\
 \
-  SOLVE_up_m2n12(0,4,8,12) SUBTRACT_m2n12(8,5,9,13) SUBTRACT_m2n12(16,6,10,14) SUBTRACT_m2n12(24,7,11,15)\
+  SOLVE_uplo_m2n12(0,4,8,12) SUBTRACT_m2n12(8,5,9,13) SUBTRACT_m2n12(16,6,10,14) SUBTRACT_m2n12(24,7,11,15)\
   SOLVE_lo_m2n12(32,4,8,12) SUBTRACT_m2n12(40,5,9,13) SUBTRACT_m2n12(48,6,10,14) SUBTRACT_m2n12(56,7,11,15) SAVE_b_m2n12(0,4,8,12)\
 \
-  SOLVE_up_m2n12(72,5,9,13) SUBTRACT_m2n12(80,6,10,14) SUBTRACT_m2n12(88,7,11,15)\
+  SOLVE_uplo_m2n12(72,5,9,13) SUBTRACT_m2n12(80,6,10,14) SUBTRACT_m2n12(88,7,11,15)\
   SOLVE_lo_m2n12(104,5,9,13) SUBTRACT_m2n12(112,6,10,14) SUBTRACT_m2n12(120,7,11,15) SAVE_b_m2n12(32,5,9,13)\
 \
-  SOLVE_up_m2n12(144,6,10,14) SUBTRACT_m2n12(152,7,11,15)\
+  SOLVE_uplo_m2n12(144,6,10,14) SUBTRACT_m2n12(152,7,11,15)\
   SOLVE_lo_m2n12(176,6,10,14) SUBTRACT_m2n12(184,7,11,15) SAVE_b_m2n12(64,6,10,14)\
 \
-  SOLVE_up_m2n12(216,7,11,15)\
+  SOLVE_uplo_m2n12(216,7,11,15)\
   SOLVE_lo_m2n12(248,7,11,15) SAVE_b_m2n12(96,7,11,15)\
 \
   "movq %2,%3; addq $32,%2;" save_c_m8n4(4,5,6,7) save_c_m8n4(8,9,10,11) save_c_m8n4(12,13,14,15)
