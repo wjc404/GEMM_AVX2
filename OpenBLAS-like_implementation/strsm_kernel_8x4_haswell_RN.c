@@ -268,7 +268,7 @@ int CNAME(BLASLONG m, BLASLONG n, BLASLONG k, FLOAT dummy1, FLOAT *sa, FLOAT *sb
   float *a_ptr = sa, *b_ptr = sb, *c_ptr = C, *c_tmp = C;
   float one[8] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
   float zero[8] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-  uint64_t ldc_bytes = (uint64_t)ldc * sizeof(float), K = (uint64_t)k, M = (uint64_t)m, OFF = (uint64_t)offset, k_cnt = 0;
+  uint64_t ldc_bytes = (uint64_t)ldc * sizeof(float), K = (uint64_t)k, M = (uint64_t)m, OFF = (uint64_t)-offset, k_cnt = 0;
   BLASLONG n_count = n;
   for(;n_count>11;n_count-=12) COMPUTE(12)
   for(;n_count>7;n_count-=8) COMPUTE(8)
